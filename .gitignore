@@ -1,0 +1,57 @@
+# Build files
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# IDE files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.eclipse/
+*.swp
+*.swo
+*~
+
+# Maven
+.m2/
+maven-eclipse.xml
+.maven_execution_history
+
+# OS files
+.DS_Store
+Thumbs.db
+.gitkeep
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Node modules (if using frontend tools)
+node_modules/
+npm-debug.log
+
+# Gradle
+.gradle/
+build/
+
+# Environment files
+.env
+.env.local
+.properties.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Package files
+*.bak
+*.backup
+
