@@ -24,9 +24,9 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        // Redirect to registration page
+        // Redirect to combined login/register page
         try {
-            request.getRequestDispatcher("/register.jsp").forward(request, response);
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -49,9 +49,14 @@ public class RegisterServlet extends HttpServlet {
             email == null || email.trim().isEmpty() ||
             password == null || password.trim().isEmpty() ||
             confirmPassword == null || confirmPassword.trim().isEmpty()) {
-            request.setAttribute("error", "All required fields must be filled");
+            request.setAttribute("registerError", "All required fields must be filled");
+            request.setAttribute("name", name);
+            request.setAttribute("username", username);
+            request.setAttribute("email", email);
+            request.setAttribute("phone", phoneNumber);
+            request.setAttribute("address", address);
             try {
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -61,14 +66,14 @@ public class RegisterServlet extends HttpServlet {
 
         // Check if passwords match
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("error", "Passwords do not match");
+            request.setAttribute("registerError", "Passwords do not match");
             request.setAttribute("name", name);
             request.setAttribute("username", username);
             request.setAttribute("email", email);
             request.setAttribute("phone", phoneNumber);
             request.setAttribute("address", address);
             try {
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -78,13 +83,13 @@ public class RegisterServlet extends HttpServlet {
 
         // Check if username already exists
         if (userDAO.usernameExists(username)) {
-            request.setAttribute("error", "Username already exists");
+            request.setAttribute("registerError", "Username already exists");
             request.setAttribute("name", name);
             request.setAttribute("email", email);
             request.setAttribute("phone", phoneNumber);
             request.setAttribute("address", address);
             try {
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -94,13 +99,13 @@ public class RegisterServlet extends HttpServlet {
 
         // Check if email already exists
         if (userDAO.emailExists(email)) {
-            request.setAttribute("error", "Email already exists");
+            request.setAttribute("registerError", "Email already exists");
             request.setAttribute("name", name);
             request.setAttribute("username", username);
             request.setAttribute("phone", phoneNumber);
             request.setAttribute("address", address);
             try {
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -112,17 +117,17 @@ public class RegisterServlet extends HttpServlet {
         User newUser = new User(username, password, name, email, phoneNumber, address);
 
         if (userDAO.registerUser(newUser)) {
-            request.setAttribute("success", "Registration successful! Please login.");
+            request.setAttribute("registerSuccess", "Registration successful! Please login.");
             try {
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } else {
-            request.setAttribute("error", "Registration failed. Please try again.");
+            request.setAttribute("registerError", "Registration failed. Please try again.");
             try {
-                request.getRequestDispatcher("/register.jsp").forward(request, response);
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -130,4 +135,3 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 }
-

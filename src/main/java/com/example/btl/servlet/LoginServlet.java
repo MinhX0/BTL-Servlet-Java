@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Redirect to login page
+        // Redirect to combined login/register page
         try {
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         } catch (Exception e) {
@@ -84,4 +84,3 @@ public class LoginServlet extends HttpServlet {
         }
     }
 }
-
