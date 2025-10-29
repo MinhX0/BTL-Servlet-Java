@@ -33,6 +33,25 @@ public class CartItemDAO {
         }
     }
 
+    // New: fetch join variant and product for rendering
+    public List<CartItem> listByUserDetailed(int userId) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<CartItem> q = session.createQuery(
+                    "select ci from CartItem ci " +
+                    "join fetch ci.variant v " +
+                    "join fetch v.product p " +
+                    "where ci.user.id = :uid order by ci.dateAdded desc",
+                    CartItem.class
+            );
+            q.setParameter("uid", userId);
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error listing detailed cart items: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
     public CartItem findByUserAndVariant(int userId, int variantId) {
         try (Session session = HibernateUtil.getSession()) {
             Query<CartItem> q = session.createQuery("FROM CartItem WHERE user.id = :uid AND variant.id = :vid", CartItem.class);
@@ -111,4 +130,3 @@ public class CartItemDAO {
         }
     }
 }
-

@@ -11,6 +11,7 @@ public class CartService {
     public CartService(CartItemDAO cartItemDAO) { this.cartItemDAO = cartItemDAO; }
 
     public List<CartItem> listByUser(int userId) { return cartItemDAO.listByUser(userId); }
+    public List<CartItem> listByUserDetailed(int userId) { return cartItemDAO.listByUserDetailed(userId); }
 
     public boolean addOrIncrement(int userId, int variantId, int delta) {
         CartItem existing = cartItemDAO.findByUserAndVariant(userId, variantId);
@@ -44,4 +45,3 @@ public class CartService {
 
     public boolean clearCart(int userId) { return cartItemDAO.deleteByUser(userId); }
 }
-

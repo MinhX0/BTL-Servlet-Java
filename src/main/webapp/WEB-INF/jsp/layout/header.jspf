@@ -32,7 +32,8 @@
                         </div>
                     </div>
                     <div class="cart">
-                        <i class="fa fa-cart-plus"></i>
+                        <c:url var="cartUrl" value="/cart"/>
+                        <a href="${cartUrl}" aria-label="View cart"><i class="fa fa-cart-plus"></i></a>
                         <span>(0)</span>
                     </div>
                 </div>
