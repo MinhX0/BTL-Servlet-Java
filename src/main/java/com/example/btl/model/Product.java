@@ -20,6 +20,9 @@ public class Product {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "main_image_url")
+    private String mainImageUrl;
+
     @Column(name = "base_price", precision = 10, scale = 2, nullable = false)
     private BigDecimal basePrice;
 
@@ -42,6 +45,8 @@ public class Product {
     public void setName(String name) { this.name = name; }
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+    public String getMainImageUrl() { return mainImageUrl; }
+    public void setMainImageUrl(String mainImageUrl) { this.mainImageUrl = mainImageUrl; }
     public BigDecimal getBasePrice() { return basePrice; }
     public void setBasePrice(BigDecimal basePrice) { this.basePrice = basePrice; }
     public LocalDateTime getDateAdded() { return dateAdded; }
@@ -50,5 +55,9 @@ public class Product {
     public void setCategory(Category category) { this.category = category; }
     public List<ProductVariant> getVariants() { return variants; }
     public void setVariants(List<ProductVariant> variants) { this.variants = variants; }
-}
 
+    // Alias for JSP usage: imgsrc -> maps to mainImageUrl
+    @Transient
+    public String getImgsrc() { return mainImageUrl; }
+    public void setImgsrc(String imgsrc) { this.mainImageUrl = imgsrc; }
+}

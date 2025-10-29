@@ -1,0 +1,67 @@
+<%-- Common top header and nav bar, using template assets prefix --%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<!-- Top Header Start -->
+<div class="top-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-3">
+                <div class="logo">
+                    <c:url var="homeUrl" value="/index"/>
+                    <a href="${homeUrl}">
+                        <c:url var="logoUrl" value="/assets/img/logo.png"/>
+                        <img src="${logoUrl}" alt="Logo">
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="search">
+                    <input type="text" placeholder="Search" aria-label="Search products">
+                    <button><i class="fa fa-search"></i></button>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="user">
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account</a>
+                        <div class="dropdown-menu">
+                            <c:url var="loginUrl" value="/login.jsp#login"/>
+                            <c:url var="registerUrl" value="/login.jsp#register"/>
+                            <a href="${loginUrl}" class="dropdown-item">Login</a>
+                            <a href="${registerUrl}" class="dropdown-item">Register</a>
+                        </div>
+                    </div>
+                    <div class="cart">
+                        <i class="fa fa-cart-plus"></i>
+                        <span>(0)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Top Header End -->
+
+<!-- Header Start -->
+<div class="header">
+    <div class="container">
+        <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+            <a href="#" class="navbar-brand">MENU</a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                <div class="navbar-nav m-auto">
+                    <a href="${homeUrl}" class="nav-item nav-link ${fn:endsWith(pageContext.request.requestURI, '/index.jsp') || fn:endsWith(pageContext.request.requestURI, '/index') ? 'active' : ''}">Home</a>
+                    <c:url var="productsUrl" value="/products"/>
+                    <a href="${productsUrl}" class="nav-item nav-link">Products</a>
+
+                    <c:url var="contactUrl" value="/contact.jsp"/>
+                    <a href="${contactUrl}" class="nav-item nav-link">Contact Us</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+<!-- Header End -->

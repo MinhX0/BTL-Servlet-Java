@@ -12,15 +12,15 @@ import java.util.List;
 public class UserDAO {
 
     /**
-     * Authenticate user by username and password
+     * Authenticate user by username (or email) and password
      * Compares plain password against hashed password in database
      */
     public User authenticateUser(String username, String password) {
-        String hql = "FROM User WHERE username = :username";
+        String hql = "FROM User WHERE username = :identifier OR email = :identifier";
 
         try (Session session = HibernateUtil.getSession()) {
             Query<User> query = session.createQuery(hql, User.class);
-            query.setParameter("username", username);
+            query.setParameter("identifier", username);
 
             User user = query.uniqueResult();
 
@@ -209,4 +209,3 @@ public class UserDAO {
         return false;
     }
 }
-
