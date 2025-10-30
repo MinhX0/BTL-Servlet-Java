@@ -20,7 +20,7 @@ public class RegisterServlet extends HttpServlet {
         // Check if user is already logged in
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
-            response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
+            response.sendRedirect(request.getContextPath() + "/index");
             return;
         }
 
@@ -113,17 +113,12 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        // Create new user (default CUSTOMER role)
+        // Create new user (default CUSTOMER role); password is hashed in DAO
         User newUser = new User(username, password, name, email, phoneNumber, address);
 
         if (userDAO.registerUser(newUser)) {
-            request.setAttribute("registerSuccess", "Registration successful! Please login.");
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+            // Registration success → navigate back to index screen
+            response.sendRedirect(request.getContextPath() + "/index");
         } else {
             request.setAttribute("registerError", "Registration failed. Please try again.");
             try {

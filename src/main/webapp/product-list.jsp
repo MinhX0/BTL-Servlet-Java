@@ -88,13 +88,27 @@
                                             <c:url var="detailUrl" value="/product-detail.jsp">
                                                 <c:param name="id" value="${p.id}"/>
                                             </c:url>
-                                            <c:set var="img" value="${empty p.mainImageUrl ? '/img/product-1.png' : p.mainImageUrl}"/>
-                                            <c:url var="imgUrl" value="${img}"/>
+                                            <c:choose>
+                                                <c:when test="${empty p.mainImageUrl}">
+                                                    <c:set var="resolvedImg" value="/assets/img/placeholder.jpg"/>
+                                                </c:when>
+                                                <c:when test="${fn:startsWith(p.mainImageUrl, 'http://') || fn:startsWith(p.mainImageUrl, 'https://') || fn:startsWith(p.mainImageUrl, '/')}">
+                                                    <c:set var="resolvedImg" value="${p.mainImageUrl}"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="resolvedImg" value="/assets/img/${p.mainImageUrl}"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <c:url var="imgUrl" value="${resolvedImg}"/>
+                                            <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
                                             <a href="${detailUrl}">
-                                                <img src="${imgUrl}" alt="${fn:escapeXml(p.name)}">
+                                                <img src="${imgUrl}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl}'">
                                             </a>
                                             <div class="product-action">
-                                                <a href="#"><i class="fa fa-cart-plus"></i></a>
+                                                <c:url var="addToCartUrl" value="/add-to-cart">
+                                                    <c:param name="productId" value="${p.id}"/>
+                                                </c:url>
+                                                <a href="${addToCartUrl}" aria-label="Add ${fn:escapeXml(p.name)} to cart"><i class="fa fa-cart-plus"></i></a>
                                             </div>
                                         </div>
                                         <div class="product-content">

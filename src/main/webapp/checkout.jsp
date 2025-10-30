@@ -13,6 +13,9 @@
 <!-- Checkout Start -->
 <div class="checkout">
     <div class="container">
+        <c:if test="${param.error == '1'}">
+            <div class="alert alert-danger" role="alert">Checkout failed. Please try again in a moment.</div>
+        </c:if>
         <div class="row">
             <div class="col-md-7">
                 <form method="post" action="${pageContext.request.contextPath}/checkout">
@@ -79,8 +82,8 @@
                         <h3>Products</h3>
                         <c:forEach var="ci" items="${cartItems}">
                             <p>
-                                ${ci.variant.product.name} x ${ci.quantity}
-                                <span>${ci.variant.finalVariantPrice * ci.quantity}</span>
+                                ${ci.product.name} x ${ci.quantity}
+                                <span>${ci.product.basePrice * ci.quantity}</span>
                             </p>
                         </c:forEach>
                         <p class="sub-total">Sub Total<span>${subTotal}</span></p>

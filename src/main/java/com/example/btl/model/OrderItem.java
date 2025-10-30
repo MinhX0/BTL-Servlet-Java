@@ -16,8 +16,8 @@ public class OrderItem {
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id", nullable = false)
-    private ProductVariant variant;
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private int quantity;
@@ -31,11 +31,10 @@ public class OrderItem {
     public void setId(int id) { this.id = id; }
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
-    public ProductVariant getVariant() { return variant; }
-    public void setVariant(ProductVariant variant) { this.variant = variant; }
+    public Product getProduct() { return product; }
+    public void setProduct(Product product) { this.product = product; }
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public BigDecimal getPriceAtPurchase() { return priceAtPurchase; }
     public void setPriceAtPurchase(BigDecimal priceAtPurchase) { this.priceAtPurchase = priceAtPurchase; }
 }
-

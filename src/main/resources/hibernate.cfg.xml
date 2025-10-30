@@ -18,6 +18,7 @@
         <property name="hibernate.jdbc.batch_size">20</property>
         <property name="hibernate.order_inserts">true</property>
         <property name="hibernate.order_updates">true</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Connection pool (basic) -->
         <property name="hibernate.connection.pool_size">10</property>

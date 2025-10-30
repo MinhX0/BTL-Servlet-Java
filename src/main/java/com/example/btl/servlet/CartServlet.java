@@ -50,9 +50,9 @@ public class CartServlet extends HttpServlet {
         boolean ok = false;
         try {
             if ("add".equalsIgnoreCase(action)) {
-                int variantId = Integer.parseInt(request.getParameter("variantId"));
+                int productId = Integer.parseInt(request.getParameter("productId"));
                 int qty = parseIntOr(request.getParameter("qty"), 1);
-                ok = cartService.addOrIncrement(userId, variantId, Math.max(1, qty));
+                ok = cartService.addOrIncrement(userId, productId, Math.max(1, qty));
             } else if ("update".equalsIgnoreCase(action)) {
                 int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
                 int qty = parseIntOr(request.getParameter("qty"), 1);
@@ -79,4 +79,3 @@ public class CartServlet extends HttpServlet {
         try { return Integer.parseInt(s); } catch (Exception e) { return def; }
     }
 }
-

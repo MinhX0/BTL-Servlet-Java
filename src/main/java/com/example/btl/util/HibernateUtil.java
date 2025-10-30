@@ -33,7 +33,6 @@ public class HibernateUtil {
                     .addAnnotatedClass(User.class)
                     .addAnnotatedClass(Category.class)
                     .addAnnotatedClass(Product.class)
-                    .addAnnotatedClass(ProductVariant.class)
                     .addAnnotatedClass(CartItem.class)
                     .addAnnotatedClass(Order.class)
                     .addAnnotatedClass(OrderItem.class);

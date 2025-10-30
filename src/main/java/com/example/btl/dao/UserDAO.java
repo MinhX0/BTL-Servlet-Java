@@ -115,6 +115,21 @@ public class UserDAO {
     }
 
     /**
+     * Get user by email
+     */
+    public User getUserByEmail(String email) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<User> q = session.createQuery("FROM User WHERE email = :email", User.class);
+            q.setParameter("email", email);
+            return q.uniqueResult();
+        } catch (HibernateException e) {
+            System.out.println("Error fetching user by email: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
      * Get user by ID
      */
     public User getUserById(int userId) {

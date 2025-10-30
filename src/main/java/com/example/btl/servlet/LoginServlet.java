@@ -20,7 +20,7 @@ public class LoginServlet extends HttpServlet {
         // Check if user is already logged in
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
-            response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
+            response.sendRedirect(request.getContextPath() + "/index");
             return;
         }
 
@@ -64,14 +64,8 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("name", user.getName());
             session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
-            // Redirect based on role
-            if (user.isAdmin()) {
-                response.sendRedirect(request.getContextPath() + "/admin/dashboard.jsp");
-            } else if (user.isSeller()) {
-                response.sendRedirect(request.getContextPath() + "/seller/dashboard.jsp");
-            } else {
-                response.sendRedirect(request.getContextPath() + "/customer/dashboard.jsp");
-            }
+            // Navigate back to index screen
+            response.sendRedirect(request.getContextPath() + "/index");
         } else {
             // Authentication failed
             request.setAttribute("error", "Invalid username or password");

@@ -47,22 +47,6 @@ CREATE TABLE Products
 );
 
 -- ----------------------------
--- 5. Product_Variants Table (Specific items, stock, and variant pricing)
--- ----------------------------
-CREATE TABLE Product_Variants
-(
-    variant_id          INT AUTO_INCREMENT PRIMARY KEY,
-    product_id          INT                NOT NULL,
-    SKU                 VARCHAR(50) UNIQUE NOT NULL,
-    size                VARCHAR(20),
-    color               VARCHAR(20),
-    final_variant_price DECIMAL(10, 2)     NOT NULL,
-    quantity_on_hand    INT DEFAULT 0,
-    FOREIGN KEY (product_id) REFERENCES Products (product_id),
-    UNIQUE KEY idx_variant_attributes (product_id, size, color)
-);
-
--- ----------------------------
 -- 6. Carts Table (Temporary holding for user selections)
 -- ----------------------------
 CREATE TABLE Carts
@@ -70,12 +54,12 @@ CREATE TABLE Carts
     cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
     -- FK now references the 'id' column in the Users table
     user_id      INT NOT NULL,
-    variant_id   INT NOT NULL,
+    product_id   INT NOT NULL,
     quantity     INT NOT NULL CHECK (quantity > 0),
     date_added   DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES Users (id),
-    FOREIGN KEY (variant_id) REFERENCES Product_Variants (variant_id),
-    UNIQUE KEY idx_user_variant (user_id, variant_id)
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (product_id) REFERENCES Products (product_id),
+    UNIQUE KEY idx_user_product (user_id, product_id)
 );
 
 -- ----------------------------
@@ -99,9 +83,9 @@ CREATE TABLE Order_Items
 (
     order_item_id     INT AUTO_INCREMENT PRIMARY KEY,
     order_id          INT            NOT NULL,
-    variant_id        INT            NOT NULL,
+    product_id        INT            NOT NULL,
     quantity          INT            NOT NULL,
     price_at_purchase DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (order_id) REFERENCES Orders (order_id),
-    FOREIGN KEY (variant_id) REFERENCES Product_Variants (variant_id)
+    FOREIGN KEY (product_id) REFERENCES Products (product_id)
 );

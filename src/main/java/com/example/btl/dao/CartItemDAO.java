@@ -33,13 +33,12 @@ public class CartItemDAO {
         }
     }
 
-    // New: fetch join variant and product for rendering
+    // fetch join product for rendering
     public List<CartItem> listByUserDetailed(int userId) {
         try (Session session = HibernateUtil.getSession()) {
             Query<CartItem> q = session.createQuery(
                     "select ci from CartItem ci " +
-                    "join fetch ci.variant v " +
-                    "join fetch v.product p " +
+                    "join fetch ci.product p " +
                     "where ci.user.id = :uid order by ci.dateAdded desc",
                     CartItem.class
             );
@@ -52,14 +51,14 @@ public class CartItemDAO {
         }
     }
 
-    public CartItem findByUserAndVariant(int userId, int variantId) {
+    public CartItem findByUserAndProduct(int userId, int productId) {
         try (Session session = HibernateUtil.getSession()) {
-            Query<CartItem> q = session.createQuery("FROM CartItem WHERE user.id = :uid AND variant.id = :vid", CartItem.class);
+            Query<CartItem> q = session.createQuery("FROM CartItem WHERE user.id = :uid AND product.id = :pid", CartItem.class);
             q.setParameter("uid", userId);
-            q.setParameter("vid", variantId);
+            q.setParameter("pid", productId);
             return q.uniqueResult();
         } catch (HibernateException e) {
-            System.out.println("Error finding cart item by user and variant: " + e.getMessage());
+            System.out.println("Error finding cart item by user and product: " + e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -60,38 +60,6 @@
 </div>
 <!-- Feature End-->
 
-<!-- Category Start-->
-<div class="category">
-    <div class="container-fluid">
-        <div class="row">
-            <c:choose>
-                <c:when test="${not empty categories}">
-                    <c:forEach var="cat" items="${categories}" varStatus="st">
-                        <div class="col-md-4">
-                            <div class="category-img">
-                                <c:set var="imgName" value="${st.index % 4 == 0 ? 'category-1.jpg' : st.index % 4 == 1 ? 'category-2.jpg' : st.index % 4 == 2 ? 'category-3.jpg' : 'category-4.jpg'}"/>
-                                <c:url var="catImg" value="/assets/img/${imgName}"/>
-                                <img src="${catImg}" alt="${fn:escapeXml(cat.name)}" />
-                                <c:url var="catUrl" value="/products">
-                                    <c:param name="categoryId" value="${cat.id}"/>
-                                    <c:param name="page" value="1"/>
-                                </c:url>
-                                <a class="category-name" href="${catUrl}">
-                                    <h2>${cat.name}</h2>
-                                </a>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:when>
-                <c:otherwise>
-                    <div class="col-12"><span class="text-muted">No categories</span></div>
-                </c:otherwise>
-            </c:choose>
-        </div>
-    </div>
-</div>
-<!-- Category End-->
-
 <!-- Featured Product Start -->
 <div class="featured-product">
     <div class="container">
@@ -102,6 +70,35 @@
             </p>
         </div>
         <div class="row align-items-center product-slider product-slider-4">
+            <!-- Demo card (kept) but corrected paths and fallback -->
+            <div class="col-lg-3">
+                <div class="product-item">
+                    <div class="product-image">
+                        <c:url var="demoDetail" value="/product-detail.jsp"/>
+                        <c:url var="demoImg" value="/assets/img/product-1.png"/>
+                        <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
+                        <a href="${demoDetail}">
+                            <img src="${demoImg}" alt="Product Image" onerror="this.onerror=null;this.src='${placeholderUrl}'">
+                        </a>
+                        <div class="product-action">
+                            <a href="#"><i class="fa fa-cart-plus"></i></a>
+                            <a href="#"><i class="fa fa-heart"></i></a>
+                            <a href="#"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <div class="title"><a href="#">Phasellus Gravida</a></div>
+                        <div class="ratting">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="price">$22 <span>$25</span></div>
+                    </div>
+                </div>
+            </div>
             <c:choose>
                 <c:when test="${not empty featuredProducts}">
                     <c:forEach var="p" items="${featuredProducts}">
@@ -111,15 +108,28 @@
                                     <c:url var="detailUrl" value="/product-detail.jsp">
                                         <c:param name="id" value="${p.id}"/>
                                     </c:url>
-                                    <c:set var="img" value="${empty p.mainImageUrl ? '/assets/img/product-1.png' : p.mainImageUrl}"/>
-                                    <c:url var="imgUrl" value="${img}"/>
-                                    <a href="${detailUrl}">
-                                        <img src="${imgUrl}" alt="${fn:escapeXml(p.name)}">
+                                    <%-- Robust image URL resolution: default, absolute, or prefix relative filenames under /assets/img/ --%>
+                                    <c:choose>
+                                        <c:when test="${empty p.mainImageUrl}">
+                                            <c:set var="resolvedImg" value="/assets/img/placeholder.jpg"/>
+                                        </c:when>
+                                        <c:when test="${fn:startsWith(p.mainImageUrl, 'http://') || fn:startsWith(p.mainImageUrl, 'https://') || fn:startsWith(p.mainImageUrl, '/')}" >
+                                            <c:set var="resolvedImg" value="${p.mainImageUrl}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="resolvedImg" value="/assets/img/${p.mainImageUrl}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <c:url var="imgUrl" value="${resolvedImg}"/>
+                                    <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
+                                    <a href="${detailUrl}" aria-label="View ${fn:escapeXml(p.name)} details">
+                                        <img src="${imgUrl}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl}'">
                                     </a>
                                     <div class="product-action">
-                                        <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                        <a href="#"><i class="fa fa-heart"></i></a>
-                                        <a href="#"><i class="fa fa-search"></i></a>
+                                        <c:url var="addToCart" value="/add-to-cart">
+                                            <c:param name="productId" value="${p.id}"/>
+                                        </c:url>
+                                        <a href="${addToCart}" aria-label="Add ${fn:escapeXml(p.name)} to cart"><i class="fa fa-cart-plus"></i></a>
                                     </div>
                                 </div>
                                 <div class="product-content">

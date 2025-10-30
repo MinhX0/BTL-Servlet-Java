@@ -4,6 +4,7 @@ import com.example.btl.dao.CartItemDAO;
 import com.example.btl.model.CartItem;
 import com.example.btl.model.Order;
 import com.example.btl.service.CheckoutService;
+import com.example.btl.servlet.payment.vnpay.Config;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,8 +12,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.util.List;
+import java.math.RoundingMode;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+
+import static java.lang.System.out;
 
 @WebServlet(name = "CheckoutServlet", urlPatterns = {"/checkout"})
 public class CheckoutServlet extends HttpServlet {
@@ -36,7 +44,7 @@ public class CheckoutServlet extends HttpServlet {
         List<CartItem> items = cartItemDAO.listByUserDetailed(userId);
         BigDecimal subTotal = BigDecimal.ZERO;
         for (CartItem ci : items) {
-            BigDecimal line = ci.getVariant().getFinalVariantPrice().multiply(BigDecimal.valueOf(ci.getQuantity()));
+            BigDecimal line = ci.getProduct().getBasePrice().multiply(BigDecimal.valueOf(ci.getQuantity()));
             subTotal = subTotal.add(line);
         }
         request.setAttribute("cartItems", items);
@@ -56,17 +64,91 @@ public class CheckoutServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
+        String payment = Optional.ofNullable(request.getParameter("payment")).orElse("COD");
+        // Read optional billing info if later needed
+        String fullName = request.getParameter("fullName");
+        String phone = request.getParameter("phone");
+        String email = request.getParameter("email");
+        String address = request.getParameter("address");
+
         List<CartItem> items = cartItemDAO.listByUserDetailed(userId);
         if (items.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
+        // Always create the order and clear the cart per requirement
         Order order = checkoutService.placeOrder(userId, items);
         if (order == null) {
             response.sendRedirect(request.getContextPath() + "/checkout?error=1");
             return;
         }
-        response.sendRedirect(request.getContextPath() + "/order-success.jsp?orderId=" + order.getId());
+
+        if ("VNPAY".equalsIgnoreCase(payment)) {
+            try {
+                String redirectUrl = buildVnPayRedirectUrl(request, order);
+                response.sendRedirect(redirectUrl);
+                return;
+            } catch (Exception ex) {
+                response.sendRedirect(request.getContextPath() + "/vnpay_return?error=init_failed&orderId=" + order.getId());
+                return;
+            }
+        }
+
+        // Default: COD flow → show success screen
+        request.setAttribute("orderId", order.getId());
+        request.setAttribute("totalAmount", order.getTotalAmount());
+        request.setAttribute("orderDate", order.getOrderDate());
+        try {
+            request.getRequestDispatcher("/order-success.jsp").forward(request, response);
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/");
+        }
+    }
+
+    private String buildVnPayRedirectUrl(HttpServletRequest request, Order order) throws UnsupportedEncodingException {
+        // Compute amount in minor units (x100)
+        BigDecimal total = order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO;
+        long amountMinor = total.multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).longValue();
+
+        String vnp_ReturnUrl = request.getScheme() + "://" + request.getServerName() +
+                (request.getServerPort() != 80 && request.getServerPort() != 443 ? (":" + request.getServerPort()) : "") +
+                request.getContextPath() + "/vnpay_return";
+        String vnp_IpAddr = Config.getIpAddress(request);
+
+        Map<String, String> fields = new HashMap<>();
+        fields.put("vnp_Version", "2.1.0");
+        fields.put("vnp_Command", "pay");
+        fields.put("vnp_TmnCode", Config.vnp_TmnCode);
+        fields.put("vnp_Amount", String.valueOf(amountMinor));
+        fields.put("vnp_CurrCode", "VND");
+        fields.put("vnp_ExpireDate", LocalDateTime.now().plusMinutes(15).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
+        fields.put("vnp_TxnRef", String.valueOf(order.getId()));
+        fields.put("vnp_OrderInfo", "Payment for order #" + order.getId());
+        fields.put("vnp_OrderType", "other"); // required by VNPay, common value
+        fields.put("vnp_Locale", "vn");
+        fields.put("vnp_ReturnUrl", vnp_ReturnUrl);
+        fields.put("vnp_IpAddr", vnp_IpAddr);
+        String createDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        fields.put("vnp_CreateDate", createDate);
+
+        // Encode and sign
+        Map<String, String> encoded = new HashMap<>();
+        for (Map.Entry<String, String> e : fields.entrySet()) {
+            String k = URLEncoder.encode(e.getKey(), java.nio.charset.StandardCharsets.US_ASCII);
+            String v = URLEncoder.encode(e.getValue(), java.nio.charset.StandardCharsets.US_ASCII);
+            encoded.put(k, v);
+        }
+        String secureHash = Config.hashAllFields(encoded);
+
+        // Build query string with encoded keys/values + hash
+        List<String> parts = new ArrayList<>();
+        encoded.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(en -> parts.add(en.getKey() + "=" + en.getValue()));
+        parts.add(URLEncoder.encode("vnp_SecureHash", java.nio.charset.StandardCharsets.US_ASCII) + "=" + URLEncoder.encode(secureHash, java.nio.charset.StandardCharsets.US_ASCII));
+
+        String query = String.join("&", parts);
+        out.print(Config.vnp_PayUrl + "?" + query);
+        return Config.vnp_PayUrl + "?" + query;
     }
 }
-

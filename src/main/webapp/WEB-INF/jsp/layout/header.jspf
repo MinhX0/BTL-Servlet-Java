@@ -1,6 +1,9 @@
 <%-- Common top header and nav bar, using template assets prefix --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<script>
+    window.appContextPath = '${pageContext.request.contextPath}';
+</script>
 <!-- Top Header Start -->
 <div class="top-header">
     <div class="container">
@@ -23,18 +26,37 @@
             <div class="col-md-3">
                 <div class="user">
                     <div class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account</a>
-                        <div class="dropdown-menu">
-                            <c:url var="loginUrl" value="/login.jsp#login"/>
-                            <c:url var="registerUrl" value="/login.jsp#register"/>
-                            <a href="${loginUrl}" class="dropdown-item">Login</a>
-                            <a href="${registerUrl}" class="dropdown-item">Register</a>
-                        </div>
+                        <c:choose>
+                            <c:when test="${not empty sessionScope.user}">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="fa fa-user"></i>
+                                    <span>${fn:escapeXml(sessionScope.name != null ? sessionScope.name : sessionScope.username)}</span>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <c:url var="accountUrl" value="/account"/>
+                                    <a href="${accountUrl}" class="dropdown-item">My Account</a>
+                                    <c:url var="ordersUrl" value="/orders"/>
+                                    <a href="${ordersUrl}" class="dropdown-item">My Orders</a>
+                                    <div class="dropdown-divider"></div>
+                                    <c:url var="logoutUrl" value="/logout"/>
+                                    <a href="${logoutUrl}" class="dropdown-item">Logout</a>
+                                </div>
+                            </c:when>
+                            <c:otherwise>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account</a>
+                                <div class="dropdown-menu">
+                                    <c:url var="loginUrl" value="/login.jsp#login"/>
+                                    <c:url var="registerUrl" value="/login.jsp#register"/>
+                                    <a href="${loginUrl}" class="dropdown-item">Login</a>
+                                    <a href="${registerUrl}" class="dropdown-item">Register</a>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </div>
                     <div class="cart">
                         <c:url var="cartUrl" value="/cart"/>
                         <a href="${cartUrl}" aria-label="View cart"><i class="fa fa-cart-plus"></i></a>
-                        <span>(0)</span>
+                        <span>(${empty requestScope.cartCount ? 0 : requestScope.cartCount})</span>
                     </div>
                 </div>
             </div>

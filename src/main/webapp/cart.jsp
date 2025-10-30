@@ -32,19 +32,19 @@
                             <c:when test="${not empty cartItems}">
                                 <c:set var="subTotal" value="0"/>
                                 <c:forEach var="ci" items="${cartItems}" varStatus="st">
-                                    <c:set var="unitPrice" value="${ci.variant.finalVariantPrice}"/>
+                                    <c:set var="unitPrice" value="${ci.product.basePrice}"/>
                                     <c:set var="lineTotal" value="${unitPrice * ci.quantity}"/>
                                     <tr>
                                         <td>
-                                            <c:set var="img" value="${empty ci.variant.product.mainImageUrl ? '/assets/img/product-1.png' : ci.variant.product.mainImageUrl}"/>
+                                            <c:set var="img" value="${empty ci.product.mainImageUrl ? '/assets/img/product-1.png' : ci.product.mainImageUrl}"/>
                                             <c:url var="imgUrl" value="${img}"/>
-                                            <a href="#"><img src="${imgUrl}" alt="${fn:escapeXml(ci.variant.product.name)}"></a>
+                                            <a href="#"><img src="${imgUrl}" alt="${fn:escapeXml(ci.product.name)}"></a>
                                         </td>
                                         <td>
                                             <c:url var="detailUrl" value="/product-detail.jsp">
-                                                <c:param name="id" value="${ci.variant.product.id}"/>
+                                                <c:param name="id" value="${ci.product.id}"/>
                                             </c:url>
-                                            <a href="${detailUrl}">${ci.variant.product.name} <small>(${fn:escapeXml(ci.variant.size)} ${fn:escapeXml(ci.variant.color)})</small></a>
+                                            <a href="${detailUrl}">${ci.product.name}</a>
                                         </td>
                                         <td>${unitPrice}</td>
                                         <td>
@@ -101,9 +101,8 @@
                                 <input type="hidden" name="action" value="clear"/>
                                 <button class="btn btn-outline-secondary" onclick="return confirm('Clear cart?');">Clear Cart</button>
                             </form>
-                            <form method="get" action="${pageContext.request.contextPath}/checkout" class="d-inline">
-                                <button class="btn btn-primary" type="submit">Checkout</button>
-                            </form>
+                            <c:url var="checkoutUrl" value="/checkout"/>
+                            <a class="btn btn-primary" href="${checkoutUrl}">Checkout</a>
                         </div>
                     </div>
                 </div>

@@ -9,4 +9,9 @@
         </cookie-config>
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
+
+    <!-- Make /index (IndexServlet) the default welcome page -->
+    <welcome-file-list>
+        <welcome-file>index</welcome-file>
+    </welcome-file-list>
 </web-app>

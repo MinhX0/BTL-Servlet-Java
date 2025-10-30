@@ -3,8 +3,6 @@ package com.example.btl.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "Products")
@@ -33,9 +31,6 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductVariant> variants = new ArrayList<>();
-
     public Product() { }
 
     // getters and setters
@@ -53,8 +48,6 @@ public class Product {
     public void setDateAdded(LocalDateTime dateAdded) { this.dateAdded = dateAdded; }
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
-    public List<ProductVariant> getVariants() { return variants; }
-    public void setVariants(List<ProductVariant> variants) { this.variants = variants; }
 
     // Alias for JSP usage: imgsrc -> maps to mainImageUrl
     @Transient

@@ -10,17 +10,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class CheckoutService {
-
     public Order placeOrder(int userId, List<CartItem> items) {
         if (items == null || items.isEmpty()) return null;
+        Session session = null;
         Transaction tx = null;
-        try (Session session = HibernateUtil.getSession()) {
+        try {
+            session = HibernateUtil.getSession();
             tx = session.beginTransaction();
 
             // Compute total
             BigDecimal total = BigDecimal.ZERO;
             for (CartItem ci : items) {
-                BigDecimal price = ci.getVariant().getFinalVariantPrice();
+                // Use product's base price as price (since variants removed)
+                BigDecimal price = ci.getProduct().getBasePrice();
                 BigDecimal line = price.multiply(BigDecimal.valueOf(ci.getQuantity()));
                 total = total.add(line);
             }
@@ -38,11 +40,11 @@ public class CheckoutService {
             for (CartItem ci : items) {
                 OrderItem oi = new OrderItem();
                 oi.setOrder(order);
-                // Reattach/load variant in this session
-                ProductVariant variant = session.get(ProductVariant.class, ci.getVariant().getId());
-                oi.setVariant(variant);
+                // Reattach/load product in this session
+                Product product = session.get(Product.class, ci.getProduct().getId());
+                oi.setProduct(product);
                 oi.setQuantity(ci.getQuantity());
-                oi.setPriceAtPurchase(variant.getFinalVariantPrice());
+                oi.setPriceAtPurchase(product.getBasePrice());
                 session.persist(oi);
             }
 
@@ -54,10 +56,19 @@ public class CheckoutService {
             tx.commit();
             return order;
         } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
+            // Rollback only if tx is active and session is open
+            try {
+                if (tx != null && tx.isActive()) {
+                    tx.rollback();
+                }
+            } catch (Exception ignored) {
+                // ignore rollback failures
+            }
             return null;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
     }
 }
-
