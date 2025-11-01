@@ -37,7 +37,7 @@
                     <div class="dropdown">
                         <c:choose>
                             <c:when test="${not empty sessionScope.user}">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa fa-user"></i>
                                     <span>${fn:escapeXml(sessionScope.name != null ? sessionScope.name : sessionScope.username)}</span>
                                 </a>
@@ -60,7 +60,7 @@
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account</a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account</a>
                                 <div class="dropdown-menu">
                                     <c:url var="loginUrl" value="/login.jsp#login"/>
                                     <c:url var="registerUrl" value="/login.jsp#register"/>
