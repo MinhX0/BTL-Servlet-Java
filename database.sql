@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS users
     phone_number VARCHAR(20),
     address      VARCHAR(255),
     role         ENUM ('CUSTOMER', 'ADMIN', 'SELLER') NOT NULL DEFAULT 'CUSTOMER',
+    is_active    TINYINT(1)                           NOT NULL DEFAULT 1,
     created_at   TIMESTAMP                                     DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP                                     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

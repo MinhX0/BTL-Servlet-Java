@@ -32,6 +32,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role = Role.CUSTOMER;
 
+    @Column(name = "is_active")
+    private Boolean active = Boolean.TRUE;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -153,6 +156,18 @@ public class User {
 
     public boolean isCustomer() {
         return role == Role.CUSTOMER;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public boolean isActive() {
+        return active == null || active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public String getCreatedAt() {

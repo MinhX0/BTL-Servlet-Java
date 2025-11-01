@@ -16,7 +16,7 @@ public class UserDAO {
      * Compares plain password against hashed password in database
      */
     public User authenticateUser(String username, String password) {
-        String hql = "FROM User WHERE username = :identifier OR email = :identifier";
+        String hql = "FROM User WHERE (username = :identifier OR email = :identifier) AND (active IS NULL OR active = true)";
 
         try (Session session = HibernateUtil.getSession()) {
             Query<User> query = session.createQuery(hql, User.class);
@@ -46,6 +46,7 @@ public class UserDAO {
             // Hash password before saving
             String hashedPassword = com.example.btl.util.PasswordUtil.hashPassword(user.getPassword());
             user.setPassword(hashedPassword);
+            if (user.getActive() == null) user.setActive(Boolean.TRUE);
 
             session = HibernateUtil.getSession();
             transaction = session.beginTransaction();
@@ -149,24 +150,33 @@ public class UserDAO {
     }
 
     /**
-     * Get all users
+     * Get all users (optionally filtered by role/active)
      */
     public List<User> getAllUsers() {
-        Session session = null;
-        try {
-            session = HibernateUtil.getSession();
-            String hql = "FROM User";
-            Query<User> query = session.createQuery(hql, User.class);
-            return query.getResultList();
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("FROM User ORDER BY id DESC", User.class).getResultList();
         } catch (HibernateException e) {
             System.out.println("Error fetching users: " + e.getMessage());
             e.printStackTrace();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+            return List.of();
         }
-        return List.of();
+    }
+
+    public List<User> search(Role role, Boolean active) {
+        StringBuilder hql = new StringBuilder("FROM User WHERE 1=1");
+        if (role != null) hql.append(" AND role = :role");
+        if (active != null) hql.append(" AND (active = :active OR (active IS NULL AND :active = true))");
+        hql.append(" ORDER BY id DESC");
+        try (Session session = HibernateUtil.getSession()) {
+            Query<User> q = session.createQuery(hql.toString(), User.class);
+            if (role != null) q.setParameter("role", role);
+            if (active != null) q.setParameter("active", active);
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error searching users: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
     }
 
     /**
@@ -191,6 +201,28 @@ public class UserDAO {
             if (session != null) {
                 session.close();
             }
+        }
+        return false;
+    }
+
+    /**
+     * Soft deactivate/activate user
+     */
+    public boolean setActive(int userId, boolean active) {
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSession()) {
+            tx = session.beginTransaction();
+            User u = session.get(User.class, userId);
+            if (u != null) {
+                u.setActive(active);
+                session.merge(u);
+                tx.commit();
+                return true;
+            }
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            System.out.println("Error toggling user active: " + e.getMessage());
+            e.printStackTrace();
         }
         return false;
     }

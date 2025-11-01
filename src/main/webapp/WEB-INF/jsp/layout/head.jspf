@@ -6,9 +6,11 @@
 <meta content="Bootstrap Ecommerce Template Free Download" name="description">
 <base href="${pageContext.request.contextPath}/" />
 
+<c:set var="v" value="${applicationScope.assetVersion}"/>
+
 <!-- Favicon -->
 <c:url var="faviconUrl" value="/assets/img/favicon.ico"/>
-<link href="${faviconUrl}" rel="icon">
+<link href="${faviconUrl}?v=${v}" rel="icon">
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
@@ -18,9 +20,17 @@
 <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <c:url var="slickCssUrl" value="/assets/lib/slick/slick.css"/>
 <c:url var="slickThemeCssUrl" value="/assets/lib/slick/slick-theme.css"/>
-<link href="${slickCssUrl}" rel="stylesheet">
-<link href="${slickThemeCssUrl}" rel="stylesheet">
+<link href="${slickCssUrl}?v=${v}" rel="stylesheet">
+<link href="${slickThemeCssUrl}?v=${v}" rel="stylesheet">
 
 <!-- Template Stylesheet -->
 <c:url var="mainCssUrl" value="/assets/css/style.css"/>
-<link href="${mainCssUrl}" rel="stylesheet">
+<link href="${mainCssUrl}?v=${v}" rel="stylesheet">
+
+<!-- JS Libraries (defer to end of body in some templates; included here for simplicity) -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+<c:url var="slickJsUrl" value="/assets/lib/slick/slick.min.js"/>
+<script src="${slickJsUrl}?v=${v}"></script>
+<c:url var="mainJsUrl" value="/assets/js/main.js"/>
+<script src="${mainJsUrl}?v=${v}"></script>

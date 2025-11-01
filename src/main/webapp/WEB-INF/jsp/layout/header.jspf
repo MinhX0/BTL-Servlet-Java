@@ -10,7 +10,14 @@
         <div class="row align-items-center">
             <div class="col-md-3">
                 <div class="logo">
-                    <c:url var="homeUrl" value="/index"/>
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
+                            <c:url var="homeUrl" value="/admin"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:url var="homeUrl" value="/index"/>
+                        </c:otherwise>
+                    </c:choose>
                     <a href="${homeUrl}">
                         <c:url var="logoUrl" value="/assets/img/logo.png"/>
                         <img src="${logoUrl}" alt="Logo">
@@ -18,10 +25,12 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="search">
-                    <input type="text" placeholder="Search" aria-label="Search products">
-                    <button><i class="fa fa-search"></i></button>
-                </div>
+                <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
+                    <div class="search">
+                        <input type="text" placeholder="Search" aria-label="Search products">
+                        <button><i class="fa fa-search"></i></button>
+                    </div>
+                </c:if>
             </div>
             <div class="col-md-3">
                 <div class="user">
@@ -33,10 +42,18 @@
                                     <span>${fn:escapeXml(sessionScope.name != null ? sessionScope.name : sessionScope.username)}</span>
                                 </a>
                                 <div class="dropdown-menu">
-                                    <c:url var="accountUrl" value="/account"/>
-                                    <a href="${accountUrl}" class="dropdown-item">My Account</a>
-                                    <c:url var="ordersUrl" value="/orders"/>
-                                    <a href="${ordersUrl}" class="dropdown-item">My Orders</a>
+                                    <c:choose>
+                                        <c:when test="${sessionScope.user.admin}">
+                                            <c:url var="adminUrl" value="/admin"/>
+                                            <a href="${adminUrl}" class="dropdown-item">Admin Dashboard</a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:url var="accountUrl" value="/account"/>
+                                            <a href="${accountUrl}" class="dropdown-item">My Account</a>
+                                            <c:url var="ordersUrl" value="/orders"/>
+                                            <a href="${ordersUrl}" class="dropdown-item">My Orders</a>
+                                        </c:otherwise>
+                                    </c:choose>
                                     <div class="dropdown-divider"></div>
                                     <c:url var="logoutUrl" value="/logout"/>
                                     <a href="${logoutUrl}" class="dropdown-item">Logout</a>
@@ -53,11 +70,13 @@
                             </c:otherwise>
                         </c:choose>
                     </div>
-                    <div class="cart">
-                        <c:url var="cartUrl" value="/cart"/>
-                        <a href="${cartUrl}" aria-label="View cart"><i class="fa fa-cart-plus"></i></a>
-                        <span>(${empty requestScope.cartCount ? 0 : requestScope.cartCount})</span>
-                    </div>
+                    <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
+                        <div class="cart">
+                            <c:url var="cartUrl" value="/cart"/>
+                            <a href="${cartUrl}" aria-label="View cart"><i class="fa fa-cart-plus"></i></a>
+                            <span>(${empty requestScope.cartCount ? 0 : requestScope.cartCount})</span>
+                        </div>
+                    </c:if>
                 </div>
             </div>
         </div>
@@ -76,12 +95,25 @@
 
             <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                 <div class="navbar-nav m-auto">
-                    <a href="${homeUrl}" class="nav-item nav-link ${fn:endsWith(pageContext.request.requestURI, '/index.jsp') || fn:endsWith(pageContext.request.requestURI, '/index') ? 'active' : ''}">Home</a>
-                    <c:url var="productsUrl" value="/products"/>
-                    <a href="${productsUrl}" class="nav-item nav-link">Products</a>
-
-                    <c:url var="contactUrl" value="/contact.jsp"/>
-                    <a href="${contactUrl}" class="nav-item nav-link">Contact Us</a>
+                    <c:choose>
+                        <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
+                            <c:url var="adminUrl2" value="/admin"/>
+                            <a href="${adminUrl2}" class="nav-item nav-link">Dashboard</a>
+                            <c:url var="adminOrdersUrl" value="/admin/orders"/>
+                            <a href="${adminOrdersUrl}" class="nav-item nav-link">Orders</a>
+                            <c:url var="adminProductsUrl" value="/admin/products"/>
+                            <a href="${adminProductsUrl}" class="nav-item nav-link">Products</a>
+                            <c:url var="adminCategoriesUrl" value="/admin/categories"/>
+                            <a href="${adminCategoriesUrl}" class="nav-item nav-link">Categories</a>
+                        </c:when>
+                        <c:otherwise>
+                            <a href="${homeUrl}" class="nav-item nav-link ${fn:endsWith(pageContext.request.requestURI, '/index.jsp') || fn:endsWith(pageContext.request.requestURI, '/index') ? 'active' : ''}">Home</a>
+                            <c:url var="productsUrl" value="/products"/>
+                            <a href="${productsUrl}" class="nav-item nav-link">Products</a>
+                            <c:url var="contactUrl" value="/contact.jsp"/>
+                            <a href="${contactUrl}" class="nav-item nav-link">Contact Us</a>
+                        </c:otherwise>
+                    </c:choose>
                 </div>
             </div>
         </nav>

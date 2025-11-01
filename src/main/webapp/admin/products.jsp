@@ -14,7 +14,7 @@
         <a href="${pageContext.request.contextPath}/admin/products/new" class="btn btn-primary">Add Product</a>
     </div>
     <table class="table table-striped">
-        <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Category</th></tr></thead>
+        <thead><tr><th>ID</th><th>Name</th><th>Price</th><th>Category</th><th>Actions</th></tr></thead>
         <tbody>
         <c:forEach var="p" items="${products}">
             <tr>
@@ -22,6 +22,10 @@
                 <td>${p.name}</td>
                 <td>${p.basePrice}</td>
                 <td>${p.category.name}</td>
+                <td>
+                    <a class="btn btn-sm btn-outline-secondary disabled" href="#" title="Edit (coming soon)">Edit</a>
+                    <a class="btn btn-sm btn-outline-danger disabled" href="#" title="Delete (coming soon)">Delete</a>
+                </td>
             </tr>
         </c:forEach>
         </tbody>
@@ -30,4 +34,3 @@
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
 </body>
 </html>
-

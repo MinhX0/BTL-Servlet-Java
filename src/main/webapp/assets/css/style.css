@@ -318,14 +318,46 @@ button.btn {
 .home-slider {
     position: relative;
     width: 100%;
+    /* Ensure no overflow when images have different aspect ratios */
+    overflow: hidden;
 }
 
 .home-slider .main-slider-item {
     padding: 0 7.5px;
 }
 
-.home-slider .slick-dots {
-    bottom: 15px;
+/* Slider height normalization */
+.home-slider .main-slider {
+    position: relative;
+    height: 420px; /* default desktop height */
+}
+
+.home-slider .main-slider .main-slider-item {
+    height: 100%;
+}
+
+.home-slider .main-slider-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* crop to fill while keeping center */
+}
+
+/* Ensure Slick wrappers inherit fixed height */
+.home-slider .slick-list,
+.home-slider .slick-track,
+.home-slider .slick-slide { height: 100% !important; }
+/* Slick wraps slide content in an extra div; ensure it fills height */
+.home-slider .slick-slide > div { height: 100%; }
+
+@media (max-width: 991.98px) {
+    .home-slider .main-slider { height: 360px; }
+}
+@media (max-width: 767.98px) {
+    .home-slider .main-slider { height: 280px; }
+}
+@media (max-width: 575.98px) {
+    .home-slider .main-slider { height: 220px; }
 }
 
 

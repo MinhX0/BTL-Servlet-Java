@@ -13,12 +13,13 @@
 <!-- Main Slider Start -->
 <div class="home-slider">
     <div class="main-slider">
+        <c:set var="v" value="${applicationScope.assetVersion}"/>
         <c:url var="slide1" value="/assets/img/slider-1.jpg"/>
         <c:url var="slide2" value="/assets/img/slider-2.jpg"/>
         <c:url var="slide3" value="/assets/img/slider-3.jpg"/>
-        <div class="main-slider-item"><img src="${slide1}" alt="Slider 1" /></div>
-        <div class="main-slider-item"><img src="${slide2}" alt="Slider 2" /></div>
-        <div class="main-slider-item"><img src="${slide3}" alt="Slider 3" /></div>
+        <div class="main-slider-item"><img src="${slide1}?v=${v}" alt="Slider 1" /></div>
+        <div class="main-slider-item"><img src="${slide2}?v=${v}" alt="Slider 2" /></div>
+        <div class="main-slider-item"><img src="${slide3}?v=${v}" alt="Slider 3" /></div>
     </div>
 </div>
 <!-- Main Slider End -->
@@ -78,7 +79,7 @@
                         <c:url var="demoImg" value="/assets/img/product-1.png"/>
                         <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
                         <a href="${demoDetail}">
-                            <img src="${demoImg}" alt="Product Image" onerror="this.onerror=null;this.src='${placeholderUrl}'">
+                            <img src="${demoImg}?v=${v}" alt="Product Image" onerror="this.onerror=null;this.src='${placeholderUrl}?v=${v}'">
                         </a>
                         <div class="product-action">
                             <a href="#"><i class="fa fa-cart-plus"></i></a>
@@ -121,9 +122,9 @@
                                         </c:otherwise>
                                     </c:choose>
                                     <c:url var="imgUrl" value="${resolvedImg}"/>
-                                    <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
+                                    <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
                                     <a href="${detailUrl}" aria-label="View ${fn:escapeXml(p.name)} details">
-                                        <img src="${imgUrl}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl}'">
+                                        <img src="${imgUrl}?v=${v}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">
                                     </a>
                                     <div class="product-action">
                                         <c:url var="addToCart" value="/add-to-cart">

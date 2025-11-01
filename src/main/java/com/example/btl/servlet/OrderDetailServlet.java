@@ -2,6 +2,7 @@ package com.example.btl.servlet;
 
 import com.example.btl.model.Order;
 import com.example.btl.model.OrderItem;
+import com.example.btl.model.User;
 import com.example.btl.service.OrderService;
 import com.example.btl.dao.OrderDAO;
 import com.example.btl.dao.OrderItemDAO;
@@ -28,6 +29,11 @@ public class OrderDetailServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user != null && user.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -59,4 +65,3 @@ public class OrderDetailServlet extends HttpServlet {
         }
     }
 }
-

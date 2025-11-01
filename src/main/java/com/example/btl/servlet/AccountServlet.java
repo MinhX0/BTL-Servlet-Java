@@ -28,6 +28,11 @@ public class AccountServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login.jsp#login");
             return;
         }
+        User u = (User) session.getAttribute("user");
+        if (u.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         try {
             request.getRequestDispatcher("/my-account.jsp").forward(request, response);
         } catch (ServletException e) {
@@ -59,6 +64,10 @@ public class AccountServlet extends HttpServlet {
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
 
         String name = trimOrNull(request.getParameter("name"));
         String email = trimOrNull(request.getParameter("email"));
@@ -109,6 +118,10 @@ public class AccountServlet extends HttpServlet {
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
+        if (sessionUser.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
 
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");

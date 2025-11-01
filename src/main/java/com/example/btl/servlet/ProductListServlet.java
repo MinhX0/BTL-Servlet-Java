@@ -4,12 +4,14 @@ import com.example.btl.dao.ProductDAO;
 import com.example.btl.dao.CategoryDAO;
 import com.example.btl.model.Product;
 import com.example.btl.model.Category;
+import com.example.btl.model.User;
 import com.example.btl.service.CategoryService;
 import com.example.btl.service.ProductService;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,6 +29,12 @@ public class ProductListServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false);
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user != null && user.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         // Simple optional filtering & pagination params (no-op defaults)
         String categoryParam = request.getParameter("categoryId");
         String pageParam = request.getParameter("page");
