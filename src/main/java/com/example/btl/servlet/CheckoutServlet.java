@@ -3,6 +3,7 @@ package com.example.btl.servlet;
 import com.example.btl.dao.CartItemDAO;
 import com.example.btl.model.CartItem;
 import com.example.btl.model.Order;
+import com.example.btl.model.User;
 import com.example.btl.service.CheckoutService;
 import com.example.btl.servlet.payment.vnpay.Config;
 import jakarta.servlet.annotation.WebServlet;
@@ -37,6 +38,11 @@ public class CheckoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user != null && user.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -60,6 +66,11 @@ public class CheckoutServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user != null && user.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -77,7 +88,7 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
         // Always create the order and clear the cart per requirement
-        Order order = checkoutService.placeOrder(userId, items);
+        Order order = checkoutService.placeOrder(userId, items, address);
         if (order == null) {
             response.sendRedirect(request.getContextPath() + "/checkout?error=1");
             return;
@@ -98,6 +109,7 @@ public class CheckoutServlet extends HttpServlet {
         request.setAttribute("orderId", order.getId());
         request.setAttribute("totalAmount", order.getTotalAmount());
         request.setAttribute("orderDate", order.getOrderDate());
+        request.setAttribute("address", order.getAddress());
         try {
             request.getRequestDispatcher("/order-success.jsp").forward(request, response);
         } catch (Exception e) {
@@ -124,7 +136,7 @@ public class CheckoutServlet extends HttpServlet {
         fields.put("vnp_ExpireDate", LocalDateTime.now().plusMinutes(15).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")));
         fields.put("vnp_TxnRef", String.valueOf(order.getId()));
         fields.put("vnp_OrderInfo", "Payment for order #" + order.getId());
-        fields.put("vnp_OrderType", "other"); // required by VNPay, common value
+        fields.put("vnp_OrderType", "other");
         fields.put("vnp_Locale", "vn");
         fields.put("vnp_ReturnUrl", vnp_ReturnUrl);
         fields.put("vnp_IpAddr", vnp_IpAddr);

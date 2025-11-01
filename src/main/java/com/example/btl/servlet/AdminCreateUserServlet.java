@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,10 +32,12 @@ public class AdminCreateUserServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User actor = session != null ? (User) session.getAttribute("user") : null;
         if (actor == null || actor.getRole() != Role.ADMIN) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
         try {
+            request.setAttribute("roles", Role.values());
+            request.setAttribute("form", new HashMap<String, Object>());
             request.getRequestDispatcher("/admin/add-user.jsp").forward(request, response);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error forwarding to add-user.jsp", e);
@@ -46,7 +50,7 @@ public class AdminCreateUserServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User actor = session != null ? (User) session.getAttribute("user") : null;
         if (actor == null || actor.getRole() != Role.ADMIN) {
-            response.sendRedirect(request.getContextPath() + "/login.jsp");
+            response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
@@ -57,6 +61,14 @@ public class AdminCreateUserServlet extends HttpServlet {
         String phone = request.getParameter("phone");
         String address = request.getParameter("address");
         String roleParam = request.getParameter("role");
+
+        Map<String, Object> form = new HashMap<>();
+        form.put("username", username);
+        form.put("email", email);
+        form.put("name", name);
+        form.put("phone", phone);
+        form.put("address", address);
+        form.put("role", roleParam);
 
         UserCreateRequest req = new UserCreateRequest();
         req.setUsername(username);
@@ -71,6 +83,8 @@ public class AdminCreateUserServlet extends HttpServlet {
             boolean ok = userService.createUserAsAdmin(actor, req);
             if (ok) {
                 request.setAttribute("success", "User created successfully");
+                // Clear form on success
+                form.clear();
             } else {
                 request.setAttribute("error", "Failed to create user");
             }
@@ -81,6 +95,8 @@ public class AdminCreateUserServlet extends HttpServlet {
             request.setAttribute("error", "Unexpected error: " + ex.getMessage());
         }
         try {
+            request.setAttribute("roles", Role.values());
+            request.setAttribute("form", form);
             request.getRequestDispatcher("/admin/add-user.jsp").forward(request, response);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error forwarding back to add-user.jsp", e);

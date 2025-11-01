@@ -73,6 +73,7 @@ CREATE TABLE Orders
     order_date   DATETIME                                                                                 DEFAULT CURRENT_TIMESTAMP,
     total_amount DECIMAL(10, 2)                                                                  NOT NULL,
     status       ENUM ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded') NOT NULL DEFAULT 'Pending',
+    address      VARCHAR(500),
     FOREIGN KEY (user_id) REFERENCES Users (id)
 );
 

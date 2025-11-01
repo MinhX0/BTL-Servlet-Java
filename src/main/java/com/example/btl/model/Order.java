@@ -28,6 +28,9 @@ public class Order {
     @Column(nullable = false)
     private OrderStatus status = OrderStatus.Pending;
 
+    @Column(name = "address", length = 500)
+    private String address;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
 
@@ -45,5 +48,7 @@ public class Order {
     public void setStatus(OrderStatus status) { this.status = status; }
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
-}
 
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+}

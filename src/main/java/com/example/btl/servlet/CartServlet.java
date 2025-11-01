@@ -3,6 +3,7 @@ package com.example.btl.servlet;
 import com.example.btl.dao.CartItemDAO;
 import com.example.btl.service.CartService;
 import com.example.btl.model.CartItem;
+import com.example.btl.model.User;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +26,11 @@ public class CartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user != null && user.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
@@ -42,6 +48,11 @@ public class CartServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
+        User user = session != null ? (User) session.getAttribute("user") : null;
+        if (user != null && user.isAdmin()) {
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
         if (userId == null) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;

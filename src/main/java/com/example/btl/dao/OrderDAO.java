@@ -23,6 +23,17 @@ public class OrderDAO {
         }
     }
 
+    public List<Order> listAll() {
+        try (Session session = HibernateUtil.getSession()) {
+            return session.createQuery("SELECT o FROM Order o JOIN FETCH o.user ORDER BY o.orderDate DESC", Order.class)
+                    .getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error listing all orders: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
     public List<Order> listByUser(int userId) {
         try (Session session = HibernateUtil.getSession()) {
             Query<Order> q = session.createQuery("FROM Order WHERE user.id = :uid ORDER BY orderDate DESC", Order.class);
@@ -72,4 +83,3 @@ public class OrderDAO {
         return false;
     }
 }
-

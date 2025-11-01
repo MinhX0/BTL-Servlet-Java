@@ -20,7 +20,9 @@ public class LoginServlet extends HttpServlet {
         // Check if user is already logged in
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
-            response.sendRedirect(request.getContextPath() + "/index");
+            User u = (User) session.getAttribute("user");
+            String redirect = (u != null && u.isAdmin()) ? "/admin" : "/index";
+            response.sendRedirect(request.getContextPath() + redirect);
             return;
         }
 
@@ -64,8 +66,9 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("name", user.getName());
             session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
-            // Navigate back to index screen
-            response.sendRedirect(request.getContextPath() + "/index");
+            // Navigate admin to dashboard, others to index
+            String redirect = user.isAdmin() ? "/admin" : "/index";
+            response.sendRedirect(request.getContextPath() + redirect);
         } else {
             // Authentication failed
             request.setAttribute("error", "Invalid username or password");

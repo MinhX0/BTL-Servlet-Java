@@ -17,6 +17,9 @@
                 <p>Order ID: <strong>#${orderId}</strong></p>
                 <p>Total Amount: <strong>${totalAmount}</strong></p>
                 <p>Date: <strong>${orderDate}</strong></p>
+                <c:if test="${not empty address}">
+                    <p>Shipping Address: <strong>${address}</strong></p>
+                </c:if>
                 <hr>
                 <c:url var="ordersUrl" value="/customer/orders.jsp"/>
                 <a class="btn btn-primary" href="${ordersUrl}">View My Orders</a>
@@ -30,4 +33,3 @@
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
 </body>
 </html>
-

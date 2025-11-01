@@ -11,6 +11,11 @@ import java.util.List;
 
 public class CheckoutService {
     public Order placeOrder(int userId, List<CartItem> items) {
+        // Delegate to the overload without address
+        return placeOrder(userId, items, null);
+    }
+
+    public Order placeOrder(int userId, List<CartItem> items, String address) {
         if (items == null || items.isEmpty()) return null;
         Session session = null;
         Transaction tx = null;
@@ -34,6 +39,9 @@ public class CheckoutService {
             order.setOrderDate(LocalDateTime.now());
             order.setTotalAmount(total);
             order.setStatus(OrderStatus.Pending);
+            if (address != null && !address.isBlank()) {
+                order.setAddress(address);
+            }
             session.persist(order);
 
             // Create order items

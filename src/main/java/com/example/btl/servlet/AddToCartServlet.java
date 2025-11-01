@@ -94,6 +94,18 @@ public class AddToCartServlet extends HttpServlet {
             return;
         }
 
+        // Block admin users from buying
+        if (user.isAdmin()) {
+            if (isAjax(request)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"ok\":false,\"message\":\"Admin cannot add to cart\"}");
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/admin");
+            return;
+        }
+
         // Check existing cart item for this user & product
         CartItem existing = cartItemDAO.findByUserAndProduct(user.getId(), productId);
         if (existing != null) {
