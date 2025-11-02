@@ -1,10 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <title>Chi tiết đơn hàng</title>
+    <title>Chi ti��t đơn hàng</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
 <body>
@@ -21,7 +22,7 @@
                                 <h5 class="mb-0">Đơn hàng #${order.id}</h5>
                                 <small class="text-muted">Ngày đặt ${order.orderDate}</small>
                             </div>
-                            <span class="badge badge-info">${order.status}</span>
+                            <span class="badge badge-info"><ui:orderStatusText value="${order.status}" /></span>
                         </div>
                         <div class="card-body">
                             <div class="row">

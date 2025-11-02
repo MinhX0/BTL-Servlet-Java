@@ -12,8 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.target>24</maven.compiler.target>
-        <maven.compiler.source>24</maven.compiler.source>
+        <maven.compiler.target>20</maven.compiler.target>
+        <maven.compiler.source>20</maven.compiler.source>
         <junit.version>5.10.2</junit.version>
     </properties>
 
@@ -88,8 +88,8 @@
                 <configuration>
                     <webResources>
                         <resource>
-                            <directory>${project.basedir}/bootstrap-ecommerce-template</directory>
-                            <targetPath>bootstrap-ecommerce-template</targetPath>
+                            <directory>${project.basedir}</directory>
+                            <targetPath></targetPath>
                             <includes>
                                 <include>**/*.*</include>
                             </includes>

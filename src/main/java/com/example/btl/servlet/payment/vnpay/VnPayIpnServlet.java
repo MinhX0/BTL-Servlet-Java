@@ -38,8 +38,6 @@ public class VnPayIpnServlet extends HttpServlet {
 
     private void handleIpn(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
-        String rspCode = "97"; // default: Invalid signature
-        String message = "Invalid signature";
         try (PrintWriter out = response.getWriter()) {
             // Build field map (URL-encoded) and verify signature
             Map<String, String> fields = new HashMap<>();
@@ -59,7 +57,7 @@ public class VnPayIpnServlet extends HttpServlet {
             String signValue = Config.hashAllFields(fields);
             boolean signatureValid = signValue != null && signValue.equals(vnp_SecureHash);
             if (!signatureValid) {
-                out.printf("{\"RspCode\":\"97\",\"Message\":\"%s\"}", message);
+                out.print("{\"RspCode\":\"97\",\"Message\":\"Invalid signature\"}");
                 return;
             }
 
@@ -68,7 +66,6 @@ public class VnPayIpnServlet extends HttpServlet {
             String vnp_TransactionStatus = request.getParameter("vnp_TransactionStatus");
             String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
 
-            // Basic validation: must have order id
             int orderId;
             try {
                 orderId = Integer.parseInt(vnp_TxnRef);
@@ -77,26 +74,15 @@ public class VnPayIpnServlet extends HttpServlet {
                 return;
             }
 
-            // Map VNPay status to our OrderStatus
-            OrderStatus newStatus;
-            boolean success = "00".equals(vnp_TransactionStatus) && "00".equals(vnp_ResponseCode);
-            if (success) {
-                newStatus = OrderStatus.Processing; // paid, begin processing
-            } else {
-                newStatus = OrderStatus.Cancelled; // failed or cancelled
-            }
+            boolean success = "00".equals(vnp_TransactionStatus) || "00".equals(vnp_ResponseCode);
+            OrderStatus newStatus = success ? OrderStatus.Processing : OrderStatus.Cancelled;
 
             boolean updated = orderDAO.updateStatus(orderId, newStatus);
             if (updated) {
-                rspCode = "00";
-                message = "Confirm Success";
+                out.print("{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}");
             } else {
-                rspCode = "02";
-                message = "Order not found or not updated";
+                out.print("{\"RspCode\":\"02\",\"Message\":\"Order not found or not updated\"}");
             }
-
-            out.printf("{\"RspCode\":\"%s\",\"Message\":\"%s\"}", rspCode, message);
         }
     }
 }
-
