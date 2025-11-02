@@ -1,10 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <title>E Shop - Home</title>
+    <title>Cửa hàng E Shop</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
 <body>
@@ -17,9 +18,12 @@
         <c:url var="slide1" value="/assets/img/slider-1.jpg"/>
         <c:url var="slide2" value="/assets/img/slider-2.jpg"/>
         <c:url var="slide3" value="/assets/img/slider-3.jpg"/>
+        <c:url var="slide4" value="/assets/img/slider-4.jpg"/>
+
         <div class="main-slider-item"><img src="${slide1}?v=${v}" alt="Slider 1" /></div>
         <div class="main-slider-item"><img src="${slide2}?v=${v}" alt="Slider 2" /></div>
         <div class="main-slider-item"><img src="${slide3}?v=${v}" alt="Slider 3" /></div>
+        <div class="main-slider-item"><img src="${slide4}?v=${v}" alt="Slider 4" /></div>
     </div>
 </div>
 <!-- Main Slider End -->
@@ -31,29 +35,29 @@
             <div class="col-lg-3 col-md-6 feature-col">
                 <div class="feature-content">
                     <i class="fa fa-shield"></i>
-                    <h2>Trusted Shopping</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                    <h2>Mua sắm đáng tin cậy</h2>
+                    <p>Mua sắm an toàn, bảo mật với dịch vụ hỗ trợ tận tâm</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 feature-col">
                 <div class="feature-content">
                     <i class="fa fa-shopping-bag"></i>
-                    <h2>Quality Product</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                    <h2>Sản phẩm chất lượng</h2>
+                    <p>Sản phẩm chính hãng, chất lượng được kiểm chứng</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 feature-col">
                 <div class="feature-content">
                     <i class="fa fa-truck"></i>
-                    <h2>Worldwide Delivery</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                    <h2>Giao hàng toàn cầu</h2>
+                    <p>Vận chuyển nhanh chóng đến nhiều quốc gia</p>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 feature-col">
                 <div class="feature-content">
                     <i class="fa fa-phone"></i>
-                    <h2>Telephone Support</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
+                    <h2>Hỗ trợ qua điện thoại</h2>
+                    <p>Liên hệ dễ dàng khi cần tư vấn hoặc trợ giúp</p>
                 </div>
             </div>
         </div>
@@ -65,41 +69,12 @@
 <div class="featured-product">
     <div class="container">
         <div class="section-header">
-            <h3>Featured Product</h3>
+            <h3>Sản phẩm nổi bật</h3>
             <p>
-                Latest additions to the store
+                Những sản phẩm mới nhất
             </p>
         </div>
         <div class="row align-items-center product-slider product-slider-4">
-            <!-- Demo card (kept) but corrected paths and fallback -->
-            <div class="col-lg-3">
-                <div class="product-item">
-                    <div class="product-image">
-                        <c:url var="demoDetail" value="/product-detail.jsp"/>
-                        <c:url var="demoImg" value="/assets/img/product-1.png"/>
-                        <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
-                        <a href="${demoDetail}">
-                            <img src="${demoImg}?v=${v}" alt="Product Image" onerror="this.onerror=null;this.src='${placeholderUrl}?v=${v}'">
-                        </a>
-                        <div class="product-action">
-                            <a href="#"><i class="fa fa-cart-plus"></i></a>
-                            <a href="#"><i class="fa fa-heart"></i></a>
-                            <a href="#"><i class="fa fa-search"></i></a>
-                        </div>
-                    </div>
-                    <div class="product-content">
-                        <div class="title"><a href="#">Phasellus Gravida</a></div>
-                        <div class="ratting">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                        </div>
-                        <div class="price">$22 <span>$25</span></div>
-                    </div>
-                </div>
-            </div>
             <c:choose>
                 <c:when test="${not empty featuredProducts}">
                     <c:forEach var="p" items="${featuredProducts}">
@@ -123,14 +98,14 @@
                                     </c:choose>
                                     <c:url var="imgUrl" value="${resolvedImg}"/>
                                     <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
-                                    <a href="${detailUrl}" aria-label="View ${fn:escapeXml(p.name)} details">
-                                        <img src="${imgUrl}?v=${v}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">
+                                    <a href="${detailUrl}" aria-label="Xem chi tiết ${fn:escapeXml(p.name)}">
+                                        <img src="${placeholderUrl2}?v=${v}" data-src="${imgUrl}?v=${v}" alt="${fn:escapeXml(p.name)}" class="lazy-img">
                                     </a>
                                     <div class="product-action">
                                         <c:url var="addToCart" value="/add-to-cart">
                                             <c:param name="productId" value="${p.id}"/>
                                         </c:url>
-                                        <a href="${addToCart}" aria-label="Add ${fn:escapeXml(p.name)} to cart"><i class="fa fa-cart-plus"></i></a>
+                                        <a href="${addToCart}" aria-label="Thêm ${fn:escapeXml(p.name)} vào giỏ"><i class="fa fa-cart-plus"></i></a>
                                     </div>
                                 </div>
                                 <div class="product-content">
@@ -142,7 +117,7 @@
                                         <i class="fa fa-star"></i>
                                         <i class="fa fa-star"></i>
                                     </div>
-                                    <div class="price">${p.basePrice}</div>
+                                    <div class="price"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</div>
                                 </div>
                             </div>
                         </div>
@@ -150,7 +125,7 @@
                 </c:when>
                 <c:otherwise>
                     <div class="col-12">
-                        <div class="alert alert-info">No featured products yet.</div>
+                        <div class="alert alert-info">Chưa có sản phẩm nổi bật.</div>
                     </div>
                 </c:otherwise>
             </c:choose>

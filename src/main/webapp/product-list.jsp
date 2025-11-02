@@ -1,10 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <title>E Shop - Products</title>
+    <title>E Shop - Sản phẩm</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
 <body>
@@ -13,8 +14,8 @@
 <div class="breadcrumb-wrap">
     <div class="container">
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/index">Home</a></li>
-            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/products">Products</a></li>
+            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/index">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/products">Sản phẩm</a></li>
         </ul>
     </div>
 </div>
@@ -37,7 +38,7 @@
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
                                     </c:url>
                                     <form method="get" action="${searchAction}" class="d-flex">
-                                        <input type="text" name="q" value="${fn:escapeXml(kw)}" placeholder="Search products" class="form-control"/>
+                                        <input type="text" name="q" value="${fn:escapeXml(kw)}" placeholder="Tìm kiếm sản phẩm" class="form-control"/>
                                         <button type="submit" class="btn btn-primary ml-2"><i class="fa fa-search"></i></button>
                                     </form>
                                 </div>
@@ -46,7 +47,7 @@
                             <div class="col-md-4">
                                 <div class="product-short">
                                     <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sort</a>
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sắp xếp</a>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <c:url var="sortNewest" value="/products">
                                                 <c:param name="page" value="1"/>
@@ -69,9 +70,9 @@
                                                 <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
                                                 <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
                                             </c:url>
-                                            <a href="${sortNewest}" class="dropdown-item ${sort == 'date_desc' || empty sort ? 'active' : ''}">Newest</a>
-                                            <a href="${sortPriceAsc}" class="dropdown-item ${sort == 'price_asc' ? 'active' : ''}">Price: Low to High</a>
-                                            <a href="${sortPriceDesc}" class="dropdown-item ${sort == 'price_desc' ? 'active' : ''}">Price: High to Low</a>
+                                            <a href="${sortNewest}" class="dropdown-item ${sort == 'date_desc' || empty sort ? 'active' : ''}">Mới nhất</a>
+                                            <a href="${sortPriceAsc}" class="dropdown-item ${sort == 'price_asc' ? 'active' : ''}">Giá: Thấp đến Cao</a>
+                                            <a href="${sortPriceDesc}" class="dropdown-item ${sort == 'price_desc' ? 'active' : ''}">Giá: Cao đến Thấp</a>
                                         </div>
                                     </div>
                                 </div>
@@ -79,17 +80,18 @@
                         </div>
                     </div>
 
+                    <!-- Product grid -->
                     <c:choose>
                         <c:when test="${not empty products}">
                             <c:forEach var="p" items="${products}">
-                                <div class="col-lg-4 mb-4">
+                                <div class="col-lg-4 col-md-6">
                                     <div class="product-item">
                                         <div class="product-image">
                                             <c:url var="detailUrl" value="/product-detail.jsp">
                                                 <c:param name="id" value="${p.id}"/>
                                             </c:url>
                                             <c:choose>
-                                                <c:when test="${empty p.mainImageUrl}">
+                                                <c:when test="${empty p.mainImageUrl or fn:length(fn:trim(p.mainImageUrl)) == 0}">
                                                     <c:set var="resolvedImg" value="/assets/img/placeholder.jpg"/>
                                                 </c:when>
                                                 <c:when test="${fn:startsWith(p.mainImageUrl, 'http://') || fn:startsWith(p.mainImageUrl, 'https://') || fn:startsWith(p.mainImageUrl, '/')}">
@@ -101,14 +103,12 @@
                                             </c:choose>
                                             <c:url var="imgUrl" value="${resolvedImg}"/>
                                             <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
-                                            <a href="${detailUrl}">
-                                                <img src="${imgUrl}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl}'">
-                                            </a>
+                                            <a href="${detailUrl}"><img src="${imgUrl}" alt="${fn:escapeXml(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='${placeholderUrl}'"></a>
                                             <div class="product-action">
                                                 <c:url var="addToCartUrl" value="/add-to-cart">
                                                     <c:param name="productId" value="${p.id}"/>
                                                 </c:url>
-                                                <a href="${addToCartUrl}" aria-label="Add ${fn:escapeXml(p.name)} to cart"><i class="fa fa-cart-plus"></i></a>
+                                                <a href="${addToCartUrl}" aria-label="Thêm ${fn:escapeXml(p.name)} vào giỏ"><i class="fa fa-cart-plus"></i></a>
                                             </div>
                                         </div>
                                         <div class="product-content">
@@ -121,7 +121,7 @@
                                                 <i class="fa fa-star"></i>
                                             </div>
                                             <div class="price">
-                                                ${p.basePrice}
+                                                <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ
                                             </div>
                                         </div>
                                     </div>
@@ -130,7 +130,7 @@
                         </c:when>
                         <c:otherwise>
                             <div class="col-12">
-                                <div class="alert alert-info">No products found.</div>
+                                <div class="alert alert-info">Không tìm thấy sản phẩm.</div>
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -139,7 +139,7 @@
 
                 <div class="col-lg-12">
                     <c:if test="${totalPages > 1}">
-                        <nav aria-label="Page navigation">
+                        <nav aria-label="Điều hướng trang">
                             <ul class="pagination justify-content-center">
                                 <c:set var="prevPage" value="${page - 1}"/>
                                 <c:set var="nextPage" value="${page + 1}"/>
@@ -152,7 +152,7 @@
                                         <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
                                     </c:url>
-                                    <a class="page-link" href="${prevUrl}" tabindex="-1">Previous</a>
+                                    <a class="page-link" href="${prevUrl}" tabindex="-1">Trước</a>
                                 </li>
 
                                 <c:forEach var="i" begin="1" end="${totalPages}">
@@ -174,7 +174,7 @@
                                         <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
                                     </c:url>
-                                    <a class="page-link" href="${nextUrl}">Next</a>
+                                    <a class="page-link" href="${nextUrl}">Tiếp</a>
                                 </li>
                             </ul>
                         </nav>
@@ -184,7 +184,7 @@
 
             <div class="col-md-3">
                 <div class="sidebar-widget category">
-                    <h2 class="title">Category</h2>
+                    <h2 class="title">Danh mục</h2>
                     <ul>
                         <c:choose>
                             <c:when test="${not empty categories}">
@@ -202,17 +202,17 @@
                                 </c:forEach>
                             </c:when>
                             <c:otherwise>
-                                <li><span class="text-muted">No categories</span></li>
+                                <li><span class="text-muted">Không có danh mục</span></li>
                             </c:otherwise>
                         </c:choose>
                     </ul>
                 </div>
 
                 <div class="sidebar-widget image">
-                    <h2 class="title">Featured Product</h2>
+                    <h2 class="title">Sản phẩm nổi bật</h2>
                     <a href="#">
                         <c:url var="sideImg" value="/assets/img/category-1.jpg"/>
-                        <img src="${sideImg}" alt="Featured">
+                        <img src="${sideImg}" alt="Nổi bật">
                     </a>
                 </div>
             </div>

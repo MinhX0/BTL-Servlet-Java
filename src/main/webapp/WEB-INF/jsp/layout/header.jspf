@@ -27,13 +27,13 @@
             <div class="col-md-6">
                 <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
                     <div class="search">
-                        <input type="text" placeholder="Search" aria-label="Search products">
+                        <input type="text" placeholder="Tìm kiếm" aria-label="Tìm kiếm sản phẩm">
                         <button><i class="fa fa-search"></i></button>
                     </div>
                 </c:if>
             </div>
             <div class="col-md-3">
-                <div class="user">
+                <div class="user d-flex align-items-center justify-content-end gap-2">
                     <div class="dropdown">
                         <c:choose>
                             <c:when test="${not empty sessionScope.user}">
@@ -45,27 +45,27 @@
                                     <c:choose>
                                         <c:when test="${sessionScope.user.admin}">
                                             <c:url var="adminUrl" value="/admin"/>
-                                            <a href="${adminUrl}" class="dropdown-item">Admin Dashboard</a>
+                                            <a href="${adminUrl}" class="dropdown-item">Bảng điều khiển</a>
                                         </c:when>
                                         <c:otherwise>
                                             <c:url var="accountUrl" value="/account"/>
-                                            <a href="${accountUrl}" class="dropdown-item">My Account</a>
+                                            <a href="${accountUrl}" class="dropdown-item">Tài khoản của tôi</a>
                                             <c:url var="ordersUrl" value="/orders"/>
-                                            <a href="${ordersUrl}" class="dropdown-item">My Orders</a>
+                                            <a href="${ordersUrl}" class="dropdown-item">Đơn hàng của tôi</a>
                                         </c:otherwise>
                                     </c:choose>
                                     <div class="dropdown-divider"></div>
                                     <c:url var="logoutUrl" value="/logout"/>
-                                    <a href="${logoutUrl}" class="dropdown-item">Logout</a>
+                                    <a href="${logoutUrl}" class="dropdown-item">Đăng xuất</a>
                                 </div>
                             </c:when>
                             <c:otherwise>
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account</a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tài khoản</a>
                                 <div class="dropdown-menu">
                                     <c:url var="loginUrl" value="/login.jsp#login"/>
                                     <c:url var="registerUrl" value="/login.jsp#register"/>
-                                    <a href="${loginUrl}" class="dropdown-item">Login</a>
-                                    <a href="${registerUrl}" class="dropdown-item">Register</a>
+                                    <a href="${loginUrl}" class="dropdown-item">Đăng nhập</a>
+                                    <a href="${registerUrl}" class="dropdown-item">Đăng ký</a>
                                 </div>
                             </c:otherwise>
                         </c:choose>
@@ -73,7 +73,7 @@
                     <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
                         <div class="cart">
                             <c:url var="cartUrl" value="/cart"/>
-                            <a href="${cartUrl}" aria-label="View cart"><i class="fa fa-cart-plus"></i></a>
+                            <a href="${cartUrl}" aria-label="Xem giỏ hàng"><i class="fa fa-cart-plus"></i></a>
                             <span>(${empty requestScope.cartCount ? 0 : requestScope.cartCount})</span>
                         </div>
                     </c:if>
@@ -98,20 +98,20 @@
                     <c:choose>
                         <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
                             <c:url var="adminUrl2" value="/admin"/>
-                            <a href="${adminUrl2}" class="nav-item nav-link">Dashboard</a>
+                            <a href="${adminUrl2}" class="nav-item nav-link">Bảng điều khiển</a>
                             <c:url var="adminOrdersUrl" value="/admin/orders"/>
-                            <a href="${adminOrdersUrl}" class="nav-item nav-link">Orders</a>
+                            <a href="${adminOrdersUrl}" class="nav-item nav-link">Đơn hàng</a>
                             <c:url var="adminProductsUrl" value="/admin/products"/>
-                            <a href="${adminProductsUrl}" class="nav-item nav-link">Products</a>
+                            <a href="${adminProductsUrl}" class="nav-item nav-link">Sản phẩm</a>
                             <c:url var="adminCategoriesUrl" value="/admin/categories"/>
-                            <a href="${adminCategoriesUrl}" class="nav-item nav-link">Categories</a>
+                            <a href="${adminCategoriesUrl}" class="nav-item nav-link">Danh mục</a>
                         </c:when>
                         <c:otherwise>
-                            <a href="${homeUrl}" class="nav-item nav-link ${fn:endsWith(pageContext.request.requestURI, '/index.jsp') || fn:endsWith(pageContext.request.requestURI, '/index') ? 'active' : ''}">Home</a>
+                            <a href="${homeUrl}" class="nav-item nav-link ${fn:endsWith(pageContext.request.requestURI, '/index.jsp') || fn:endsWith(pageContext.request.requestURI, '/index') ? 'active' : ''}">Trang chủ</a>
                             <c:url var="productsUrl" value="/products"/>
-                            <a href="${productsUrl}" class="nav-item nav-link">Products</a>
+                            <a href="${productsUrl}" class="nav-item nav-link">Sản phẩm</a>
                             <c:url var="contactUrl" value="/contact.jsp"/>
-                            <a href="${contactUrl}" class="nav-item nav-link">Contact Us</a>
+                            <a href="${contactUrl}" class="nav-item nav-link">Liên hệ</a>
                         </c:otherwise>
                     </c:choose>
                 </div>

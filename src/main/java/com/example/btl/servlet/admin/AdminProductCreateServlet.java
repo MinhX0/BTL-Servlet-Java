@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 @WebServlet(name = "AdminProductCreateServlet", urlPatterns = {"/admin/products/new"})
@@ -55,7 +54,7 @@ public class AdminProductCreateServlet extends HttpServlet {
         String categoryIdStr = request.getParameter("categoryId");
 
         try {
-            BigDecimal basePrice = new BigDecimal(basePriceStr);
+            long basePrice = Long.parseLong(basePriceStr);
             int categoryId = Integer.parseInt(categoryIdStr);
             Category category = categoryDAO.getById(categoryId);
 
@@ -73,4 +72,3 @@ public class AdminProductCreateServlet extends HttpServlet {
         }
     }
 }
-

@@ -24,8 +24,9 @@
             <input type="text" name="mainImageUrl" class="form-control">
         </div>
         <div class="mb-3">
-            <label class="form-label">Base Price</label>
-            <input type="number" step="0.01" name="basePrice" class="form-control" required>
+            <label class="form-label">Base Price (VND)</label>
+            <input type="number" step="1" min="0" name="basePrice" class="form-control" required>
+            <small class="form-text text-muted">Nhập số nguyên, đơn vị: đồng (VND)</small>
         </div>
         <div class="mb-3">
             <label class="form-label">Category</label>
@@ -42,4 +43,3 @@
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
 </body>
 </html>
-

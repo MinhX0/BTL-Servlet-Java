@@ -48,13 +48,13 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
         List<CartItem> items = cartItemDAO.listByUserDetailed(userId);
-        BigDecimal subTotal = BigDecimal.ZERO;
+        long subTotalVnd = 0L;
         for (CartItem ci : items) {
-            BigDecimal line = ci.getProduct().getBasePrice().multiply(BigDecimal.valueOf(ci.getQuantity()));
-            subTotal = subTotal.add(line);
+            long price = ci.getProduct().getBasePrice();
+            subTotalVnd += price * (long) ci.getQuantity();
         }
         request.setAttribute("cartItems", items);
-        request.setAttribute("subTotal", subTotal);
+        request.setAttribute("subTotal", subTotalVnd);
         try {
             request.getRequestDispatcher("/checkout.jsp").forward(request, response);
         } catch (Exception e) {
@@ -76,7 +76,6 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
         String payment = Optional.ofNullable(request.getParameter("payment")).orElse("COD");
-        // Read optional billing info if later needed
         String fullName = request.getParameter("fullName");
         String phone = request.getParameter("phone");
         String email = request.getParameter("email");
@@ -107,7 +106,7 @@ public class CheckoutServlet extends HttpServlet {
 
         // Default: COD flow → show success screen
         request.setAttribute("orderId", order.getId());
-        request.setAttribute("totalAmount", order.getTotalAmount());
+        request.setAttribute("totalAmount", order.getTotalAmount().toBigInteger());
         request.setAttribute("orderDate", order.getOrderDate());
         request.setAttribute("address", order.getAddress());
         try {
@@ -159,8 +158,6 @@ public class CheckoutServlet extends HttpServlet {
                 .forEach(en -> parts.add(en.getKey() + "=" + en.getValue()));
         parts.add(URLEncoder.encode("vnp_SecureHash", java.nio.charset.StandardCharsets.US_ASCII) + "=" + URLEncoder.encode(secureHash, java.nio.charset.StandardCharsets.US_ASCII));
 
-        String query = String.join("&", parts);
-        out.print(Config.vnp_PayUrl + "?" + query);
-        return Config.vnp_PayUrl + "?" + query;
+        return Config.vnp_PayUrl + "?" + String.join("&", parts);
     }
 }

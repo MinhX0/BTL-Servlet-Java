@@ -1,7 +1,6 @@
 package com.example.btl.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +20,9 @@ public class Product {
     @Column(name = "main_image_url")
     private String mainImageUrl;
 
-    @Column(name = "base_price", precision = 10, scale = 2, nullable = false)
-    private BigDecimal basePrice;
+    // VND stored as BIGINT (no decimals)
+    @Column(name = "base_price", nullable = false)
+    private long basePrice;
 
     @Column(name = "date_added")
     private LocalDateTime dateAdded;
@@ -42,8 +42,8 @@ public class Product {
     public void setDescription(String description) { this.description = description; }
     public String getMainImageUrl() { return mainImageUrl; }
     public void setMainImageUrl(String mainImageUrl) { this.mainImageUrl = mainImageUrl; }
-    public BigDecimal getBasePrice() { return basePrice; }
-    public void setBasePrice(BigDecimal basePrice) { this.basePrice = basePrice; }
+    public long getBasePrice() { return basePrice; }
+    public void setBasePrice(long basePrice) { this.basePrice = basePrice; }
     public LocalDateTime getDateAdded() { return dateAdded; }
     public void setDateAdded(LocalDateTime dateAdded) { this.dateAdded = dateAdded; }
     public Category getCategory() { return category; }

@@ -1,8 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <title>E Shop - Login & Register</title>
+    <title>Đăng nhập / Đăng ký</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
 
@@ -13,9 +13,9 @@
 <div class="breadcrumb-wrap">
     <div class="container">
         <ul class="breadcrumb">
-            <li class="breadcrumb-item"><a href="index.jsp">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">User</a></li>
-            <li class="breadcrumb-item active">Login</li>
+            <li class="breadcrumb-item"><a href="index.jsp">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="#">Người dùng</a></li>
+            <li class="breadcrumb-item active">Đăng nhập</li>
         </ul>
     </div>
 </div>
@@ -25,9 +25,9 @@
 <div class="login">
     <div class="container">
         <div class="section-header">
-            <h3>User Registration & Login</h3>
+            <h3>Đăng nhập / Đăng ký</h3>
             <p>
-                Sign in to your account or create a new one.
+                Đăng nhập vào tài khoản hoặc tạo tài khoản mới.
             </p>
         </div>
         <div class="row">
@@ -45,21 +45,21 @@
                     <form method="post" action="<%= request.getContextPath() %>/login">
                         <div class="row">
                             <div class="col-md-12">
-                                <label>E-mail / Username</label>
-                                <input class="form-control" type="text" name="username" placeholder="Enter username or email" required autofocus>
+                                <label>Tên đăng nhập hoặc Email</label>
+                                <input class="form-control" type="text" name="username" placeholder="Nhập tên đăng nhập hoặc email" required autofocus>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <label>Password</label>
-                                <input class="form-control" type="password" name="password" placeholder="Enter password" required>
+                                <label>Mật khẩu</label>
+                                <input class="form-control" type="password" name="password" placeholder="Nhập mật khẩu" required>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="rememberme" name="remember">
-                                    <label class="custom-control-label" for="rememberme">Keep me signed in</label>
+                                    <label class="custom-control-label" for="rememberme">Ghi nhớ đăng nhập</label>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <button class="btn" type="submit">Login</button>
+                                <button class="btn" type="submit">Đăng nhập</button>
                             </div>
                         </div>
                     </form>
@@ -86,35 +86,35 @@
                     <form method="post" action="<%= request.getContextPath() %>/register">
                         <div class="row">
                             <div class="col-md-12">
-                                <label>Full Name</label>
-                                <input class="form-control" type="text" name="name" placeholder="Full Name" value="<%= request.getAttribute("name") != null ? request.getAttribute("name") : "" %>" required>
+                                <label>Họ tên</label>
+                                <input class="form-control" type="text" name="name" placeholder="Họ tên" value="<%= request.getAttribute("name") != null ? request.getAttribute("name") : "" %>" required>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <label>Username</label>
-                                <input class="form-control" type="text" name="username" placeholder="Username" value="<%= request.getAttribute("username") != null ? request.getAttribute("username") : "" %>" required>
+                                <label>Tên đăng nhập</label>
+                                <input class="form-control" type="text" name="username" placeholder="Tên đăng nhập" value="<%= request.getAttribute("username") != null ? request.getAttribute("username") : "" %>" required>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <label>E-mail</label>
                                 <input class="form-control" type="email" name="email" placeholder="E-mail" value="<%= request.getAttribute("email") != null ? request.getAttribute("email") : "" %>" required>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label>Password</label>
-                                <input class="form-control" type="password" name="password" placeholder="Password" required>
+                                <label>Mật khẩu</label>
+                                <input class="form-control" type="password" name="password" placeholder="Mật khẩu" required>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label>Confirm Password</label>
-                                <input class="form-control" type="password" name="confirm-password" placeholder="Confirm Password" required>
+                                <label>Xác nhận mật khẩu</label>
+                                <input class="form-control" type="password" name="confirm-password" placeholder="Xác nhận mật khẩu" required>
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label>Mobile No (Optional)</label>
-                                <input class="form-control" type="text" name="phone" placeholder="Mobile No" value="<%= request.getAttribute("phone") != null ? request.getAttribute("phone") : "" %>">
+                                <label>Số điện thoại (Không bắt buộc)</label>
+                                <input class="form-control" type="text" name="phone" placeholder="Số điện thoại" value="<%= request.getAttribute("phone") != null ? request.getAttribute("phone") : "" %>">
                             </div>
                             <div class="col-md-6 mt-3">
-                                <label>Address (Optional)</label>
-                                <input class="form-control" type="text" name="address" placeholder="Address" value="<%= request.getAttribute("address") != null ? request.getAttribute("address") : "" %>">
+                                <label>Địa chỉ (Không bắt buộc)</label>
+                                <input class="form-control" type="text" name="address" placeholder="Địa chỉ" value="<%= request.getAttribute("address") != null ? request.getAttribute("address") : "" %>">
                             </div>
                             <div class="col-md-12 mt-3">
-                                <button class="btn" type="submit">Register</button>
+                                <button class="btn" type="submit">Đăng ký</button>
                             </div>
                         </div>
                     </form>

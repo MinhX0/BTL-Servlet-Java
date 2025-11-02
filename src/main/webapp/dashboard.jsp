@@ -2,15 +2,15 @@
 <%
     // Check if user is logged in
     if (session.getAttribute("user") == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/login.jsp#login");
         return;
     }
     String username = (String) session.getAttribute("username");
 %>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Dashboard</title>
+    <title>Bảng điều khiển</title>
     <style>
         * {
             margin: 0;
@@ -137,11 +137,11 @@
 <body>
     <div class="navbar">
         <div class="navbar-content">
-            <h1>Application</h1>
+            <h1>Trang quản trị</h1>
             <div class="nav-right">
                 <div class="user-info">
-                    <span>Welcome, <strong><%= username %></strong>!</span>
-                    <a href="<%= request.getContextPath() %>/logout" class="logout-btn">Logout</a>
+                    <span>Xin chào, <strong><%= username %></strong>!</span>
+                    <a href="<%= request.getContextPath() %>/logout" class="logout-btn">Đăng xuất</a>
                 </div>
             </div>
         </div>
@@ -149,31 +149,30 @@
 
     <div class="container">
         <div class="welcome-card">
-            <h2>Welcome to Dashboard</h2>
-            <p>You have successfully logged in!</p>
+            <h2>Chào mừng đến Bảng điều khiển</h2>
+            <p>Bạn đã đăng nhập thành công!</p>
         </div>
 
         <div class="content-grid">
             <div class="card">
-                <h3>Profile</h3>
-                <p>Manage your profile information and account settings.</p>
+                <h3>Hồ sơ</h3>
+                <p>Quản lý thông tin hồ sơ và cài đặt tài khoản của bạn.</p>
             </div>
 
             <div class="card">
-                <h3>Settings</h3>
-                <p>Configure your preferences and security settings.</p>
+                <h3>Cài đặt</h3>
+                <p>Thiết lập các tùy chọn và cài đặt bảo mật.</p>
             </div>
 
             <div class="card">
-                <h3>Help</h3>
-                <p>Get help and support for any questions you may have.</p>
+                <h3>Trợ giúp</h3>
+                <p>Nhận trợ giúp và hỗ trợ cho các câu hỏi của bạn.</p>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>&copy; 2025 Java Web Application. All rights reserved.</p>
+        <p>&copy; 2025 Ứng dụng Java Web. Bảo lưu mọi quyền.</p>
     </div>
 </body>
 </html>
-

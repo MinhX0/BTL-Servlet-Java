@@ -12,8 +12,10 @@
 <c:url var="faviconUrl" value="/assets/img/favicon.ico"/>
 <link href="${faviconUrl}?v=${v}" rel="icon">
 
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
+<!-- Google Fonts (with Vietnamese subset) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Open+Sans:wght@400;600;700&display=swap&subset=vietnamese" rel="stylesheet">
 
 <!-- CSS Libraries -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
@@ -27,10 +29,4 @@
 <c:url var="mainCssUrl" value="/assets/css/style.css"/>
 <link href="${mainCssUrl}?v=${v}" rel="stylesheet">
 
-<!-- JS Libraries (defer to end of body in some templates; included here for simplicity) -->
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-<c:url var="slickJsUrl" value="/assets/lib/slick/slick.min.js"/>
-<script src="${slickJsUrl}?v=${v}"></script>
-<c:url var="mainJsUrl" value="/assets/js/main.js"/>
-<script src="${mainJsUrl}?v=${v}"></script>
+<%-- JS moved to footer.jspf to avoid double-loading --%>

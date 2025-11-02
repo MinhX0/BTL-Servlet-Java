@@ -23,13 +23,11 @@ public class CheckoutService {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
 
-            // Compute total
-            BigDecimal total = BigDecimal.ZERO;
+            // Compute total in VND (long)
+            long totalVnd = 0L;
             for (CartItem ci : items) {
-                // Use product's base price as price (since variants removed)
-                BigDecimal price = ci.getProduct().getBasePrice();
-                BigDecimal line = price.multiply(BigDecimal.valueOf(ci.getQuantity()));
-                total = total.add(line);
+                long price = ci.getProduct().getBasePrice();
+                totalVnd += price * (long) ci.getQuantity();
             }
 
             // Create order
@@ -37,7 +35,7 @@ public class CheckoutService {
             User userRef = session.get(User.class, userId);
             order.setUser(userRef);
             order.setOrderDate(LocalDateTime.now());
-            order.setTotalAmount(total);
+            order.setTotalAmount(BigDecimal.valueOf(totalVnd));
             order.setStatus(OrderStatus.Pending);
             if (address != null && !address.isBlank()) {
                 order.setAddress(address);
@@ -52,7 +50,7 @@ public class CheckoutService {
                 Product product = session.get(Product.class, ci.getProduct().getId());
                 oi.setProduct(product);
                 oi.setQuantity(ci.getQuantity());
-                oi.setPriceAtPurchase(product.getBasePrice());
+                oi.setPriceAtPurchase(BigDecimal.valueOf(product.getBasePrice()));
                 session.persist(oi);
             }
 

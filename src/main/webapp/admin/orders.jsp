@@ -1,19 +1,24 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Admin - Orders</title>
+    <title>Quản trị - Đơn hàng</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/layout/header.jspf" %>
 <div class="container mt-4">
-    <h3>Orders</h3>
+    <h3>Đơn hàng</h3>
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>ID</th><th>User</th><th>Date</th><th>Total</th><th>Status</th><th>Actions</th>
+            <th>Mã đơn hàng</th>
+            <th>Người dùng</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
         </tr>
         </thead>
         <tbody>
@@ -27,11 +32,11 @@
                 <td>
                     <form method="post" action="${pageContext.request.contextPath}/admin/orders/action" class="d-inline">
                         <input type="hidden" name="orderId" value="${o.id}">
-                        <button name="action" value="confirm" class="btn btn-sm btn-success">Confirm</button>
-                        <button name="action" value="ship" class="btn btn-sm btn-primary">Ship</button>
-                        <button name="action" value="deliver" class="btn btn-sm btn-info">Deliver</button>
-                        <button name="action" value="cancel" class="btn btn-sm btn-warning">Cancel</button>
-                        <button name="action" value="refund" class="btn btn-sm btn-danger">Refund</button>
+                        <button name="action" value="confirm" class="btn btn-sm btn-primary">Xác nhận</button>
+                        <button name="action" value="ship" class="btn btn-sm btn-info">Giao hàng</button>
+                        <button name="action" value="deliver" class="btn btn-sm btn-success">Đã giao</button>
+                        <button name="action" value="cancel" class="btn btn-sm btn-warning">Hủy</button>
+                        <button name="action" value="refund" class="btn btn-sm btn-secondary">Hoàn tiền</button>
                     </form>
                 </td>
             </tr>
@@ -42,4 +47,3 @@
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
 </body>
 </html>
-

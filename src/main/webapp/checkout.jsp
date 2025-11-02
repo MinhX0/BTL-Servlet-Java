@@ -1,10 +1,11 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <title>E Shop - Checkout</title>
+    <title>Thanh toán</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
 <body>
@@ -14,81 +15,82 @@
 <div class="checkout">
     <div class="container">
         <c:if test="${param.error == '1'}">
-            <div class="alert alert-danger" role="alert">Checkout failed. Please try again in a moment.</div>
+            <div class="alert alert-danger" role="alert">Thanh toán thất bại. Vui lòng thử lại sau.</div>
         </c:if>
         <div class="row">
             <div class="col-md-7">
                 <form method="post" action="${pageContext.request.contextPath}/checkout">
                     <div class="billing-address">
-                        <h2>Billing Address</h2>
+                        <h2>Thông tin thanh toán</h2>
                         <div class="row">
                             <div class="col-md-6">
-                                <label>Full Name</label>
-                                <input class="form-control" type="text" name="fullName" placeholder="Your Name" required>
+                                <label>Họ tên</label>
+                                <input class="form-control" type="text" name="fullName" placeholder="Họ tên" required>
                             </div>
                             <div class="col-md-6">
-                                <label>Phone Number</label>
-                                <input class="form-control" type="text" name="phone" placeholder="Phone Number" required>
+                                <label>Số điện thoại</label>
+                                <input class="form-control" type="text" name="phone" placeholder="Số điện thoại" required>
                             </div>
                             <div class="col-md-6">
                                 <label>E-mail</label>
                                 <input class="form-control" type="email" name="email" placeholder="E-mail" required>
                             </div>
                             <div class="col-md-6">
-                                <label>Address</label>
-                                <input class="form-control" type="text" name="address" placeholder="Address" required>
+                                <label>Địa chỉ</label>
+                                <input class="form-control" type="text" name="address" placeholder="Địa chỉ" required>
                             </div>
                             <div class="col-md-6">
-                                <label>City</label>
-                                <input class="form-control" type="text" name="city" placeholder="City">
+                                <label>Thành phố</label>
+                                <input class="form-control" type="text" name="city" placeholder="Thành phố">
                             </div>
                             <div class="col-md-6">
-                                <label>State</label>
-                                <input class="form-control" type="text" name="state" placeholder="State">
+                                <label>Tỉnh/Quận</label>
+                                <input class="form-control" type="text" name="state" placeholder="Tỉnh/Quận">
                             </div>
                             <div class="col-md-6">
-                                <label>ZIP Code</label>
-                                <input class="form-control" type="text" name="zip" placeholder="ZIP Code">
+                                <label>Mã bưu điện</label>
+                                <input class="form-control" type="text" name="zip" placeholder="Mã bưu điện">
                             </div>
                         </div>
                     </div>
 
                     <div class="checkout-payment">
-                        <h2>Payment Methods</h2>
+                        <h2>Phương thức thanh toán</h2>
                         <div class="payment-methods">
                             <div class="payment-method">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" id="payment-1" name="payment" value="VNPAY" checked>
-                                    <label class="custom-control-label" for="payment-1">VNPAY</label>
+                                    <input type="radio" class="custom-control-input" id="payment-vnpay" name="payment" value="VNPAY" checked>
+                                    <label class="custom-control-label" for="payment-vnpay">VNPay</label>
                                 </div>
                             </div>
                             <div class="payment-method">
                                 <div class="custom-control custom-radio">
-                                    <input type="radio" class="custom-control-input" id="payment-2" name="payment" value="COD">
-                                    <label class="custom-control-label" for="payment-2">Cash on Delivery</label>
+                                    <input type="radio" class="custom-control-input" id="payment-cod" name="payment" value="COD">
+                                    <label class="custom-control-label" for="payment-cod">Thanh toán khi nhận hàng (COD)</label>
                                 </div>
                             </div>
                         </div>
                         <div class="checkout-btn">
-                            <button type="submit">Place Order</button>
+                            <button type="submit">Đặt hàng</button>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="col-md-5">
                 <div class="checkout-summary">
-                    <h2>Cart Total</h2>
+                    <h2>Tổng giỏ hàng</h2>
                     <div class="checkout-content">
-                        <h3>Products</h3>
+                        <h3>Sản phẩm</h3>
                         <c:forEach var="ci" items="${cartItems}">
+                            <c:set var="lineTotal" value="${ci.product.basePrice * ci.quantity}"/>
                             <p>
                                 ${ci.product.name} x ${ci.quantity}
-                                <span>${ci.product.basePrice * ci.quantity}</span>
+                                <span><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true"/> đ</span>
                             </p>
                         </c:forEach>
-                        <p class="sub-total">Sub Total<span>${subTotal}</span></p>
-                        <p class="ship-cost">Shipping Cost<span>$0</span></p>
-                        <h4>Grand Total<span>${subTotal}</span></h4>
+                        <p class="sub-total">Tạm tính<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true"/> đ</span></p>
+                        <p class="ship-cost">Phí vận chuyển<span>0đ</span></p>
+                        <h4>Tổng cộng<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true"/> đ</span></h4>
                     </div>
                 </div>
             </div>
