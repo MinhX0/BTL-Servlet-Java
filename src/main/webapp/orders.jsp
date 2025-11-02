@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -30,7 +31,7 @@
                             <td>${o.id}</td>
                             <td>${o.orderDate}</td>
                             <td>${o.totalAmount}</td>
-                            <td>${o.status}</td>
+                            <td><ui:orderStatusText value="${o.status}" /></td>
                             <td>
                                 <c:url var="detailUrl" value="/orders/detail">
                                     <c:param name="orderId" value="${o.id}"/>
