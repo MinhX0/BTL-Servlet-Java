@@ -7,7 +7,7 @@
     <title>VNPAY - Transaction Result</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
     <c:if test="${signatureValid && orderExists && !orderPaid}">
-        <meta http-equiv="refresh" content="3">
+        <meta http-equiv="refresh" content="5">
     </c:if>
 </head>
 <body>
@@ -35,6 +35,9 @@
                                         <span class="${orderPaid ? 'text-success' : 'text-warning'}">${orderStatus}</span>
                                         <c:if test="${!orderPaid}">
                                             <small class="text-muted">(Waiting IPN confirmation... page auto-refreshes)</small>
+                                        </c:if>
+                                        <c:if test="${updatedByReturn}">
+                                            <small class="text-info d-block">Trạng thái đã được cập nhật theo kết quả trả về (fallback).</small>
                                         </c:if>
                                     </p>
                                 </c:when>

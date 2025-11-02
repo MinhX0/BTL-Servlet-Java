@@ -55,3 +55,4 @@ build/
 *.bak
 *.backup
 
+*.md

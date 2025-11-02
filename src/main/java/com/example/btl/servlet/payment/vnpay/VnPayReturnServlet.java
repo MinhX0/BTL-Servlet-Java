@@ -66,7 +66,9 @@ public class VnPayReturnServlet extends HttpServlet {
         String vnp_TransactionStatusParam = request.getParameter("vnp_TransactionStatus");
 
         boolean signatureValid = signValue != null && signValue.equals(vnp_SecureHash);
-        boolean txnSuccess = signatureValid && "00".equals(vnp_TransactionStatusParam);
+        boolean responseOk = "00".equals(vnp_ResponseCode);
+        boolean txnStatusOk = "00".equals(vnp_TransactionStatusParam);
+        boolean txnSuccess = signatureValid && (responseOk || txnStatusOk);
         String vnp_TransactionStatusText;
         if (!signatureValid) {
             vnp_TransactionStatusText = "invalid signature";
@@ -86,6 +88,7 @@ public class VnPayReturnServlet extends HttpServlet {
         // Also check server-side order status using vnp_TxnRef as internal orderId
         boolean orderExists = false;
         boolean orderPaid = false;
+        boolean updatedByReturn = false;
         String orderStatusStr = null;
         Integer orderId = null;
         try {
@@ -97,6 +100,14 @@ public class VnPayReturnServlet extends HttpServlet {
                     OrderStatus st = order.getStatus();
                     orderStatusStr = st != null ? st.name() : null;
                     orderPaid = (st == OrderStatus.Processing || st == OrderStatus.Shipped || st == OrderStatus.Delivered);
+                    // Fallback for dev: if payment success and not yet marked paid, update now
+                    if (txnSuccess && !orderPaid) {
+                        if (orderDAO.updateStatus(orderId, OrderStatus.Processing)) {
+                            updatedByReturn = true;
+                            orderPaid = true;
+                            orderStatusStr = OrderStatus.Processing.name();
+                        }
+                    }
                 }
             }
         } catch (Exception ignored) { }
@@ -118,6 +129,7 @@ public class VnPayReturnServlet extends HttpServlet {
         request.setAttribute("orderExists", orderExists);
         request.setAttribute("orderStatus", orderStatusStr);
         request.setAttribute("orderPaid", orderPaid);
+        request.setAttribute("updatedByReturn", updatedByReturn);
 
         // Forward to a result page
         try {
