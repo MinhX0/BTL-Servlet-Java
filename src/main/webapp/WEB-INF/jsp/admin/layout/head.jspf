@@ -1,0 +1,30 @@
+<%-- Admin head include: independent from public layout --%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<base href="${pageContext.request.contextPath}/" />
+
+<title>Admin</title>
+
+<!-- Bootstrap 5 + Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" integrity="sha512-fL8mXK0F1h3oGzqBvS2mXb5tGx1QF3sKxjKx0z7r1d4/6rG9m+3P2m7oYk3mJ5I7x6o2xv7n7Rk1v5a9b9Z+Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<style>
+  :root { --admin-sidebar-w: 240px; --admin-navbar-h: 56px; }
+  body { background: #f6f7fb; }
+  .admin-navbar { position: fixed; top: 0; left: 0; right: 0; height: var(--admin-navbar-h); z-index: 1030; }
+  .admin-sidebar {
+    position: fixed; top: var(--admin-navbar-h); left: 0; bottom: 0; width: var(--admin-sidebar-w);
+    background: #111827; color: #fff; overflow-y: auto; padding-top: .5rem;
+  }
+  .admin-sidebar .nav-link { color: #cbd5e1; }
+  .admin-sidebar .nav-link.active, .admin-sidebar .nav-link:hover { color: #fff; background: rgba(255,255,255,.08); }
+  .admin-content { margin-top: calc(var(--admin-navbar-h) + 1rem); margin-left: calc(var(--admin-sidebar-w) + 1rem); margin-right: 1rem; }
+  @media (max-width: 991.98px) {
+    .admin-sidebar { left: -260px; transition: left .2s ease; }
+    body.sidebar-open .admin-sidebar { left: 0; }
+    .admin-content { margin-left: 1rem; }
+  }
+</style>
+

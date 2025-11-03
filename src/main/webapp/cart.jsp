@@ -37,12 +37,23 @@
                                     <c:set var="lineTotal" value="${unitPrice * ci.quantity}"/>
                                     <tr>
                                         <td>
-                                            <c:set var="img" value="${empty ci.product.mainImageUrl ? '/assets/img/placeholder.jpg' : ci.product.mainImageUrl}"/>
-                                            <c:url var="imgUrl" value="${img}"/>
-                                            <a href="#"><img src="${imgUrl}" alt="${fn:escapeXml(ci.product.name)}"></a>
+                                            <c:choose>
+                                                <c:when test="${empty ci.product.mainImageUrl}">
+                                                    <c:set var="resolvedImg" value="/assets/img/placeholder.jpg"/>
+                                                </c:when>
+                                                <c:when test="${fn:startsWith(ci.product.mainImageUrl,'http://') || fn:startsWith(ci.product.mainImageUrl,'https://') || fn:startsWith(ci.product.mainImageUrl,'/')}">
+                                                    <c:set var="resolvedImg" value="${ci.product.mainImageUrl}"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="resolvedImg" value="/assets/img/${ci.product.mainImageUrl}"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <c:url var="imgUrl" value="${resolvedImg}"/>
+                                            <c:url var="phUrl" value="/assets/img/placeholder.jpg"/>
+                                            <a href="#"><img src="${imgUrl}" alt="${fn:escapeXml(ci.product.name)}" onerror="this.onerror=null;this.src='${phUrl}'"></a>
                                         </td>
                                         <td>
-                                            <c:url var="detailUrl" value="/product-detail.jsp">
+                                            <c:url var="detailUrl" value="/product-detail">
                                                 <c:param name="id" value="${ci.product.id}"/>
                                             </c:url>
                                             <a href="${detailUrl}">${ci.product.name}</a>
@@ -103,7 +114,7 @@
                                 <button class="btn btn-secondary" name="action" value="clear">Xóa giỏ</button>
                             </form>
                             <c:url var="checkoutUrl" value="/checkout"/>
-                            <a class="btn btn-primary" href="${pageContext.request.contextPath}/checkout">Thanh toán</a>
+                            <a class="btn btn-primary" href="${checkoutUrl}">Thanh toán</a>
                         </div>
                     </div>
                 </div>

@@ -23,7 +23,11 @@ public class OrderItemDAO {
 
     public List<OrderItem> listByOrder(int orderId) {
         try (Session session = HibernateUtil.getSession()) {
-            Query<OrderItem> q = session.createQuery("FROM OrderItem WHERE order.id = :oid", OrderItem.class);
+            // Join fetch product to avoid lazy initialization issues in JSP
+            Query<OrderItem> q = session.createQuery(
+                    "SELECT oi FROM OrderItem oi JOIN FETCH oi.product WHERE oi.order.id = :oid",
+                    OrderItem.class
+            );
             q.setParameter("oid", orderId);
             return q.getResultList();
         } catch (HibernateException e) {
@@ -48,4 +52,3 @@ public class OrderItemDAO {
         }
     }
 }
-

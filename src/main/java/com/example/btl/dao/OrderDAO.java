@@ -15,7 +15,16 @@ public class OrderDAO {
 
     public Order getById(int id) {
         try (Session session = HibernateUtil.getSession()) {
-            return session.get(Order.class, id);
+            Query<Order> q = session.createQuery(
+                    "SELECT o FROM Order o JOIN FETCH o.user WHERE o.id = :id",
+                    Order.class
+            );
+            q.setParameter("id", id);
+            Order o = q.uniqueResult();
+            if (o == null) {
+                o = session.get(Order.class, id);
+            }
+            return o;
         } catch (HibernateException e) {
             System.out.println("Error fetching order by id: " + e.getMessage());
             e.printStackTrace();

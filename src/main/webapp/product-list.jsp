@@ -87,7 +87,7 @@
                                 <div class="col-lg-4 col-md-6">
                                     <div class="product-item">
                                         <div class="product-image">
-                                            <c:url var="detailUrl" value="/product-detail.jsp">
+                                            <c:url var="detailUrl" value="/product-detail">
                                                 <c:param name="id" value="${p.id}"/>
                                             </c:url>
                                             <c:choose>
@@ -212,7 +212,8 @@
                     <h2 class="title">Sản phẩm nổi bật</h2>
                     <a href="#">
                         <c:url var="sideImg" value="/assets/img/category-1.jpg"/>
-                        <img src="${sideImg}" alt="Nổi bật">
+                        <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
+                        <img src="${sideImg}" alt="Nổi bật" onerror="this.onerror=null;this.src='${placeholderUrl}'">
                     </a>
                 </div>
             </div>

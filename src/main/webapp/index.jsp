@@ -74,6 +74,7 @@
                 Những sản phẩm mới nhất
             </p>
         </div>
+        <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
         <div class="row align-items-center product-slider product-slider-4">
             <c:choose>
                 <c:when test="${not empty featuredProducts}">
@@ -81,7 +82,7 @@
                         <div class="col-lg-3">
                             <div class="product-item">
                                 <div class="product-image">
-                                    <c:url var="detailUrl" value="/product-detail.jsp">
+                                    <c:url var="detailUrl" value="/product-detail">
                                         <c:param name="id" value="${p.id}"/>
                                     </c:url>
                                     <%-- Robust image URL resolution: default, absolute, or prefix relative filenames under /assets/img/ --%>
@@ -97,9 +98,8 @@
                                         </c:otherwise>
                                     </c:choose>
                                     <c:url var="imgUrl" value="${resolvedImg}"/>
-                                    <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
                                     <a href="${detailUrl}" aria-label="Xem chi tiết ${fn:escapeXml(p.name)}">
-                                        <img src="${placeholderUrl2}?v=${v}" data-src="${imgUrl}?v=${v}" alt="${fn:escapeXml(p.name)}" class="lazy-img">
+                                        <img src="${imgUrl}?v=${v}" alt="${fn:escapeXml(p.name)}" class="lazy-img" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">
                                     </a>
                                     <div class="product-action">
                                         <c:url var="addToCart" value="/add-to-cart">

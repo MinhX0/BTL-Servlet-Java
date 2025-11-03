@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @WebServlet(name = "OrderDetailServlet", urlPatterns = {"/orders/detail"})
@@ -58,6 +59,11 @@ public class OrderDetailServlet extends HttpServlet {
         List<OrderItem> items = orderService.items(orderId);
         request.setAttribute("order", order);
         request.setAttribute("items", items);
+        // Pre-format LocalDateTime for JSP
+        String orderDateStr = order.getOrderDate() != null
+                ? order.getOrderDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                : "-";
+        request.setAttribute("orderDateStr", orderDateStr);
         try {
             request.getRequestDispatcher("/order-detail.jsp").forward(request, response);
         } catch (ServletException e) {

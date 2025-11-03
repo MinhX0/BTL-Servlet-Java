@@ -13,7 +13,18 @@ public class ProductDAO {
 
     public Product getById(int id) {
         try (Session session = HibernateUtil.getSession()) {
-            return session.get(Product.class, id);
+            // Eagerly fetch category to avoid LazyInitializationException in JSP
+            Query<Product> q = session.createQuery(
+                    "SELECT p FROM Product p JOIN FETCH p.category WHERE p.id = :id",
+                    Product.class
+            );
+            q.setParameter("id", id);
+            Product p = q.uniqueResult();
+            if (p == null) {
+                // Fallback just in case (should rarely happen)
+                p = session.get(Product.class, id);
+            }
+            return p;
         } catch (HibernateException e) {
             System.out.println("Error fetching product by id: " + e.getMessage());
             e.printStackTrace();
@@ -23,7 +34,11 @@ public class ProductDAO {
 
     public List<Product> listAll() {
         try (Session session = HibernateUtil.getSession()) {
-            return session.createQuery("FROM Product ORDER BY dateAdded DESC", Product.class).getResultList();
+            // Join fetch category so JSP can access p.category.name without an open session
+            return session.createQuery(
+                    "SELECT p FROM Product p LEFT JOIN FETCH p.category ORDER BY p.dateAdded DESC, p.id DESC",
+                    Product.class
+            ).getResultList();
         } catch (HibernateException e) {
             System.out.println("Error listing products: " + e.getMessage());
             e.printStackTrace();
@@ -33,7 +48,10 @@ public class ProductDAO {
 
     public List<Product> listByCategory(int categoryId) {
         try (Session session = HibernateUtil.getSession()) {
-            Query<Product> q = session.createQuery("FROM Product WHERE category.id = :cid ORDER BY dateAdded DESC", Product.class);
+            Query<Product> q = session.createQuery(
+                    "SELECT p FROM Product p JOIN FETCH p.category WHERE p.category.id = :cid ORDER BY p.dateAdded DESC, p.id DESC",
+                    Product.class
+            );
             q.setParameter("cid", categoryId);
             return q.getResultList();
         } catch (HibernateException e) {
@@ -51,7 +69,7 @@ public class ProductDAO {
         String pattern = "%" + name.trim().toLowerCase() + "%";
         try (Session session = HibernateUtil.getSession()) {
             Query<Product> q = session.createQuery(
-                    "FROM Product WHERE lower(name) LIKE :pattern ORDER BY dateAdded DESC",
+                    "SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE lower(p.name) LIKE :pattern ORDER BY p.dateAdded DESC, p.id DESC",
                     Product.class
             );
             q.setParameter("pattern", pattern);
@@ -65,15 +83,15 @@ public class ProductDAO {
 
     // Flexible search: combine filters (category and/or name)
     public List<Product> search(Integer categoryId, String name) {
-        StringBuilder hql = new StringBuilder("FROM Product WHERE 1=1");
+        StringBuilder hql = new StringBuilder("SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE 1=1");
         boolean hasName = name != null && !name.trim().isEmpty();
         if (categoryId != null) {
-            hql.append(" AND category.id = :cid");
+            hql.append(" AND p.category.id = :cid");
         }
         if (hasName) {
-            hql.append(" AND lower(name) LIKE :pattern");
+            hql.append(" AND lower(p.name) LIKE :pattern");
         }
-        hql.append(" ORDER BY dateAdded DESC");
+        hql.append(" ORDER BY p.dateAdded DESC, p.id DESC");
 
         try (Session session = HibernateUtil.getSession()) {
             Query<Product> q = session.createQuery(hql.toString(), Product.class);
@@ -122,7 +140,7 @@ public class ProductDAO {
 
     // New: Paged search with sorting support (price/date asc/desc)
     public List<Product> searchPaged(Integer categoryId, String name, int offset, int limit, String sort) {
-        StringBuilder hql = new StringBuilder("FROM Product p WHERE 1=1");
+        StringBuilder hql = new StringBuilder("SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE 1=1");
         boolean hasName = name != null && !name.trim().isEmpty();
         if (categoryId != null) {
             hql.append(" AND p.category.id = :cid");
@@ -145,7 +163,7 @@ public class ProductDAO {
             default:
                 orderBy = "p.dateAdded DESC"; // default newest first
         }
-        hql.append(" ORDER BY ").append(orderBy);
+        hql.append(" ORDER BY ").append(orderBy).append(", p.id DESC");
         try (Session session = HibernateUtil.getSession()) {
             Query<Product> q = session.createQuery(hql.toString(), Product.class);
             if (categoryId != null) q.setParameter("cid", categoryId);
