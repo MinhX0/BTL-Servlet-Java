@@ -10,6 +10,12 @@
         <tracking-mode>COOKIE</tracking-mode>
     </session-config>
 
+    <!-- Product image base directory (configurable) -->
+    <context-param>
+        <param-name>productImageBaseDir</param-name>
+        <param-value>D:\BTL_Java_Web\ImageData</param-value>
+    </context-param>
+
     <!-- Global UTF-8 encoding filter -->
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>

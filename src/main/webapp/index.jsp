@@ -88,18 +88,20 @@
                                     <%-- Robust image URL resolution: default, absolute, or prefix relative filenames under /assets/img/ --%>
                                     <c:choose>
                                         <c:when test="${empty p.mainImageUrl}">
-                                            <c:set var="resolvedImg" value="/assets/img/placeholder.jpg"/>
+                                            <c:set var="resolvedImg" value="/product-image"/>
                                         </c:when>
-                                        <c:when test="${fn:startsWith(p.mainImageUrl, 'http://') || fn:startsWith(p.mainImageUrl, 'https://') || fn:startsWith(p.mainImageUrl, '/')}" >
+                                        <c:when test="${fn:startsWith(p.mainImageUrl, 'http://') || fn:startsWith(p.mainImageUrl, 'https://')}">
                                             <c:set var="resolvedImg" value="${p.mainImageUrl}"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <c:set var="resolvedImg" value="/assets/img/${p.mainImageUrl}"/>
+                                            <c:url var="resolvedImg" value="/product-image">
+                                                <c:param name="file" value="${fn:startsWith(p.mainImageUrl,'/') ? fn:substringAfter(p.mainImageUrl,'/') : p.mainImageUrl}"/>
+                                            </c:url>
                                         </c:otherwise>
                                     </c:choose>
-                                    <c:url var="imgUrl" value="${resolvedImg}"/>
+                                    <!-- Use resolvedImg directly to avoid double context prefix -->
                                     <a href="${detailUrl}" aria-label="Xem chi tiết ${fn:escapeXml(p.name)}">
-                                        <img src="${imgUrl}?v=${v}" alt="${fn:escapeXml(p.name)}" class="lazy-img" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">
+                                        <img src="${resolvedImg}" alt="${fn:escapeXml(p.name)}" class="lazy-img" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">
                                     </a>
                                     <div class="product-action">
                                         <c:url var="addToCart" value="/add-to-cart">

@@ -39,18 +39,19 @@
                                         <td>
                                             <c:choose>
                                                 <c:when test="${empty ci.product.mainImageUrl}">
-                                                    <c:set var="resolvedImg" value="/assets/img/placeholder.jpg"/>
+                                                    <c:set var="resolvedImg" value="/product-image"/>
                                                 </c:when>
                                                 <c:when test="${fn:startsWith(ci.product.mainImageUrl,'http://') || fn:startsWith(ci.product.mainImageUrl,'https://') || fn:startsWith(ci.product.mainImageUrl,'/')}">
                                                     <c:set var="resolvedImg" value="${ci.product.mainImageUrl}"/>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <c:set var="resolvedImg" value="/assets/img/${ci.product.mainImageUrl}"/>
+                                                    <c:url var="resolvedImg" value="/product-image">
+                                                        <c:param name="file" value="${ci.product.mainImageUrl}"/>
+                                                    </c:url>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <c:url var="imgUrl" value="${resolvedImg}"/>
                                             <c:url var="phUrl" value="/assets/img/placeholder.jpg"/>
-                                            <a href="#"><img src="${imgUrl}" alt="${fn:escapeXml(ci.product.name)}" onerror="this.onerror=null;this.src='${phUrl}'"></a>
+                                            <a href="#"><img src="${resolvedImg}" alt="${fn:escapeXml(ci.product.name)}" onerror="this.onerror=null;this.src='${phUrl}'"></a>
                                         </td>
                                         <td>
                                             <c:url var="detailUrl" value="/product-detail">

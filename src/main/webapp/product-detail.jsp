@@ -38,9 +38,20 @@
                                     <img src="${phUrl}?v=${v}" alt="Placeholder">
                                 </c:when>
                                 <c:otherwise>
-                                    <c:set var="imgSrc" value="${empty product.mainImageUrl ? '/assets/img/placeholder.jpg' : product.mainImageUrl}" />
-                                    <c:url var="imgUrl" value="${fn:startsWith(imgSrc,'http') || fn:startsWith(imgSrc,'/') ? imgSrc : '/assets/img/'.concat(imgSrc)}"/>
-                                    <img src="${imgUrl}?v=${v}" alt="${fn:escapeXml(product.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
+                                    <c:choose>
+                                        <c:when test="${empty product.mainImageUrl}">
+                                            <c:set var="imgSrc" value="/product-image"/>
+                                        </c:when>
+                                        <c:when test="${fn:startsWith(product.mainImageUrl,'http://') || fn:startsWith(product.mainImageUrl,'https://')}">
+                                            <c:set var="imgSrc" value="${product.mainImageUrl}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:url var="imgSrc" value="/product-image">
+                                                <c:param name="file" value="${fn:startsWith(product.mainImageUrl,'/') ? fn:substringAfter(product.mainImageUrl,'/') : product.mainImageUrl}"/>
+                                            </c:url>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <img src="${imgSrc}" alt="${fn:escapeXml(product.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -187,16 +198,18 @@
                                         </c:url>
                                         <c:choose>
                                             <c:when test="${empty rp.mainImageUrl}">
-                                                <c:url var="rpImg" value="/assets/img/placeholder.jpg"/>
+                                                <c:set var="rpImg" value="/product-image"/>
                                             </c:when>
-                                            <c:when test="${fn:startsWith(rp.mainImageUrl,'http') || fn:startsWith(rp.mainImageUrl,'/')}">
+                                            <c:when test="${fn:startsWith(rp.mainImageUrl,'http://') || fn:startsWith(rp.mainImageUrl,'https://')}">
                                                 <c:set var="rpImg" value="${rp.mainImageUrl}"/>
                                             </c:when>
                                             <c:otherwise>
-                                                <c:set var="rpImg" value="/assets/img/${rp.mainImageUrl}"/>
+                                                <c:url var="rpImg" value="/product-image">
+                                                    <c:param name="file" value="${fn:startsWith(rp.mainImageUrl,'/') ? fn:substringAfter(rp.mainImageUrl,'/') : rp.mainImageUrl}"/>
+                                                </c:url>
                                             </c:otherwise>
                                         </c:choose>
-                                        <img src="${rpImg}?v=${v}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
+                                        <img src="${rpImg}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
                                         <div class="product-action">
                                             <c:url var="addRp" value="/add-to-cart">
                                                 <c:param name="productId" value="${rp.id}"/>
