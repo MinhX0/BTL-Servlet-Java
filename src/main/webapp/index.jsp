@@ -28,42 +28,7 @@
 </div>
 <!-- Main Slider End -->
 
-<!-- Feature Start-->
-<div class="feature">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3 col-md-6 feature-col">
-                <div class="feature-content">
-                    <i class="fa fa-shield"></i>
-                    <h2>Mua sắm đáng tin cậy</h2>
-                    <p>Mua sắm an toàn, bảo mật với dịch vụ hỗ trợ tận tâm</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 feature-col">
-                <div class="feature-content">
-                    <i class="fa fa-shopping-bag"></i>
-                    <h2>Sản phẩm chất lượng</h2>
-                    <p>Sản phẩm chính hãng, chất lượng được kiểm chứng</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 feature-col">
-                <div class="feature-content">
-                    <i class="fa fa-truck"></i>
-                    <h2>Giao hàng toàn cầu</h2>
-                    <p>Vận chuyển nhanh chóng đến nhiều quốc gia</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6 feature-col">
-                <div class="feature-content">
-                    <i class="fa fa-phone"></i>
-                    <h2>Hỗ trợ qua điện thoại</h2>
-                    <p>Liên hệ dễ dàng khi cần tư vấn hoặc trợ giúp</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Feature End-->
+
 
 <!-- Main Content: Categories (left) + Sections (right) -->
 <div class="container">
@@ -315,7 +280,42 @@
         </div>
     </div>
 </div>
-
+<!-- Feature Start-->
+<div class="feature">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 feature-col">
+                <div class="feature-content">
+                    <i class="fa fa-shield"></i>
+                    <h2>Mua sắm đáng tin cậy</h2>
+                    <p>Mua sắm an toàn, bảo mật với dịch vụ hỗ trợ tận tâm</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 feature-col">
+                <div class="feature-content">
+                    <i class="fa fa-shopping-bag"></i>
+                    <h2>Sản phẩm chất lượng</h2>
+                    <p>Sản phẩm chính hãng, chất lượng được kiểm chứng</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 feature-col">
+                <div class="feature-content">
+                    <i class="fa fa-truck"></i>
+                    <h2>Giao hàng toàn cầu</h2>
+                    <p>Vận chuyển nhanh chóng đến nhiều quốc gia</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 feature-col">
+                <div class="feature-content">
+                    <i class="fa fa-phone"></i>
+                    <h2>Hỗ trợ qua điện thoại</h2>
+                    <p>Liên hệ dễ dàng khi cần tư vấn hoặc trợ giúp</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Feature End-->
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
 </body>
 </html>
