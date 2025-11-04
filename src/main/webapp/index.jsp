@@ -8,7 +8,7 @@
     <title>Cửa hàng E Shop</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
 </head>
-<body>
+<body class="home-index">
 <%@ include file="/WEB-INF/jsp/layout/header.jspf" %>
 
 <!-- Main Slider Start -->
@@ -65,42 +65,43 @@
 </div>
 <!-- Feature End-->
 
-<!-- Featured Product Start -->
-<div class="featured-product">
-    <div class="container">
-        <div class="section-header">
-            <h3>Sản phẩm nổi bật</h3>
-            <p>
-                Những sản phẩm mới nhất
-            </p>
-        </div>
-        <div class="row">
-            <!-- Left sidebar: Categories -->
-            <div class="col-md-3">
-                <div class="sidebar-widget category">
-                    <h2 class="title">Danh mục</h2>
-                    <ul>
-                        <c:choose>
-                            <c:when test="${not empty categories}">
-                                <c:forEach var="cat" items="${categories}">
-                                    <c:url var="catUrl" value="/products">
-                                        <c:param name="categoryId" value="${cat.id}"/>
-                                    </c:url>
-                                    <li>
-                                        <a href="${catUrl}">${cat.name}</a>
-                                    </li>
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                <li><span class="text-muted">Không có danh mục</span></li>
-                            </c:otherwise>
-                        </c:choose>
-                    </ul>
-                </div>
+<!-- Main Content: Categories (left) + Sections (right) -->
+<div class="container">
+    <div class="row">
+        <!-- Left: Categories column spans entire page height next to product sections -->
+        <div class="col-md-3">
+            <div class="sidebar-widget category">
+                <h2 class="title">Danh mục</h2>
+                <ul>
+                    <c:choose>
+                        <c:when test="${not empty categories}">
+                            <c:forEach var="cat" items="${categories}">
+                                <c:url var="catUrl" value="/products">
+                                    <c:param name="categoryId" value="${cat.id}"/>
+                                </c:url>
+                                <li>
+                                    <a href="${catUrl}">${cat.name}</a>
+                                </li>
+                            </c:forEach>
+                        </c:when>
+                        <c:otherwise>
+                            <li><span class="text-muted">Không có danh mục</span></li>
+                        </c:otherwise>
+                    </c:choose>
+                </ul>
             </div>
-            <!-- Right content: Featured products -->
-            <div class="col-md-9">
-                <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
+        </div>
+
+        <!-- Right: Stacked product sections -->
+        <div class="col-md-9">
+            <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
+
+            <!-- Featured products -->
+            <div class="featured-product">
+                <div class="section-header">
+                    <h3>Sản phẩm nổi bật</h3>
+                    <p>Những sản phẩm mới nhất</p>
+                </div>
                 <div class="row align-items-center product-slider product-slider-4">
                     <c:choose>
                         <c:when test="${not empty featuredProducts}">
@@ -174,20 +175,13 @@
                     </c:choose>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<!-- Featured Product End -->
 
-<!-- On Sale Start -->
-<div class="featured-product">
-    <div class="container">
-        <div class="section-header">
-            <h3>Đang giảm giá</h3>
-            <p>Các ưu đãi hot hiện tại</p>
-        </div>
-        <div class="row">
-            <div class="col-12">
+            <!-- On Sale -->
+            <div class="featured-product">
+                <div class="section-header">
+                    <h3>Đang giảm giá</h3>
+                    <p>Các ưu đãi hot hiện tại</p>
+                </div>
                 <div class="row align-items-center product-slider product-slider-4">
                     <c:choose>
                         <c:when test="${not empty onSaleProducts}">
@@ -248,20 +242,13 @@
                     </c:choose>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<!-- On Sale End -->
 
-<!-- New Arrivals Start -->
-<div class="featured-product">
-    <div class="container">
-        <div class="section-header">
-            <h3>Hàng mới về</h3>
-            <p>Sản phẩm vừa cập nhật</p>
-        </div>
-        <div class="row">
-            <div class="col-12">
+            <!-- New Arrivals -->
+            <div class="featured-product">
+                <div class="section-header">
+                    <h3>Hàng mới về</h3>
+                    <p>Sản phẩm vừa cập nhật</p>
+                </div>
                 <div class="row align-items-center product-slider product-slider-4">
                     <c:choose>
                         <c:when test="${not empty newestProducts}">
@@ -328,7 +315,6 @@
         </div>
     </div>
 </div>
-<!-- New Arrivals End -->
 
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
 </body>

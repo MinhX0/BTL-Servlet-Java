@@ -1805,3 +1805,23 @@ button.btn {
         text-align: center; 
     } 
 }
+
+/**********************************/
+/* Home index specific adjustments */
+.home-index .sidebar-widget.category {
+    background: #ffffff;
+    border: 1px solid #e6e6e6;
+    padding: 15px;
+}
+.home-index .featured-product .section-header {
+    margin-top: 0;
+}
+@media (min-width: 768px) {
+    .home-index .col-md-9 > .featured-product:first-child {
+        margin-top: 0;
+    }
+    .home-index .col-md-9 > .featured-product + .featured-product {
+        margin-top: 30px;
+    }
+    .home-index .sidebar-widget.category { margin-top: 45px; }
+}
