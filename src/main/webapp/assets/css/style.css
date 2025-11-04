@@ -540,11 +540,14 @@ button.btn {
     position: relative;
     background-color: #f7f7f7;
     padding-bottom: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .product-item .product-image {
     position: relative;
     overflow: hidden;
+    height: 220px; /* consistent image band height for grid/slider cards */
 }
 
 .product-item .product-image a {
@@ -552,6 +555,14 @@ button.btn {
     background: #3F69AA;
     margin-bottom: 15px; 
     transition: .3s;
+    height: 100%; /* make anchor fill the image container */
+}
+
+.product-item .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* fill and crop to keep aspect */
+    object-position: center center; /* center the crop */
 }
 
 .product-item:hover .product-image a {
@@ -559,7 +570,8 @@ button.btn {
 }
 
 .product-item .product-image img {
-    width: 100%; 
+    height: 100%;
+    object-fit: cover; /* fill and crop to keep aspect */
 }
 
 .product-item:hover .product-image img {
@@ -623,6 +635,11 @@ button.btn {
     width: 100%;
     text-align: center;
     background: #f7f7f7;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 8px 10px 10px;
 }
 
 .product-item .product-content .title,
@@ -633,21 +650,25 @@ button.btn {
 }
 
 .product-item .product-content .title {
-    margin-bottom: 5px;
+    min-height: 44px; /* ~2 lines at default size to keep rows even */
+    margin-bottom: 6px;
 }
 
 .product-item .product-content .title a {
-    color: #3F69AA;
-    font-size: 18px;
-    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* clamp to 2 lines */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+    /* Allow slight responsive scaling without JS */
+    font-size: clamp(14px, 1.6vw, 18px);
 }
 
-.product-item .product-content .ratting i {
-    font-size: 14px;
-    color: #3F69AA;
-}
+.product-item .product-content .ratting { min-height: 18px; margin-bottom: 6px; }
 
 .product-item .product-content .price {
+    margin-top: auto;
     font-size: 30px;
     color: #3F69AA;
     font-weight: 700; 
