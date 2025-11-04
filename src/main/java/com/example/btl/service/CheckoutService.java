@@ -23,11 +23,12 @@ public class CheckoutService {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
 
-            // Compute total in VND (long)
+            // Compute total in VND (long) using effective price per item
             long totalVnd = 0L;
             for (CartItem ci : items) {
-                long price = ci.getProduct().getBasePrice();
-                totalVnd += price * (long) ci.getQuantity();
+                Product p = ci.getProduct();
+                long unit = (p.getSalePrice() != null && p.getSalePrice() > 0) ? p.getSalePrice() : p.getBasePrice();
+                totalVnd += unit * (long) ci.getQuantity();
             }
 
             // Create order
@@ -42,15 +43,15 @@ public class CheckoutService {
             }
             session.persist(order);
 
-            // Create order items
+            // Create order items (rehydrate product in this session and use its effective price now)
             for (CartItem ci : items) {
                 OrderItem oi = new OrderItem();
                 oi.setOrder(order);
-                // Reattach/load product in this session
                 Product product = session.get(Product.class, ci.getProduct().getId());
                 oi.setProduct(product);
                 oi.setQuantity(ci.getQuantity());
-                oi.setPriceAtPurchase(BigDecimal.valueOf(product.getBasePrice()));
+                long unit = (product.getSalePrice() != null && product.getSalePrice() > 0) ? product.getSalePrice() : product.getBasePrice();
+                oi.setPriceAtPurchase(BigDecimal.valueOf(unit));
                 session.persist(oi);
             }
 

@@ -51,10 +51,18 @@ public class AdminProductCreateServlet extends HttpServlet {
         String description = request.getParameter("description");
         String mainImageUrl = request.getParameter("mainImageUrl");
         String basePriceStr = request.getParameter("basePrice");
+        String salePriceStr = request.getParameter("salePrice");
         String categoryIdStr = request.getParameter("categoryId");
 
         try {
             long basePrice = Long.parseLong(basePriceStr);
+            Long salePrice = null;
+            if (salePriceStr != null && !salePriceStr.isBlank()) {
+                try {
+                    long sp = Long.parseLong(salePriceStr.trim());
+                    if (sp > 0) salePrice = sp;
+                } catch (NumberFormatException ignored) { /* keep null */ }
+            }
             int categoryId = Integer.parseInt(categoryIdStr);
             Category category = categoryDAO.getById(categoryId);
 
@@ -63,6 +71,9 @@ public class AdminProductCreateServlet extends HttpServlet {
             p.setDescription(description);
             p.setMainImageUrl(mainImageUrl);
             p.setBasePrice(basePrice);
+            if (salePrice != null) {
+                p.setSalePrice(salePrice.longValue());
+            }
             p.setCategory(category);
 
             productDAO.create(p);

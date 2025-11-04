@@ -24,6 +24,10 @@ public class Product {
     @Column(name = "base_price", nullable = false)
     private long basePrice;
 
+    // Optional sale price (if null/<=0 => not discounted)
+    @Column(name = "sale_price")
+    private Long salePrice;
+
     @Column(name = "date_added")
     private LocalDateTime dateAdded;
 
@@ -44,6 +48,9 @@ public class Product {
     public void setMainImageUrl(String mainImageUrl) { this.mainImageUrl = mainImageUrl; }
     public long getBasePrice() { return basePrice; }
     public void setBasePrice(long basePrice) { this.basePrice = basePrice; }
+    public Long getSalePrice() { return salePrice; }
+    public void setSalePrice(Long salePrice) { this.salePrice = salePrice; }
+    public void setSalePrice(long salePrice) { this.salePrice = salePrice; }
     public LocalDateTime getDateAdded() { return dateAdded; }
     public void setDateAdded(LocalDateTime dateAdded) { this.dateAdded = dateAdded; }
     public Category getCategory() { return category; }
@@ -53,4 +60,8 @@ public class Product {
     @Transient
     public String getImgsrc() { return mainImageUrl; }
     public void setImgsrc(String imgsrc) { this.mainImageUrl = imgsrc; }
+
+    // Effective price for UI/logic
+    @Transient
+    public long getEffectivePrice() { return (salePrice != null && salePrice > 0) ? salePrice : basePrice; }
 }

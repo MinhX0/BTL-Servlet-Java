@@ -1,6 +1,6 @@
 -- Create the database
-CREATE DATABASE IF NOT EXISTS btl_java_web;
-USE btl_java_web;
+CREATE DATABASE IF NOT EXISTS btl_java_web_test;
+USE btl_java_web_test;
 
 -- ----------------------------
 -- 2. Users Table (Provided by the User)
@@ -42,6 +42,7 @@ CREATE TABLE Products
     -- NEW COLUMN ADDED HERE
     main_image_url VARCHAR(255)   NULL,
     base_price     DECIMAL(10, 2) NOT NULL,
+    sale_price     DECIMAL(10, 2) NULL,
     date_added     DATETIME DEFAULT CURRENT_TIMESTAMP,
     category_id    INT            NOT NULL,
     FOREIGN KEY (category_id) REFERENCES Categories (category_id)

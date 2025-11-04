@@ -605,6 +605,19 @@ button.btn {
     background: #ffffff;
 }
 
+.product-item .product-image .discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: #e53935; /* red */
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    z-index: 2;
+}
+
 .product-item .product-content {
     position: relative;
     width: 100%;
@@ -640,11 +653,18 @@ button.btn {
     font-weight: 700; 
 }
 
-.product-item .product-content .price span {
+/* Previously targeted all spans -> caused unwanted line-through. */
+.product-item .product-content .price .price-old {
     margin-left: 12px;
     text-decoration: line-through;
     font-weight: 700;
     color: #666666;
+}
+.product-item .product-content .price .price-new {
+    display: block;
+    margin-left: 0;
+    text-decoration: none;
+    color: #3F69AA;
 }
 
 .product-slider.slick-slider:hover .slick-prev {
@@ -817,10 +837,17 @@ button.btn {
     margin-bottom: 15px;
 }
 
-.product-detail .product-content .price span {
+/* Previously targeted all spans -> caused unwanted line-through. */
+.product-detail .product-content .price .price-old {
     color: #666666;
     text-decoration: line-through;
     margin-left: 12px;
+}
+.product-detail .product-content .price .price-new {
+    display: block;
+    margin-left: 0;
+    text-decoration: none;
+    color: #3F69AA;
 }
 
 .product-detail .product-content .details {

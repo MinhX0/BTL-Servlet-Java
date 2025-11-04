@@ -35,10 +35,14 @@ public class IndexServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin");
             return;
         }
-        int limit = 8; // number of featured products to show
+        int limit = 8; // number of items per row
         List<Product> featured = productService.searchPaged(null, null, 0, limit, "date_desc");
+        List<Product> onSale = productService.listOnSale(limit);
+        List<Product> newest = productService.listNewest(limit);
         List<Category> categories = categoryService.listActive();
         request.setAttribute("featuredProducts", featured);
+        request.setAttribute("onSaleProducts", onSale);
+        request.setAttribute("newestProducts", newest);
         request.setAttribute("categories", categories);
         try {
             request.getRequestDispatcher("/index.jsp").forward(request, response);

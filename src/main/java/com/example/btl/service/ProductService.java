@@ -32,4 +32,8 @@ public class ProductService {
     public boolean create(Product p) { return productDAO.create(p); }
     public boolean update(Product p) { return productDAO.update(p); }
     public boolean delete(int id) { return productDAO.delete(id); }
+
+    // New helper lists for homepage sections
+    public List<Product> listOnSale(int limit) { return productDAO.listOnSale(limit); }
+    public List<Product> listNewest(int limit) { return productDAO.listNewest(limit); }
 }

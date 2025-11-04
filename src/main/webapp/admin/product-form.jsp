@@ -32,6 +32,10 @@
                 <input type="number" step="1" min="0" name="basePrice" class="form-control" required>
             </div>
             <div class="mb-3">
+                <label class="form-label">Giá giảm (VND) - tuỳ chọn</label>
+                <input type="number" step="1" min="0" name="salePrice" class="form-control" placeholder="Để trống nếu không giảm giá">
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Danh mục</label>
                 <select name="categoryId" class="form-select" required>
                     <c:forEach var="c" items="${categories}">

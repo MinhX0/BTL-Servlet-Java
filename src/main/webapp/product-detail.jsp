@@ -68,8 +68,16 @@
                             </div>
                             <div class="price">
                                 <c:choose>
+                                    <c:when test="${not empty product && not empty product.basePrice && not empty product.salePrice && product.salePrice > 0 && product.basePrice > product.salePrice}">
+                                        <span class="price-old">
+                                            <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                        <span class="price-new">
+                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true"/> đ
+                                        </span>
+                                    </c:when>
                                     <c:when test="${not empty product && not empty product.basePrice}">
-                                        <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ
+                                        <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ</span>
                                     </c:when>
                                     <c:otherwise>—</c:otherwise>
                                 </c:choose>
@@ -131,7 +139,20 @@
                                 <h4>Thông số</h4>
                                 <ul>
                                     <li>Tên: ${empty product ? '-' : fn:escapeXml(product.name)}</li>
-                                    <li>Giá: <c:choose><c:when test="${not empty product && not empty product.basePrice}"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ</c:when><c:otherwise>-</c:otherwise></c:choose></li>
+                                    <li>Giá:
+                                        <c:choose>
+                                            <c:when test="${not empty product && not empty product.basePrice && not empty product.salePrice && product.salePrice > 0 && product.basePrice > product.salePrice}">
+                                                <span class="price-old">
+                                                    <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ
+                                                </span>
+                                                <span class="price-new"><fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                            </c:when>
+                                            <c:when test="${not empty product && not empty product.basePrice}">
+                                                <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                            </c:when>
+                                            <c:otherwise>-</c:otherwise>
+                                        </c:choose>
+                                    </li>
                                     <c:if test="${not empty product && not empty product.category && not empty product.category.name}"><li>Danh mục: ${fn:escapeXml(product.category.name)}</li></c:if>
                                 </ul>
                             </div>
@@ -209,6 +230,10 @@
                                                 </c:url>
                                             </c:otherwise>
                                         </c:choose>
+                                        <c:if test="${not empty rp.salePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
+                                            <c:set var="discountPercent" value="${(100 - (rp.salePrice * 100 / rp.basePrice))}"/>
+                                            <span class="discount-badge">-${discountPercent}%</span>
+                                        </c:if>
                                         <img src="${rpImg}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
                                         <div class="product-action">
                                             <c:url var="addRp" value="/add-to-cart">
@@ -226,7 +251,16 @@
                                             <i class="fa fa-star"></i>
                                             <i class="fa fa-star"></i>
                                         </div>
-                                        <div class="price"><fmt:formatNumber value="${rp.basePrice}" type="number" groupingUsed="true"/> đ</div>
+                                        <div class="price">
+                                            <c:choose>
+                                                <c:when test="${not empty rp.salePrice && not empty rp.basePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
+                                                    <span class="price-new"><fmt:formatNumber value="${rp.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="price-new"><fmt:formatNumber value="${rp.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

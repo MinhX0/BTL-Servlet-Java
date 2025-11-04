@@ -152,10 +152,10 @@ public class ProductDAO {
         String s = sort == null ? "" : sort.trim().toLowerCase();
         switch (s) {
             case "price_asc":
-                orderBy = "p.basePrice ASC";
+                orderBy = "COALESCE(p.salePrice, p.basePrice) ASC";
                 break;
             case "price_desc":
-                orderBy = "p.basePrice DESC";
+                orderBy = "COALESCE(p.salePrice, p.basePrice) DESC";
                 break;
             case "date_asc":
                 orderBy = "p.dateAdded ASC";
@@ -224,5 +224,35 @@ public class ProductDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<Product> listOnSale(int limit) {
+        try (Session session = HibernateUtil.getSession()) {
+            String hql = "SELECT p FROM Product p LEFT JOIN FETCH p.category " +
+                    "WHERE COALESCE(p.salePrice, 0) > 0 AND COALESCE(p.basePrice, 0) > COALESCE(p.salePrice, 0) " +
+                    "ORDER BY (COALESCE(p.basePrice,0) - COALESCE(p.salePrice,0)) DESC, p.dateAdded DESC, p.id DESC";
+            Query<Product> q = session.createQuery(hql, Product.class);
+            q.setMaxResults(Math.max(1, limit));
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error listing on-sale products: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    public List<Product> listNewest(int limit) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Product> q = session.createQuery(
+                    "SELECT p FROM Product p LEFT JOIN FETCH p.category ORDER BY p.dateAdded DESC, p.id DESC",
+                    Product.class
+            );
+            q.setMaxResults(Math.max(1, limit));
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error listing newest products: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
     }
 }

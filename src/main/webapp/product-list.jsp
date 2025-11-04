@@ -23,6 +23,44 @@
 <div class="product-view">
     <div class="container">
         <div class="row">
+            <!-- Left sidebar: categories -->
+            <div class="col-md-3">
+                <div class="sidebar-widget category">
+                    <h2 class="title">Danh mục</h2>
+                    <ul>
+                        <c:choose>
+                            <c:when test="${not empty categories}">
+                                <c:forEach var="cat" items="${categories}">
+                                    <c:url var="catUrl" value="/products">
+                                        <c:param name="categoryId" value="${cat.id}"/>
+                                        <c:param name="page" value="1"/>
+                                        <c:param name="size" value="${size}"/>
+                                        <c:if test="${not empty keyword}"><c:param name="q" value="${keyword}"/></c:if>
+                                        <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
+                                    </c:url>
+                                    <li>
+                                        <a href="${catUrl}">${cat.name}</a>
+                                    </li>
+                                </c:forEach>
+                            </c:when>
+                            <c:otherwise>
+                                <li><span class="text-muted">Không có danh mục</span></li>
+                            </c:otherwise>
+                        </c:choose>
+                    </ul>
+                </div>
+
+                <div class="sidebar-widget image">
+                    <h2 class="title">Sản phẩm nổi bật</h2>
+                    <a href="#">
+                        <c:url var="sideImg" value="/assets/img/category-1.jpg"/>
+                        <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
+                        <img src="${sideImg}" alt="Nổi bật" onerror="this.onerror=null;this.src='${placeholderUrl}'">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right content: products grid -->
             <div class="col-md-9">
                 <div class="row">
                     <div class="col-lg-12">
@@ -103,6 +141,10 @@
                                                     </c:url>
                                                 </c:otherwise>
                                             </c:choose>
+                                            <c:if test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
+                                                <c:set var="discountPercent" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
+                                                <span class="discount-badge">-${discountPercent}%</span>
+                                            </c:if>
                                             <c:url var="imgUrl" value="${resolvedImg}"/>
                                             <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
                                             <!-- Avoid double-prefixing context path, use resolvedImg directly -->
@@ -124,7 +166,16 @@
                                                 <i class="fa fa-star"></i>
                                             </div>
                                             <div class="price">
-                                                <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ
+                                                <c:choose>
+                                                    <c:when test="${not empty p.salePrice && not empty p.basePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
+                                                        <span class="price-new">
+                                                            <fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ
+                                                        </span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="price-new"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </div>
                                         </div>
                                     </div>
@@ -182,42 +233,6 @@
                             </ul>
                         </nav>
                     </c:if>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <div class="sidebar-widget category">
-                    <h2 class="title">Danh mục</h2>
-                    <ul>
-                        <c:choose>
-                            <c:when test="${not empty categories}">
-                                <c:forEach var="cat" items="${categories}">
-                                    <c:url var="catUrl" value="/products">
-                                        <c:param name="categoryId" value="${cat.id}"/>
-                                        <c:param name="page" value="1"/>
-                                        <c:param name="size" value="${size}"/>
-                                        <c:if test="${not empty keyword}"><c:param name="q" value="${keyword}"/></c:if>
-                                        <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
-                                    </c:url>
-                                    <li>
-                                        <a href="${catUrl}">${cat.name}</a>
-                                    </li>
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                <li><span class="text-muted">Không có danh mục</span></li>
-                            </c:otherwise>
-                        </c:choose>
-                    </ul>
-                </div>
-
-                <div class="sidebar-widget image">
-                    <h2 class="title">Sản phẩm nổi bật</h2>
-                    <a href="#">
-                        <c:url var="sideImg" value="/assets/img/category-1.jpg"/>
-                        <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
-                        <img src="${sideImg}" alt="Nổi bật" onerror="this.onerror=null;this.src='${placeholderUrl}'">
-                    </a>
                 </div>
             </div>
         </div>
