@@ -6,56 +6,43 @@
         <div class="row">
             <div class="col-lg-3 col-md-6">
                 <div class="footer-widget">
-                    <h1>Anh em cay khe Corporation</h1>
-                    <p>Chuyên bán dép nữ cao cấp</p>
-                    <div class="mt-3">
-                        <c:url var="footerProductsUrl" value="/products"/>
-                        <c:url var="footerContactUrl" value="/contact.jsp"/>
-                        <a class="btn btn-primary btn-sm mr-2" href="${footerProductsUrl}">Mua sắm ngay</a>
-                        <a class="btn btn-outline-secondary btn-sm" href="${footerContactUrl}">Liên hệ</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="footer-widget">
-                    <h3 class="title">Liên hệ</h3>
-                    <div class="contact-info">
-                        <p><i class="fa fa-map-marker"></i>Anh em cay khe Corporation</p>
-                        <p><i class="fa fa-envelope"></i>Anh em cay khe Corporation</p>
-                        <p><i class="fa fa-phone"></i>Anh em cay khe Corporation</p>
-                        <div class="social">
-                            <a href=""><i class="fa fa-twitter"></i></a>
-                            <a href=""><i class="fa fa-facebook"></i></a>
-                            <a href=""><i class="fa fa-linkedin"></i></a>
-                            <a href=""><i class="fa fa-instagram"></i></a>
-                            <a href=""><i class="fa fa-youtube"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row payment">
-            <div class="col-md-6">
-                <div class="payment-method">
-                    <p>Phương thức thanh toán:</p>
-                    <c:url var="pmUrl" value="/assets/img/payment-method.png"/>
-                    <img src="${pmUrl}" alt="Phương thức thanh toán" />
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="payment-security">
-                    <p>Bảo mật bởi:</p>
-                    <c:url var="gdUrl" value="/assets/img/godaddy.svg"/>
-                    <c:url var="nortonUrl" value="/assets/img/norton.svg"/>
-                    <c:url var="sslUrl" value="/assets/img/ssl.svg"/>
-                    <img src="${gdUrl}" alt="Chứng nhận bảo mật" />
-                    <img src="${nortonUrl}" alt="Chứng nhận bảo mật" />
-                    <img src="${sslUrl}" alt="Chứng nhận bảo mật" />
+                    <h3 class="title">Thông tin sinh viên</h3>
+                    <!-- Improved student list -->
+                    <ul class="list-group student-list">
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="student-avatar mr-3" aria-hidden="true">TM</div>
+                            <div>
+                                <div class="student-name">Trần Tuấn Minh</div>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> --/--/2004</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="student-avatar mr-3" aria-hidden="true">BT</div>
+                            <div>
+                                <div class="student-name">Bùi Trung Toán</div>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> 21/03/2004</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="student-avatar mr-3" aria-hidden="true">AT</div>
+                            <div>
+                                <div class="student-name">Lường Anh Tiến</div>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> --/--/2004</small>
+                            </div>
+                        </li>
+                        <li class="list-group-item d-flex align-items-center">
+                            <div class="student-avatar mr-3" aria-hidden="true">HT</div>
+                            <div>
+                                <div class="student-name">Hoàng Văn Tuyên</div>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> --/--/2004</small>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+
+        <!-- Close container-fluid and footer only -->
     </div>
 </div>
 <!-- Footer End -->
@@ -75,6 +62,25 @@
 
 <!-- Back to Top -->
 <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
+
+<!-- Tiny scoped styles for student list -->
+<style>
+/* Make list items opaque and readable on dark footer */
+.footer .student-list .list-group-item {
+  background: #2d2f36; /* solid dark */
+  border-color: #3a3d44;
+  color: #e9ecef;
+  padding: 0.6rem 0.75rem;
+}
+.footer .student-list .student-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #343a40; color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 600; letter-spacing: 0.5px;
+}
+.footer .student-list .student-name { font-weight: 600; color: #ffffff; }
+.footer .student-list small.text-muted { color: #cfd3da !important; }
+</style>
 
 <!-- JavaScript Libraries -->
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
