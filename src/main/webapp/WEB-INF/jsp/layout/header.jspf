@@ -26,9 +26,16 @@
             </div>
             <div class="col-md-6">
                 <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
-                    <div class="search">
-                        <input type="text" placeholder="Tìm kiếm" aria-label="Tìm kiếm sản phẩm">
-                        <button><i class="fa fa-search"></i></button>
+                    <div class="search position-relative">
+                        <c:url var="searchAction" value="/products"/>
+                        <form method="get" action="${searchAction}" class="m-0">
+                            <c:if test="${not empty param.categoryId}">
+                                <input type="hidden" name="categoryId" value="${param.categoryId}"/>
+                            </c:if>
+                            <label for="globalSearch" class="sr-only">Tìm kiếm sản phẩm</label>
+                            <input id="globalSearch" name="q" type="text" placeholder="Tìm kiếm sản phẩm" aria-label="Tìm kiếm sản phẩm" value="${fn:escapeXml(param.q)}">
+                            <button type="submit" aria-label="Tìm kiếm"><i class="fa fa-search"></i></button>
+                        </form>
                     </div>
                 </c:if>
             </div>
@@ -112,6 +119,11 @@
                             <a href="${productsUrl}" class="nav-item nav-link">Sản phẩm</a>
                             <c:url var="contactUrl" value="/contact.jsp"/>
                             <a href="${contactUrl}" class="nav-item nav-link">Liên hệ</a>
+                            <%-- New quick anchors to sections on index page --%>
+                            <c:url var="indexOnSaleUrl" value="/index#on-sale"/>
+                            <c:url var="indexNewComerUrl" value="/index#new-comer"/>
+                            <a href="${indexOnSaleUrl}" class="nav-item nav-link js-index-anchor" data-target="#on-sale">Đang giảm giá</a>
+                            <a href="${indexNewComerUrl}" class="nav-item nav-link js-index-anchor" data-target="#new-comer">Hàng mới về</a>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -120,3 +132,37 @@
     </div>
 </div>
 <!-- Header End -->
+
+<script>
+(function(){
+  // Smooth scroll only when already on index page
+  function smoothScrollTo(selector){
+    var el = document.querySelector(selector);
+    if(!el) return;
+    var y = el.getBoundingClientRect().top + window.pageYOffset - 70; // header offset
+    window.scrollTo({top: y, behavior: 'smooth'});
+  }
+  function onNavClick(e){
+    var targetSel = this.getAttribute('data-target');
+    if(!targetSel) return;
+    // Determine if we are already on index page
+    var onIndex = document.body && document.body.classList.contains('home-index');
+    if(onIndex){
+      e.preventDefault();
+      smoothScrollTo(targetSel);
+    } // else default navigation to /index#...
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.js-index-anchor').forEach(function(a){
+      a.addEventListener('click', onNavClick);
+    });
+    // If landed on index with a hash, adjust scroll smoothly after load
+    var onIndex = document.body && document.body.classList.contains('home-index');
+    if(onIndex && window.location.hash){
+      var sel = window.location.hash;
+      // slight delay to ensure layout ready
+      setTimeout(function(){ smoothScrollTo(sel); }, 100);
+    }
+  });
+})();
+</script>

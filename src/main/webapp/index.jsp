@@ -19,11 +19,32 @@
         <c:url var="slide2" value="/assets/img/slider-2.jpg"/>
         <c:url var="slide3" value="/assets/img/slider-3.jpg"/>
         <c:url var="slide4" value="/assets/img/slider-4.jpg"/>
+        <!-- New links for slides -->
+        <c:url var="slide1Link" value="/products"><c:param name="q" value="dep xo ngon"/></c:url>
+        <c:url var="slide2Link" value="/products"><c:param name="q" value="dep eva"/></c:url>
+        <c:url var="slide3Link" value="/products"><c:param name="q" value="dep eva biti"/></c:url>
+        <c:url var="slide4Link" value="/products"><c:param name="q" value="dep"/></c:url>
 
-        <div class="main-slider-item"><img src="${slide1}?v=${v}" alt="Slider 1" /></div>
-        <div class="main-slider-item"><img src="${slide2}?v=${v}" alt="Slider 2" /></div>
-        <div class="main-slider-item"><img src="${slide3}?v=${v}" alt="Slider 3" /></div>
-        <div class="main-slider-item"><img src="${slide4}?v=${v}" alt="Slider 4" /></div>
+        <div class="main-slider-item">
+            <a href="${slide1Link}" aria-label="dep xo ngon">
+                <img src="${slide1}?v=${v}" alt="Slider 1" />
+            </a>
+        </div>
+        <div class="main-slider-item">
+            <a href="${slide2Link}" aria-label="dep eva">
+                <img src="${slide2}?v=${v}" alt="Slider 2" />
+            </a>
+        </div>
+        <div class="main-slider-item">
+            <a href="${slide3Link}" aria-label="dep eva biti">
+                <img src="${slide3}?v=${v}" alt="Slider 3" />
+            </a>
+        </div>
+        <div class="main-slider-item">
+            <a href="${slide4Link}" aria-label="dep">
+                <img src="${slide4}?v=${v}" alt="Slider 4" />
+            </a>
+        </div>
     </div>
 </div>
 <!-- Main Slider End -->
@@ -62,7 +83,7 @@
             <c:url var="placeholderUrl2" value="/assets/img/placeholder.jpg"/>
 
             <!-- Featured products -->
-            <div class="featured-product">
+            <div class="featured-product" id="featured-products">
                 <div class="section-header">
                     <h3>Sản phẩm nổi bật</h3>
                     <p>Những sản phẩm mới nhất</p>
@@ -142,7 +163,7 @@
             </div>
 
             <!-- On Sale -->
-            <div class="featured-product">
+            <div class="featured-product" id="on-sale">
                 <div class="section-header">
                     <h3>Đang giảm giá</h3>
                     <p>Các ưu đãi hot hiện tại</p>
@@ -209,7 +230,7 @@
             </div>
 
             <!-- New Arrivals -->
-            <div class="featured-product">
+            <div class="featured-product" id="new-comer">
                 <div class="section-header">
                     <h3>Hàng mới về</h3>
                     <p>Sản phẩm vừa cập nhật</p>
