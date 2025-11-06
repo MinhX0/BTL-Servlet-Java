@@ -1,7 +1,10 @@
 package com.example.btl.servlet;
 
 import com.example.btl.dao.UserDAO;
+import com.example.btl.dao.OtpTokenDAO;
 import com.example.btl.model.User;
+import com.example.btl.service.EmailService;
+import com.example.btl.service.OtpService;
 import com.example.btl.util.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,10 +18,12 @@ import java.io.IOException;
 @WebServlet(name = "AccountServlet", urlPatterns = {"/account", "/account/*"})
 public class AccountServlet extends HttpServlet {
     private UserDAO userDAO;
+    private OtpService otpService;
 
     @Override
     public void init() {
         this.userDAO = new UserDAO();
+        this.otpService = new OtpService(new OtpTokenDAO(), new EmailService());
     }
 
     @Override
@@ -36,7 +41,6 @@ public class AccountServlet extends HttpServlet {
         try {
             request.getRequestDispatcher("/my-account.jsp").forward(request, response);
         } catch (ServletException e) {
-            // Forwarding failed
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -64,10 +68,7 @@ public class AccountServlet extends HttpServlet {
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser.isAdmin()) {
-            response.sendRedirect(request.getContextPath() + "/admin");
-            return;
-        }
+        if (sessionUser.isAdmin()) { response.sendRedirect(request.getContextPath() + "/admin"); return; }
 
         String name = trimOrNull(request.getParameter("name"));
         String email = trimOrNull(request.getParameter("email"));
@@ -79,8 +80,6 @@ public class AccountServlet extends HttpServlet {
             forwardAccount(request, response);
             return;
         }
-
-        // If email changed, ensure uniqueness
         User existingByEmail = userDAO.getUserByEmail(email);
         if (existingByEmail != null && existingByEmail.getId() != sessionUser.getId()) {
             request.setAttribute("profileError", "Email is already in use.");
@@ -88,7 +87,38 @@ public class AccountServlet extends HttpServlet {
             return;
         }
 
-        // Update fields
+        // OTP gating for profile update
+        String purpose = "PROFILE_UPDATE";
+        Boolean verified = (Boolean) session.getAttribute("otpVerified:" + purpose);
+        if (verified == null || !verified) {
+            // store next and pending new values in session
+            session.setAttribute("otpNext:" + purpose, request.getContextPath() + "/account");
+            // send OTP
+            String base = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+            otpService.sendOtp(sessionUser, purpose, 10, base);
+            // also stash pending fields in session so we can apply after verify
+            session.setAttribute("pending:name", name);
+            session.setAttribute("pending:email", email);
+            session.setAttribute("pending:phone", phoneNumber);
+            session.setAttribute("pending:address", address);
+            response.sendRedirect(request.getContextPath() + "/verify-otp?purpose=" + purpose);
+            return;
+        }
+        // Clear verified flag for this purpose
+        session.removeAttribute("otpVerified:" + purpose);
+
+        // Apply the pending or current values
+        if (session.getAttribute("pending:name") != null) {
+            name = (String) session.getAttribute("pending:name");
+            email = (String) session.getAttribute("pending:email");
+            phoneNumber = (String) session.getAttribute("pending:phone");
+            address = (String) session.getAttribute("pending:address");
+            session.removeAttribute("pending:name");
+            session.removeAttribute("pending:email");
+            session.removeAttribute("pending:phone");
+            session.removeAttribute("pending:address");
+        }
+
         sessionUser.setName(name);
         sessionUser.setEmail(email);
         sessionUser.setPhoneNumber(phoneNumber);
@@ -96,7 +126,6 @@ public class AccountServlet extends HttpServlet {
 
         boolean ok = userDAO.updateUser(sessionUser);
         if (ok) {
-            // Refresh session user from DB to reflect latest state
             User refreshed = userDAO.getUserById(sessionUser.getId());
             if (refreshed != null) {
                 session.setAttribute("user", refreshed);
@@ -118,10 +147,7 @@ public class AccountServlet extends HttpServlet {
             return;
         }
         User sessionUser = (User) session.getAttribute("user");
-        if (sessionUser.isAdmin()) {
-            response.sendRedirect(request.getContextPath() + "/admin");
-            return;
-        }
+        if (sessionUser.isAdmin()) { response.sendRedirect(request.getContextPath() + "/admin"); return; }
 
         String currentPassword = request.getParameter("currentPassword");
         String newPassword = request.getParameter("newPassword");
@@ -137,14 +163,30 @@ public class AccountServlet extends HttpServlet {
             forwardAccount(request, response);
             return;
         }
-        // Verify current password
         if (!PasswordUtil.verifyPassword(currentPassword, sessionUser.getPassword())) {
             request.setAttribute("passwordError", "Current password is incorrect.");
             forwardAccount(request, response);
             return;
         }
 
-        // Hash new password and update
+        // OTP gating for password change
+        String purpose = "PASSWORD_CHANGE";
+        Boolean verified = (Boolean) session.getAttribute("otpVerified:" + purpose);
+        if (verified == null || !verified) {
+            session.setAttribute("otpNext:" + purpose, request.getContextPath() + "/account");
+            String base = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+            otpService.sendOtp(sessionUser, purpose, 10, base);
+            // stash pending new password in session
+            session.setAttribute("pending:newPassword", newPassword);
+            response.sendRedirect(request.getContextPath() + "/verify-otp?purpose=" + purpose);
+            return;
+        }
+        session.removeAttribute("otpVerified:" + purpose);
+
+        if (session.getAttribute("pending:newPassword") != null) {
+            newPassword = (String) session.getAttribute("pending:newPassword");
+            session.removeAttribute("pending:newPassword");
+        }
         String hashed = PasswordUtil.hashPassword(newPassword);
         sessionUser.setPassword(hashed);
         boolean ok = userDAO.updateUser(sessionUser);

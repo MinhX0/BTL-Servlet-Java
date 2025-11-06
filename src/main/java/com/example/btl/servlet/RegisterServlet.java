@@ -2,6 +2,9 @@ package com.example.btl.servlet;
 
 import com.example.btl.model.User;
 import com.example.btl.dao.UserDAO;
+import com.example.btl.dao.OtpTokenDAO;
+import com.example.btl.service.EmailService;
+import com.example.btl.service.OtpService;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
@@ -9,22 +12,21 @@ import java.io.IOException;
 @WebServlet(name = "RegisterServlet", value = "/register")
 public class RegisterServlet extends HttpServlet {
     private UserDAO userDAO;
+    private OtpService otpService;
 
     @Override
     public void init() {
         userDAO = new UserDAO();
+        otpService = new OtpService(new OtpTokenDAO(), new EmailService());
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Check if user is already logged in
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             response.sendRedirect(request.getContextPath() + "/index");
             return;
         }
-
-        // Redirect to combined login/register page
         try {
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         } catch (Exception e) {
@@ -43,90 +45,53 @@ public class RegisterServlet extends HttpServlet {
         String phoneNumber = request.getParameter("phone");
         String address = request.getParameter("address");
 
-        // Validate input
-        if (name == null || name.trim().isEmpty() ||
-            username == null || username.trim().isEmpty() ||
-            email == null || email.trim().isEmpty() ||
-            password == null || password.trim().isEmpty() ||
-            confirmPassword == null || confirmPassword.trim().isEmpty()) {
-            request.setAttribute("registerError", "All required fields must be filled");
-            request.setAttribute("name", name);
-            request.setAttribute("username", username);
-            request.setAttribute("email", email);
-            request.setAttribute("phone", phoneNumber);
-            request.setAttribute("address", address);
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+        if (isBlank(name) || isBlank(username) || isBlank(email) || isBlank(password) || isBlank(confirmPassword)) {
+            setErrorsAndBack(request, response, "All required fields must be filled", name, username, email, phoneNumber, address);
             return;
         }
-
-        // Check if passwords match
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("registerError", "Passwords do not match");
-            request.setAttribute("name", name);
-            request.setAttribute("username", username);
-            request.setAttribute("email", email);
-            request.setAttribute("phone", phoneNumber);
-            request.setAttribute("address", address);
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+            setErrorsAndBack(request, response, "Passwords do not match", name, username, email, phoneNumber, address);
             return;
         }
-
-        // Check if username already exists
         if (userDAO.usernameExists(username)) {
-            request.setAttribute("registerError", "Username already exists");
-            request.setAttribute("name", name);
-            request.setAttribute("email", email);
-            request.setAttribute("phone", phoneNumber);
-            request.setAttribute("address", address);
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+            setErrorsAndBack(request, response, "Username already exists", name, null, email, phoneNumber, address);
             return;
         }
-
-        // Check if email already exists
         if (userDAO.emailExists(email)) {
-            request.setAttribute("registerError", "Email already exists");
-            request.setAttribute("name", name);
-            request.setAttribute("username", username);
-            request.setAttribute("phone", phoneNumber);
-            request.setAttribute("address", address);
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+            setErrorsAndBack(request, response, "Email already exists", name, username, null, phoneNumber, address);
             return;
         }
 
-        // Create new user (default CUSTOMER role); password is hashed in DAO
+        // Create new user as inactive until OTP is verified
         User newUser = new User(username, password, name, email, phoneNumber, address);
-
-        if (userDAO.registerUser(newUser)) {
-            // Registration success → navigate back to index screen
-            response.sendRedirect(request.getContextPath() + "/index");
-        } else {
-            request.setAttribute("registerError", "Registration failed. Please try again.");
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
+        newUser.setActive(Boolean.FALSE);
+        if (!userDAO.registerUser(newUser)) {
+            setErrorsAndBack(request, response, "Registration failed. Please try again.", name, username, email, phoneNumber, address);
+            return;
         }
+
+        // Fire OTP to email
+        HttpSession session = request.getSession(true);
+        session.setAttribute("user", newUser);
+        session.setAttribute("userId", newUser.getId());
+        String base = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+        otpService.sendOtp(newUser, "REGISTER", 10, base);
+        // After verify, go to index
+        session.setAttribute("otpNext:REGISTER", request.getContextPath() + "/index");
+        response.sendRedirect(request.getContextPath() + "/verify-otp?purpose=REGISTER");
     }
+
+    private void setErrorsAndBack(HttpServletRequest request, HttpServletResponse response, String msg,
+                                  String name, String username, String email, String phone, String address) throws IOException {
+        request.setAttribute("registerError", msg);
+        request.setAttribute("name", name);
+        request.setAttribute("username", username);
+        request.setAttribute("email", email);
+        request.setAttribute("phone", phone);
+        request.setAttribute("address", address);
+        try { request.getRequestDispatcher("/login.jsp").forward(request, response); }
+        catch (Exception e) { e.printStackTrace(); response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); }
+    }
+
+    private boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }
 }
