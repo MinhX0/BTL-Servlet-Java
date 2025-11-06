@@ -52,6 +52,8 @@ public class CheckoutService {
                 oi.setQuantity(ci.getQuantity());
                 long unit = (product.getSalePrice() != null && product.getSalePrice() > 0) ? product.getSalePrice() : product.getBasePrice();
                 oi.setPriceAtPurchase(BigDecimal.valueOf(unit));
+                // copy size from cart to order item
+                oi.setItemSize(ci.getItemSize());
                 session.persist(oi);
             }
 

@@ -27,6 +27,8 @@ public class CartService {
             p.setId(productId);
             item.setProduct(p);
             item.setDateAdded(java.time.LocalDateTime.now());
+            // default size 42 for legacy flow
+            item.setItemSize("42");
             return cartItemDAO.create(item);
         } else {
             existing.setQuantity(existing.getQuantity() + delta);
@@ -42,6 +44,24 @@ public class CartService {
         if (item == null) return false;
         if (quantity <= 0) return cartItemDAO.delete(cartItemId);
         item.setQuantity(quantity);
+        return cartItemDAO.update(item);
+    }
+
+    // Change size for a cart item; merge if there's an existing line with same product and newSize.
+    public boolean changeSize(int cartItemId, String newSize, int userId) {
+        CartItem item = cartItemDAO.getById(cartItemId);
+        if (item == null) return false;
+        String size = (newSize == null || newSize.isBlank()) ? null : (newSize.length() > 10 ? newSize.substring(0,10) : newSize);
+        int productId = item.getProduct().getId();
+        // Check if a line with same product+size exists for this user
+        CartItem target = cartItemDAO.findByUserProductSize(userId, productId, size);
+        if (target != null && target.getId() != item.getId()) {
+            // merge quantities into target, delete current
+            target.setQuantity(target.getQuantity() + item.getQuantity());
+            cartItemDAO.update(target);
+            return cartItemDAO.delete(item.getId());
+        }
+        item.setItemSize(size);
         return cartItemDAO.update(item);
     }
 

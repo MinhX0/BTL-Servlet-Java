@@ -37,9 +37,7 @@ public class CartItemDAO {
     public List<CartItem> listByUserDetailed(int userId) {
         try (Session session = HibernateUtil.getSession()) {
             Query<CartItem> q = session.createQuery(
-                    "select ci from CartItem ci " +
-                    "join fetch ci.product p " +
-                    "where ci.user.id = :uid order by ci.dateAdded desc",
+                    "select ci from CartItem ci join fetch ci.product p where ci.user.id = :uid order by ci.dateAdded desc",
                     CartItem.class
             );
             q.setParameter("uid", userId);
@@ -53,12 +51,32 @@ public class CartItemDAO {
 
     public CartItem findByUserAndProduct(int userId, int productId) {
         try (Session session = HibernateUtil.getSession()) {
-            Query<CartItem> q = session.createQuery("FROM CartItem WHERE user.id = :uid AND product.id = :pid", CartItem.class);
+            Query<CartItem> q = session.createQuery(
+                    "FROM CartItem WHERE user.id = :uid AND product.id = :pid AND coalesce(itemSize,'') = ''",
+                    CartItem.class
+            );
             q.setParameter("uid", userId);
             q.setParameter("pid", productId);
             return q.uniqueResult();
         } catch (HibernateException e) {
             System.out.println("Error finding cart item by user and product: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public CartItem findByUserProductSize(int userId, int productId, String size) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<CartItem> q = session.createQuery(
+                    "FROM CartItem WHERE user.id = :uid AND product.id = :pid AND coalesce(itemSize,'') = coalesce(:sz,'')",
+                    CartItem.class
+            );
+            q.setParameter("uid", userId);
+            q.setParameter("pid", productId);
+            q.setParameter("sz", (size == null || size.isBlank()) ? null : size);
+            return q.uniqueResult();
+        } catch (HibernateException e) {
+            System.out.println("Error finding cart item by user, product and size: " + e.getMessage());
             e.printStackTrace();
             return null;
         }

@@ -25,6 +25,10 @@ public class OrderItem {
     @Column(name = "price_at_purchase", precision = 10, scale = 2, nullable = false)
     private BigDecimal priceAtPurchase;
 
+    // size at purchase time
+    @Column(name = "size", length = 10)
+    private String itemSize;
+
     public OrderItem() { }
 
     public int getId() { return id; }
@@ -37,4 +41,7 @@ public class OrderItem {
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public BigDecimal getPriceAtPurchase() { return priceAtPurchase; }
     public void setPriceAtPurchase(BigDecimal priceAtPurchase) { this.priceAtPurchase = priceAtPurchase; }
+
+    public String getItemSize() { return itemSize; }
+    public void setItemSize(String itemSize) { this.itemSize = itemSize; }
 }

@@ -7,6 +7,9 @@
 <head>
     <title>Giỏ hàng</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
+    <style>
+      .size-select { max-height: 120px; overflow-y: auto; }
+    </style>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/layout/header.jspf" %>
@@ -22,6 +25,7 @@
                         <tr>
                             <th>Ảnh</th>
                             <th>Tên</th>
+                            <th>Kích cỡ</th>
                             <th>Giá</th>
                             <th>Số lượng</th>
                             <th>Tổng</th>
@@ -59,6 +63,17 @@
                                             </c:url>
                                             <a href="${detailUrl}">${ci.product.name}</a>
                                         </td>
+                                        <td>
+                                            <form method="post" action="${pageContext.request.contextPath}/cart" class="mb-0">
+                                                <input type="hidden" name="action" value="changeSize"/>
+                                                <input type="hidden" name="cartItemId" value="${ci.id}"/>
+                                                <select name="size" class="form-control size-select" onchange="this.form.submit()">
+                                                    <c:forEach var="opt" items="${[39,40,41,42,43,44,45]}">
+                                                        <option value="${opt}" ${ci.itemSize == opt ? 'selected' : ''}>${opt}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </form>
+                                        </td>
                                         <td><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true"/> đ</td>
                                         <td>
                                             <form method="post" action="${pageContext.request.contextPath}/cart" class="d-inline">
@@ -85,7 +100,7 @@
                                 </c:forEach>
                             </c:when>
                             <c:otherwise>
-                                <tr><td colspan="6" class="text-center text-muted">Giỏ hàng trống.</td></tr>
+                                <tr><td colspan="7" class="text-center text-muted">Giỏ hàng trống.</td></tr>
                             </c:otherwise>
                         </c:choose>
                         </tbody>

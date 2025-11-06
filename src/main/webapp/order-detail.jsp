@@ -72,6 +72,7 @@
                             <thead class="thead-light">
                             <tr>
                                 <th>Sản phẩm</th>
+                                <th>Kích cỡ</th>
                                 <th>Giá</th>
                                 <th>SL</th>
                                 <th>Tạm tính</th>
@@ -88,6 +89,7 @@
                                                 </c:url>
                                                 <a href="${detailUrl}">${it.product.name}</a>
                                             </td>
+                                            <td>${empty it.itemSize ? '-' : it.itemSize}</td>
                                             <td><fmt:formatNumber value="${it.priceAtPurchase}" type="number" groupingUsed="true"/> đ</td>
                                             <td>${it.quantity}</td>
                                             <td><fmt:formatNumber value="${it.priceAtPurchase * it.quantity}" type="number" groupingUsed="true"/> đ</td>
@@ -96,7 +98,7 @@
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted">Đơn hàng chưa có sản phẩm.</td>
+                                        <td colspan="5" class="text-center text-muted">Đơn hàng chưa có sản phẩm.</td>
                                     </tr>
                                 </c:otherwise>
                             </c:choose>

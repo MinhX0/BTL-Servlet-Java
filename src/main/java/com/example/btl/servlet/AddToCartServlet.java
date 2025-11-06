@@ -37,9 +37,30 @@ public class AddToCartServlet extends HttpServlet {
         return count;
     }
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private int parseQuantity(HttpServletRequest request) {
+        String qtyStr = request.getParameter("quantity");
+        int qty = 1;
+        if (qtyStr != null) {
+            try {
+                qty = Integer.parseInt(qtyStr.trim());
+            } catch (NumberFormatException ignored) { }
+        }
+        if (qty < 1) qty = 1;
+        if (qty > 1000) qty = 1000; // simple upper bound to avoid abuse
+        return qty;
+    }
+
+    private String normalizeSize(String raw) {
+        if (raw == null) return null;
+        String s = raw.trim();
+        if (s.isEmpty()) return null;
+        return s.length() > 10 ? s.substring(0, 10) : s;
+    }
+
+    private void handleAdd(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String prodIdStr = request.getParameter("productId");
+        String size = normalizeSize(request.getParameter("size"));
+        if (size == null) size = "42"; // default size when not provided
         if (prodIdStr == null || prodIdStr.isBlank()) {
             if (isAjax(request)) {
                 response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -106,17 +127,20 @@ public class AddToCartServlet extends HttpServlet {
             return;
         }
 
-        // Check existing cart item for this user & product
-        CartItem existing = cartItemDAO.findByUserAndProduct(user.getId(), productId);
+        int qty = parseQuantity(request);
+
+        // Check existing cart item for this user & product & size
+        CartItem existing = cartItemDAO.findByUserProductSize(user.getId(), productId, size);
         if (existing != null) {
-            existing.setQuantity(existing.getQuantity() + 1);
+            existing.setQuantity(existing.getQuantity() + qty);
             cartItemDAO.update(existing);
         } else {
             CartItem newItem = new CartItem();
             newItem.setUser(user);
             newItem.setProduct(product);
-            newItem.setQuantity(1);
+            newItem.setQuantity(qty);
             newItem.setDateAdded(LocalDateTime.now());
+            newItem.setItemSize(size);
             cartItemDAO.create(newItem);
         }
 
@@ -124,13 +148,23 @@ public class AddToCartServlet extends HttpServlet {
             int count = computeCartCount(user.getId());
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
-            out.write("{\"ok\":true,\"count\":" + count + "}");
+            out.write("{\"ok\":true,\"count\":" + count + ",\"size\":\"" + size + "\"}");
             out.flush();
             return;
         }
 
-        // Redirect back to referer or products
+        // Redirect back to referer or cart
         String referer = request.getHeader("Referer");
         response.sendRedirect(referer != null ? referer : request.getContextPath() + "/cart");
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        handleAdd(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        handleAdd(request, response);
     }
 }

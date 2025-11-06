@@ -19,7 +19,7 @@
                         <li class="list-group-item d-flex align-items-center">
                             <div class="student-avatar mr-3" aria-hidden="true">BT</div>
                             <div>
-                                <div class="student-name">Bùi Trung Toán</div>
+                                <div class="student-name">Lê Trung Toán</div>
                                 <small class="text-muted"><i class="fa fa-birthday-cake"></i> 21/03/2004</small>
                             </div>
                         </li>
@@ -93,3 +93,5 @@
 <!-- Template Javascript -->
 <c:url var="mainJsUrl" value="/assets/js/main.js"/>
 <script src="${mainJsUrl}"></script>
+
+

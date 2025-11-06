@@ -73,6 +73,10 @@ public class CartServlet extends HttpServlet {
                 ok = cartService.updateQuantity(cartItemId, 0); // delete
             } else if ("clear".equalsIgnoreCase(action)) {
                 ok = cartService.clearCart(userId);
+            } else if ("changeSize".equalsIgnoreCase(action)) {
+                int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
+                String newSize = request.getParameter("size");
+                ok = cartService.changeSize(cartItemId, newSize, userId);
             }
         } catch (Exception ignore) {
             ok = false;

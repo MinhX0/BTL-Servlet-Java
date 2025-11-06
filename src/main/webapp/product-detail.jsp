@@ -7,6 +7,11 @@
 <head>
     <title>Chi tiết sản phẩm</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
+    <style>
+      /* Ensure top alignment between image and content */
+      .product-detail .product-detail-top { align-items: flex-start !important; }
+      .product-detail .product-content .title { margin-top: 0; }
+    </style>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/layout/header.jspf" %>
@@ -28,9 +33,9 @@
     <div class="container">
         <c:set var="v" value="${applicationScope.assetVersion}"/>
         <c:url var="phUrl" value="/assets/img/placeholder.jpg"/>
-        <div class="row">
+        <div class="row align-items-start product-detail-top">
             <div class="col-lg-9">
-                <div class="row align-items-center product-detail-top">
+                <div class="row">
                     <div class="col-md-5">
                         <div class="product-slider-single">
                             <c:choose>
@@ -95,6 +100,34 @@
 
                             <form class="quantity" method="post" action="${pageContext.request.contextPath}/add-to-cart">
                                 <input type="hidden" name="productId" value="${product.id}" />
+                                <!-- Size selector (above quantity) -->
+                                <div class="mb-3">
+                                    <label class="d-block font-weight-bold mb-2">Kích cỡ</label>
+                                    <div class="btn-group btn-group-toggle flex-wrap" data-toggle="buttons">
+                                        <label class="btn btn-outline-secondary m-1">
+                                            <input type="radio" name="size" value="39" autocomplete="off"> 39
+                                        </label>
+                                        <label class="btn btn-outline-secondary m-1 ">
+                                            <input type="radio" name="size" value="39" autocomplete="off"> 40
+                                        </label>
+                                        <label class="btn btn-outline-secondary m-1">
+                                            <input type="radio" name="size" value="41" autocomplete="off"> 41
+                                        </label>
+                                        <label class="btn btn-outline-secondary m-1">
+                                            <input type="radio" name="size" value="42" autocomplete="off"> 42
+                                        </label>
+                                        <label class="btn btn-outline-secondary m-1">
+                                            <input type="radio" name="size" value="43" autocomplete="off"> 43
+                                        </label>
+                                        <label class="btn btn-outline-secondary m-1">
+                                            <input type="radio" name="size" value="44" autocomplete="off"> 44
+                                        </label>
+                                        <label class="btn btn-outline-secondary m-1">
+                                            <input type="radio" name="size" value="45" autocomplete="off"> 45
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <h4>Số lượng:</h4>
                                 <div class="qty">
                                     <button type="button" class="btn-minus"><i class="fa fa-minus"></i></button>
@@ -103,8 +136,6 @@
                                 </div>
                                 <div class="action">
                                     <button type="submit" class="btn btn-primary" aria-label="Thêm vào giỏ"><i class="fa fa-cart-plus"></i></button>
-                                    <a href="#" class="btn btn-outline-secondary" aria-label="Yêu thích"><i class="fa fa-heart"></i></a>
-                                    <a href="#" class="btn btn-outline-secondary" aria-label="Xem nhanh"><i class="fa fa-search"></i></a>
                                 </div>
                             </form>
                         </div>

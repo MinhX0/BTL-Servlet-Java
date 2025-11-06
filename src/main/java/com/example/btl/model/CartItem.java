@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Carts",
-       uniqueConstraints = @UniqueConstraint(name = "idx_user_product", columnNames = {"user_id", "product_id"}))
+       uniqueConstraints = @UniqueConstraint(name = "idx_user_product_size", columnNames = {"user_id", "product_id", "size"}))
 public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +25,10 @@ public class CartItem {
     @Column(name = "date_added")
     private java.time.LocalDateTime dateAdded;
 
+    // Use different Java property name to avoid HQL SIZE keyword clash
+    @Column(name = "size", length = 10)
+    private String itemSize;
+
     public CartItem() { }
 
     public int getId() { return id; }
@@ -37,4 +41,7 @@ public class CartItem {
     public void setQuantity(int quantity) { this.quantity = quantity; }
     public java.time.LocalDateTime getDateAdded() { return dateAdded; }
     public void setDateAdded(java.time.LocalDateTime dateAdded) { this.dateAdded = dateAdded; }
+
+    public String getItemSize() { return itemSize; }
+    public void setItemSize(String itemSize) { this.itemSize = itemSize; }
 }

@@ -58,10 +58,11 @@ CREATE TABLE Carts
     user_id      INT NOT NULL,
     product_id   INT NOT NULL,
     quantity     INT NOT NULL CHECK (quantity > 0),
+    size         VARCHAR(10) NULL,
     date_added   DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (product_id) REFERENCES Products (product_id),
-    UNIQUE KEY idx_user_product (user_id, product_id)
+    UNIQUE KEY idx_user_product_size (user_id, product_id, size)
 );
 
 -- ----------------------------
@@ -89,6 +90,7 @@ CREATE TABLE Order_Items
     product_id        INT            NOT NULL,
     quantity          INT            NOT NULL,
     price_at_purchase DECIMAL(10, 2) NOT NULL,
+    size              VARCHAR(10)    NULL,
     FOREIGN KEY (order_id) REFERENCES Orders (order_id),
     FOREIGN KEY (product_id) REFERENCES Products (product_id)
 );
