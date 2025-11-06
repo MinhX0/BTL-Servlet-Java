@@ -8,7 +8,10 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 public class OrderDAO {
@@ -90,5 +93,108 @@ public class OrderDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public long countAll() {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Long> q = session.createQuery("SELECT COUNT(o.id) FROM Order o", Long.class);
+            Long r = q.uniqueResult();
+            return r != null ? r : 0L;
+        } catch (HibernateException e) {
+            System.out.println("Error counting orders: " + e.getMessage());
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    /**
+     * Sum revenue for orders that are considered completed (Delivered/Processing/Shipped)
+     */
+    public BigDecimal sumRevenue() {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<BigDecimal> q = session.createQuery(
+                "SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o WHERE o.status IN (:st1, :st2, :st3)",
+                BigDecimal.class
+            );
+            q.setParameter("st1", OrderStatus.Delivered);
+            q.setParameter("st2", OrderStatus.Shipped);
+            q.setParameter("st3", OrderStatus.Processing);
+            BigDecimal r = q.uniqueResult();
+            return r != null ? r : BigDecimal.ZERO;
+        } catch (HibernateException e) {
+            System.out.println("Error summing revenue: " + e.getMessage());
+            e.printStackTrace();
+            return BigDecimal.ZERO;
+        }
+    }
+
+    /** Reporting: monthly revenue (BigDecimal) for a given year (1..12). */
+    public List<Object[]> monthlyRevenue(int year) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Object[]> q = session.createQuery(
+                "SELECT MONTH(o.orderDate), COALESCE(SUM(o.totalAmount), 0) " +
+                "FROM Order o " +
+                "WHERE YEAR(o.orderDate) = :y AND o.status IN (:s1, :s2, :s3) " +
+                "GROUP BY MONTH(o.orderDate) ORDER BY MONTH(o.orderDate)",
+                Object[].class
+            );
+            q.setParameter("y", year);
+            q.setParameter("s1", OrderStatus.Delivered);
+            q.setParameter("s2", OrderStatus.Shipped);
+            q.setParameter("s3", OrderStatus.Processing);
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error fetching monthly revenue: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    /** Reporting: monthly order count for a given year (1..12). */
+    public List<Object[]> monthlyOrderCount(int year) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Object[]> q = session.createQuery(
+                "SELECT MONTH(o.orderDate), COUNT(o.id) " +
+                "FROM Order o " +
+                "WHERE YEAR(o.orderDate) = :y AND o.status NOT IN (:c1, :c2) " +
+                "GROUP BY MONTH(o.orderDate) ORDER BY MONTH(o.orderDate)",
+                Object[].class
+            );
+            q.setParameter("y", year);
+            q.setParameter("c1", OrderStatus.Cancelled);
+            q.setParameter("c2", OrderStatus.Refunded);
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error fetching monthly order count: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    /**
+     * Reporting: top N products by revenue within a year.
+     * Returns Object[] of {Integer productId, String name, BigDecimal revenue, Long qty}
+     */
+    public List<Object[]> topProductsByRevenue(int year, int limit) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Object[]> q = session.createQuery(
+                "SELECT p.id, p.name, COALESCE(SUM(oi.priceAtPurchase * oi.quantity), 0), COALESCE(SUM(oi.quantity), 0) " +
+                "FROM OrderItem oi JOIN oi.order o JOIN oi.product p " +
+                "WHERE YEAR(o.orderDate) = :y AND o.status IN (:s1, :s2, :s3) " +
+                "GROUP BY p.id, p.name " +
+                "ORDER BY COALESCE(SUM(oi.priceAtPurchase * oi.quantity), 0) DESC",
+                Object[].class
+            );
+            q.setParameter("y", year);
+            q.setParameter("s1", OrderStatus.Delivered);
+            q.setParameter("s2", OrderStatus.Shipped);
+            q.setParameter("s3", OrderStatus.Processing);
+            q.setMaxResults(Math.max(1, limit));
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error fetching top products by revenue: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
     }
 }

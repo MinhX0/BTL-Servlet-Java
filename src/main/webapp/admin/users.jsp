@@ -18,7 +18,6 @@
                 <select class="form-select" name="role">
                     <option value="">Tất cả vai trò</option>
                     <option value="CUSTOMER">Khách hàng</option>
-                    <option value="SELLER">Người bán</option>
                     <option value="ADMIN">Quản trị</option>
                 </select>
             </div>

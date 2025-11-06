@@ -1,28 +1,33 @@
-<%-- Admin sidebar --%>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<aside class="admin-sidebar">
-  <div class="list-group list-group-flush">
-    <a class="list-group-item list-group-item-action bg-transparent text-white" href="${pageContext.request.contextPath}/admin/dashboard">
-      <i class="fas fa-gauge me-2"></i> Bảng điều khiển
-    </a>
-    <a class="list-group-item list-group-item-action bg-transparent text-white" href="${pageContext.request.contextPath}/admin/users">
-      <i class="fas fa-users me-2"></i> Người dùng
-    </a>
-    <a class="list-group-item list-group-item-action bg-transparent text-white" href="${pageContext.request.contextPath}/admin/categories">
-      <i class="fas fa-tags me-2"></i> Danh mục
-    </a>
-    <a class="list-group-item list-group-item-action bg-transparent text-white" href="${pageContext.request.contextPath}/admin/products">
-      <i class="fas fa-box-open me-2"></i> Sản phẩm
-    </a>
-    <a class="list-group-item list-group-item-action bg-transparent text-white" href="${pageContext.request.contextPath}/admin/orders">
-      <i class="fas fa-clipboard-list me-2"></i> Đơn hàng
-    </a>
-    <a class="list-group-item list-group-item-action bg-transparent text-white disabled" href="#" title="Sắp có">
-      <i class="fas fa-chart-line me-2"></i> Báo cáo
-    </a>
-    <a class="list-group-item list-group-item-action bg-transparent text-white disabled" href="#" title="Sắp có">
-      <i class="fas fa-gear me-2"></i> Cài đặt
-    </a>
-  </div>
-</aside>
-
+    <%-- Admin sidebar --%>
+        <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+        <aside class="admin-sidebar">
+        <div class="list-group list-group-flush">
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/dashboard">
+        <i class="fas fa-gauge me-2"></i> Bảng điều khiển
+        </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/users">
+        <i class="fas fa-users me-2"></i> Người dùng
+        </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/categories">
+        <i class="fas fa-tags me-2"></i> Danh mục
+        </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/products">
+        <i class="fas fa-box-open me-2"></i> Sản phẩm
+        </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/orders">
+        <i class="fas fa-clipboard-list me-2"></i> Đơn hàng
+        </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/reports">
+        <i class="fas fa-chart-line me-2"></i> Báo cáo
+        </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white disabled" href="#" title="Sắp có">
+        <i class="fas fa-gear me-2"></i> Cài đặt
+        </a>
+        </div>
+        </aside>

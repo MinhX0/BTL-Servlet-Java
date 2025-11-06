@@ -28,7 +28,7 @@
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
-            <div class="display-6">0</div>
+            <div class="display-6">${kpiUsers}</div>
             <div class="text-muted">Người dùng</div>
           </div>
         </div>
@@ -36,7 +36,7 @@
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
-            <div class="display-6">0</div>
+            <div class="display-6">${kpiProducts}</div>
             <div class="text-muted">Sản phẩm</div>
           </div>
         </div>
@@ -44,7 +44,7 @@
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
-            <div class="display-6">0</div>
+            <div class="display-6">${kpiOrders}</div>
             <div class="text-muted">Đơn hàng</div>
           </div>
         </div>
@@ -52,7 +52,7 @@
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
-            <div class="display-6">0</div>
+            <div class="display-6"><span class="kpi-revenue" data-val="${kpiRevenue}"></span></div>
             <div class="text-muted">Doanh thu</div>
           </div>
         </div>
@@ -83,5 +83,21 @@
   </div>
 </div>
 <%@ include file="/WEB-INF/jsp/admin/layout/footer.jspf" %>
+<script>
+  // Format revenue nicely if available
+  (function(){
+    const el = document.querySelector('.kpi-revenue');
+    if(!el) return;
+    const val = el.getAttribute('data-val');
+    try {
+      const num = Number(val);
+      if (!isNaN(num)) {
+        el.textContent = new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+      } else {
+        el.textContent = val;
+      }
+    } catch(e){ el.textContent = val; }
+  })();
+</script>
 </body>
 </html>

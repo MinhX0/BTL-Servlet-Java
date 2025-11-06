@@ -255,4 +255,36 @@ public class UserDAO {
         }
         return false;
     }
+
+    /**
+     * Count all users
+     */
+    public long countAll() {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Long> q = session.createQuery("SELECT COUNT(u.id) FROM User u", Long.class);
+            Long r = q.uniqueResult();
+            return r != null ? r : 0L;
+        } catch (HibernateException e) {
+            System.out.println("Error counting users: " + e.getMessage());
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
+    /**
+     * Count users by role
+     */
+    public long countByRole(Role role) {
+        if (role == null) return 0L;
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Long> q = session.createQuery("SELECT COUNT(u.id) FROM User u WHERE u.role = :role", Long.class);
+            q.setParameter("role", role);
+            Long r = q.uniqueResult();
+            return r != null ? r : 0L;
+        } catch (HibernateException e) {
+            System.out.println("Error counting users by role: " + e.getMessage());
+            e.printStackTrace();
+            return 0L;
+        }
+    }
 }

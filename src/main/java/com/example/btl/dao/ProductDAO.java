@@ -255,4 +255,16 @@ public class ProductDAO {
             return List.of();
         }
     }
+
+    public long countAll() {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Long> q = session.createQuery("SELECT COUNT(p.id) FROM Product p", Long.class);
+            Long r = q.uniqueResult();
+            return r != null ? r : 0L;
+        } catch (HibernateException e) {
+            System.out.println("Error counting products: " + e.getMessage());
+            e.printStackTrace();
+            return 0L;
+        }
+    }
 }
