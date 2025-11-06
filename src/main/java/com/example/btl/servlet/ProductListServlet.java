@@ -46,6 +46,16 @@ public class ProductListServlet extends HttpServlet {
         // Sorting param: price_asc | price_desc | date_asc | date_desc (default)
         String sortParam = request.getParameter("sort");
 
+        // New: price range params (VND, integers)
+        Long minPrice = parseLongOrNull(request.getParameter("minPrice"));
+        Long maxPrice = parseLongOrNull(request.getParameter("maxPrice"));
+        if (minPrice != null && minPrice < 0) minPrice = 0L;
+        if (maxPrice != null && maxPrice < 0) maxPrice = null; // treat invalid negative as unset
+        if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+            // swap to be forgiving
+            long tmp = minPrice; minPrice = maxPrice; maxPrice = tmp;
+        }
+
         int page = 1;
         int size = 20;
         try { if (pageParam != null) page = Math.max(1, Integer.parseInt(pageParam)); } catch (NumberFormatException ignored) {}
@@ -61,12 +71,12 @@ public class ProductListServlet extends HttpServlet {
         // Load categories for sidebar
         List<Category> categories = categoryService.listActive();
 
-        // Count total and fetch a page
-        long total = productService.searchCount(categoryId, keyWordParam);
+        // Count total and fetch a page with price range
+        long total = productService.searchCount(categoryId, keyWordParam, minPrice, maxPrice);
         int totalPages = (int) Math.max(1, Math.ceil(total / (double) size));
         int currentPage = Math.min(page, totalPages);
         int offset = (currentPage - 1) * size;
-        List<Product> products = productService.searchPaged(categoryId, keyWordParam, offset, size, sortParam);
+        List<Product> products = productService.searchPaged(categoryId, keyWordParam, minPrice, maxPrice, offset, size, sortParam);
 
         // Attributes for view
         request.setAttribute("products", products);
@@ -78,11 +88,17 @@ public class ProductListServlet extends HttpServlet {
         request.setAttribute("keyword", keyWordParam);
         if (categoryId != null) request.setAttribute("categoryId", categoryId);
         if (sortParam != null) request.setAttribute("sort", sortParam);
+        if (minPrice != null) request.setAttribute("minPrice", minPrice);
+        if (maxPrice != null) request.setAttribute("maxPrice", maxPrice);
 
         try {
             request.getRequestDispatcher("/product-list.jsp").forward(request, response);
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private Long parseLongOrNull(String s) {
+        try { return (s == null || s.isBlank()) ? null : Long.parseLong(s.trim()); } catch (Exception e) { return null; }
     }
 }

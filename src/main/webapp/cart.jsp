@@ -9,6 +9,8 @@
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
     <style>
       .size-select { max-height: 120px; overflow-y: auto; }
+      .price-old { color: #888; text-decoration: line-through; font-size: .9rem; }
+      .price-new { color: #d0021b; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -37,7 +39,7 @@
                             <c:when test="${not empty cartItems}">
                                 <c:set var="subTotal" value="0"/>
                                 <c:forEach var="ci" items="${cartItems}" varStatus="st">
-                                    <c:set var="unitPrice" value="${ci.product.basePrice}"/>
+                                    <c:set var="unitPrice" value="${ci.product.effectivePrice}"/>
                                     <c:set var="lineTotal" value="${unitPrice * ci.quantity}"/>
                                     <tr>
                                         <td>
@@ -74,7 +76,17 @@
                                                 </select>
                                             </form>
                                         </td>
-                                        <td><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true"/> đ</td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${ci.product.salePrice != null && ci.product.salePrice > 0}">
+                                                    <div class="price-old"><fmt:formatNumber value="${ci.product.basePrice}" type="number" groupingUsed="true"/> đ</div>
+                                                    <div class="price-new"><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true"/> đ</div>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <div><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true"/> đ</div>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
                                         <td>
                                             <form method="post" action="${pageContext.request.contextPath}/cart" class="d-inline">
                                                 <input type="hidden" name="action" value="update"/>

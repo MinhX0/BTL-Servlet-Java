@@ -7,6 +7,11 @@
 <head>
     <title>E Shop - Sản phẩm</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
+    <style>
+      .sidebar-widget .form-control { height: 38px; }
+      .sidebar-widget .btn { height: 38px; line-height: 1; }
+      .sidebar-widget .title { margin-bottom: .5rem; }
+    </style>
 </head>
 <body>
 <%@ include file="/WEB-INF/jsp/layout/header.jspf" %>
@@ -23,7 +28,7 @@
 <div class="product-view">
     <div class="container">
         <div class="row">
-            <!-- Left sidebar: categories -->
+            <!-- Left sidebar: categories + search + sort + price range -->
             <div class="col-md-3">
                 <div class="sidebar-widget category">
                     <h2 class="title">Danh mục</h2>
@@ -37,6 +42,8 @@
                                         <c:param name="size" value="${size}"/>
                                         <c:if test="${not empty keyword}"><c:param name="q" value="${keyword}"/></c:if>
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
+                                        <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                        <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
                                     </c:url>
                                     <li>
                                         <a href="${catUrl}">${cat.name}</a>
@@ -48,6 +55,81 @@
                             </c:otherwise>
                         </c:choose>
                     </ul>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h2 class="title">Tìm kiếm</h2>
+                    <c:set var="kw" value="${param.q != null ? param.q : keyword}"/>
+                    <c:url var="searchAction" value="/products"/>
+                    <form method="get" action="${searchAction}" class="d-flex">
+                        <input type="hidden" name="page" value="1"/>
+                        <input type="hidden" name="size" value="${size}"/>
+                        <c:if test="${not empty categoryId}"><input type="hidden" name="categoryId" value="${categoryId}"/></c:if>
+                        <c:if test="${not empty sort}"><input type="hidden" name="sort" value="${sort}"/></c:if>
+                        <c:if test="${not empty minPrice}"><input type="hidden" name="minPrice" value="${minPrice}"/></c:if>
+                        <c:if test="${not empty maxPrice}"><input type="hidden" name="maxPrice" value="${maxPrice}"/></c:if>
+                        <input type="text" name="q" value="${fn:escapeXml(kw)}" placeholder="Tìm kiếm sản phẩm" class="form-control"/>
+                        <button type="submit" class="btn btn-primary ml-2"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h2 class="title">Sắp xếp theo giá</h2>
+                    <div class="product-short">
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Chọn</a>
+                            <div class="dropdown-menu">
+                                <c:url var="sortNewest" value="/products">
+                                    <c:param name="page" value="1"/>
+                                    <c:param name="size" value="${size}"/>
+                                    <c:param name="sort" value="date_desc"/>
+                                    <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
+                                    <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
+                                    <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                    <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
+                                </c:url>
+                                <c:url var="sortPriceAsc" value="/products">
+                                    <c:param name="page" value="1"/>
+                                    <c:param name="size" value="${size}"/>
+                                    <c:param name="sort" value="price_asc"/>
+                                    <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
+                                    <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
+                                    <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                    <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
+                                </c:url>
+                                <c:url var="sortPriceDesc" value="/products">
+                                    <c:param name="page" value="1"/>
+                                    <c:param name="size" value="${size}"/>
+                                    <c:param name="sort" value="price_desc"/>
+                                    <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
+                                    <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
+                                    <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                    <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
+                                </c:url>
+                                <a href="${sortNewest}" class="dropdown-item ${sort == 'date_desc' || empty sort ? 'active' : ''}">Mới nhất</a>
+                                <a href="${sortPriceAsc}" class="dropdown-item ${sort == 'price_asc' ? 'active' : ''}">Giá: Thấp đến Cao</a>
+                                <a href="${sortPriceDesc}" class="dropdown-item ${sort == 'price_desc' ? 'active' : ''}">Giá: Cao đến Thấp</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h2 class="title">Khoảng giá (VNĐ)</h2>
+                    <c:url var="priceAction" value="/products"/>
+                    <form method="get" action="${priceAction}">
+                        <input type="hidden" name="page" value="1"/>
+                        <input type="hidden" name="size" value="${size}"/>
+                        <c:if test="${not empty kw}"><input type="hidden" name="q" value="${kw}"/></c:if>
+                        <c:if test="${not empty categoryId}"><input type="hidden" name="categoryId" value="${categoryId}"/></c:if>
+                        <c:if test="${not empty sort}"><input type="hidden" name="sort" value="${sort}"/></c:if>
+                        <div class="input-group mb-2">
+                            <input type="number" min="0" step="1000" name="minPrice" class="form-control" placeholder="Từ" value="${minPrice}">
+                            <span class="input-group-text">-</span>
+                            <input type="number" min="0" step="1000" name="maxPrice" class="form-control" placeholder="Đến" value="${maxPrice}">
+                        </div>
+                        <button type="submit" class="btn btn-outline-primary w-100">Lọc</button>
+                    </form>
                 </div>
 
                 <div class="sidebar-widget image">
@@ -63,62 +145,6 @@
             <!-- Right content: products grid -->
             <div class="col-md-9">
                 <div class="row">
-                    <div class="col-lg-12">
-                        <div class="row">
-                            <div class="col-md-8">
-                                <div class="product-search">
-                                    <c:set var="kw" value="${param.q != null ? param.q : keyword}"/>
-                                    <c:url var="searchAction" value="/products">
-                                        <c:if test="${not empty categoryId}">
-                                            <c:param name="categoryId" value="${categoryId}"/>
-                                        </c:if>
-                                        <c:param name="size" value="${size}"/>
-                                        <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
-                                    </c:url>
-                                    <form method="get" action="${searchAction}" class="d-flex">
-                                        <input type="text" name="q" value="${fn:escapeXml(kw)}" placeholder="Tìm kiếm sản phẩm" class="form-control"/>
-                                        <button type="submit" class="btn btn-primary ml-2"><i class="fa fa-search"></i></button>
-                                    </form>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="product-short">
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sắp xếp</a>
-                                        <div class="dropdown-menu dropdown-menu-right">
-                                            <c:url var="sortNewest" value="/products">
-                                                <c:param name="page" value="1"/>
-                                                <c:param name="size" value="${size}"/>
-                                                <c:param name="sort" value="date_desc"/>
-                                                <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
-                                                <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
-                                            </c:url>
-                                            <c:url var="sortPriceAsc" value="/products">
-                                                <c:param name="page" value="1"/>
-                                                <c:param name="size" value="${size}"/>
-                                                <c:param name="sort" value="price_asc"/>
-                                                <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
-                                                <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
-                                            </c:url>
-                                            <c:url var="sortPriceDesc" value="/products">
-                                                <c:param name="page" value="1"/>
-                                                <c:param name="size" value="${size}"/>
-                                                <c:param name="sort" value="price_desc"/>
-                                                <c:if test="${not empty kw}"><c:param name="q" value="${kw}"/></c:if>
-                                                <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
-                                            </c:url>
-                                            <a href="${sortNewest}" class="dropdown-item ${sort == 'date_desc' || empty sort ? 'active' : ''}">Mới nhất</a>
-                                            <a href="${sortPriceAsc}" class="dropdown-item ${sort == 'price_asc' ? 'active' : ''}">Giá: Thấp đến Cao</a>
-                                            <a href="${sortPriceDesc}" class="dropdown-item ${sort == 'price_desc' ? 'active' : ''}">Giá: Cao đến Thấp</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product grid -->
                     <c:choose>
                         <c:when test="${not empty products}">
                             <c:forEach var="p" items="${products}">
@@ -145,9 +171,7 @@
                                                 <c:set var="discountPercent" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
                                                 <span class="discount-badge">-${discountPercent}%</span>
                                             </c:if>
-                                            <c:url var="imgUrl" value="${resolvedImg}"/>
                                             <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
-                                            <!-- Avoid double-prefixing context path, use resolvedImg directly -->
                                             <a href="${detailUrl}"><img src="${resolvedImg}" alt="${fn:escapeXml(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='${placeholderUrl}'"></a>
                                             <div class="product-action">
                                                 <c:url var="addToCartUrl" value="/add-to-cart">
@@ -158,19 +182,11 @@
                                         </div>
                                         <div class="product-content">
                                             <div class="title"><a href="${detailUrl}">${p.name}</a></div>
-                                            <div class="ratting">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
                                             <div class="price">
                                                 <c:choose>
                                                     <c:when test="${not empty p.salePrice && not empty p.basePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                                        <span class="price-new">
-                                                            <fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ
-                                                        </span>
+                                                        <span class="price-old"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                        <span class="price-new"><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ</span>
                                                     </c:when>
                                                     <c:otherwise>
                                                         <span class="price-new"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
@@ -188,7 +204,6 @@
                             </div>
                         </c:otherwise>
                     </c:choose>
-
                 </div>
 
                 <div class="col-lg-12">
@@ -205,6 +220,8 @@
                                         <c:if test="${not empty keyword}"><c:param name="q" value="${keyword}"/></c:if>
                                         <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
+                                        <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                        <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
                                     </c:url>
                                     <a class="page-link" href="${prevUrl}" tabindex="-1">Trước</a>
                                 </li>
@@ -216,6 +233,8 @@
                                         <c:if test="${not empty keyword}"><c:param name="q" value="${keyword}"/></c:if>
                                         <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
+                                        <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                        <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
                                     </c:url>
                                     <li class="page-item ${i == page ? 'active' : ''}"><a class="page-link" href="${pUrl}">${i}</a></li>
                                 </c:forEach>
@@ -227,6 +246,8 @@
                                         <c:if test="${not empty keyword}"><c:param name="q" value="${keyword}"/></c:if>
                                         <c:if test="${not empty categoryId}"><c:param name="categoryId" value="${categoryId}"/></c:if>
                                         <c:if test="${not empty sort}"><c:param name="sort" value="${sort}"/></c:if>
+                                        <c:if test="${not empty minPrice}"><c:param name="minPrice" value="${minPrice}"/></c:if>
+                                        <c:if test="${not empty maxPrice}"><c:param name="maxPrice" value="${maxPrice}"/></c:if>
                                     </c:url>
                                     <a class="page-link" href="${nextUrl}">Tiếp</a>
                                 </li>

@@ -29,6 +29,14 @@ public class ProductService {
         return productDAO.searchPaged(categoryId, name, offset, limit, sort);
     }
 
+    // New: price range aware
+    public long searchCount(Integer categoryId, String name, Long minPrice, Long maxPrice) {
+        return productDAO.searchCount(categoryId, name, minPrice, maxPrice);
+    }
+    public List<Product> searchPaged(Integer categoryId, String name, Long minPrice, Long maxPrice, int offset, int limit, String sort) {
+        return productDAO.searchPaged(categoryId, name, minPrice, maxPrice, offset, limit, sort);
+    }
+
     public boolean create(Product p) { return productDAO.create(p); }
     public boolean update(Product p) { return productDAO.update(p); }
     public boolean delete(int id) { return productDAO.delete(id); }

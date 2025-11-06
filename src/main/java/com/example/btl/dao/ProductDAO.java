@@ -132,6 +132,37 @@ public class ProductDAO {
         }
     }
 
+    // Count total products matching filters (extended with price range)
+    public long searchCount(Integer categoryId, String name, Long minPrice, Long maxPrice) {
+        StringBuilder hql = new StringBuilder("SELECT COUNT(p.id) FROM Product p WHERE 1=1");
+        boolean hasName = name != null && !name.trim().isEmpty();
+        if (categoryId != null) {
+            hql.append(" AND p.category.id = :cid");
+        }
+        if (hasName) {
+            hql.append(" AND lower(p.name) LIKE :pattern");
+        }
+        if (minPrice != null) {
+            hql.append(" AND COALESCE(p.salePrice, p.basePrice) >= :minPrice");
+        }
+        if (maxPrice != null) {
+            hql.append(" AND COALESCE(p.salePrice, p.basePrice) <= :maxPrice");
+        }
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Long> q = session.createQuery(hql.toString(), Long.class);
+            if (categoryId != null) q.setParameter("cid", categoryId);
+            if (hasName) q.setParameter("pattern", "%" + name.trim().toLowerCase() + "%");
+            if (minPrice != null) q.setParameter("minPrice", minPrice);
+            if (maxPrice != null) q.setParameter("maxPrice", maxPrice);
+            Long result = q.uniqueResult();
+            return result != null ? result : 0L;
+        } catch (HibernateException e) {
+            System.out.println("Error counting products (price range): " + e.getMessage());
+            e.printStackTrace();
+            return 0L;
+        }
+    }
+
     // Paged search with combined filters (legacy signature keeps default ordering)
     public List<Product> searchPaged(Integer categoryId, String name, int offset, int limit) {
         // Delegate to new method with default sort
@@ -173,6 +204,47 @@ public class ProductDAO {
             return q.getResultList();
         } catch (HibernateException e) {
             System.out.println("Error fetching paged products: " + e.getMessage());
+            e.printStackTrace();
+            return List.of();
+        }
+    }
+
+    // Paged search with combined filters and sorting (extended with price range)
+    public List<Product> searchPaged(Integer categoryId, String name, Long minPrice, Long maxPrice, int offset, int limit, String sort) {
+        StringBuilder hql = new StringBuilder("SELECT p FROM Product p LEFT JOIN FETCH p.category WHERE 1=1");
+        boolean hasName = name != null && !name.trim().isEmpty();
+        if (categoryId != null) {
+            hql.append(" AND p.category.id = :cid");
+        }
+        if (hasName) {
+            hql.append(" AND lower(p.name) LIKE :pattern");
+        }
+        if (minPrice != null) {
+            hql.append(" AND COALESCE(p.salePrice, p.basePrice) >= :minPrice");
+        }
+        if (maxPrice != null) {
+            hql.append(" AND COALESCE(p.salePrice, p.basePrice) <= :maxPrice");
+        }
+        String orderBy;
+        String s = sort == null ? "" : sort.trim().toLowerCase();
+        switch (s) {
+            case "price_asc": orderBy = "COALESCE(p.salePrice, p.basePrice) ASC"; break;
+            case "price_desc": orderBy = "COALESCE(p.salePrice, p.basePrice) DESC"; break;
+            case "date_asc": orderBy = "p.dateAdded ASC"; break;
+            default: orderBy = "p.dateAdded DESC"; // default newest first
+        }
+        hql.append(" ORDER BY ").append(orderBy).append(", p.id DESC");
+        try (Session session = HibernateUtil.getSession()) {
+            Query<Product> q = session.createQuery(hql.toString(), Product.class);
+            if (categoryId != null) q.setParameter("cid", categoryId);
+            if (hasName) q.setParameter("pattern", "%" + name.trim().toLowerCase() + "%");
+            if (minPrice != null) q.setParameter("minPrice", minPrice);
+            if (maxPrice != null) q.setParameter("maxPrice", maxPrice);
+            q.setFirstResult(Math.max(0, offset));
+            q.setMaxResults(Math.max(1, limit));
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error fetching paged products (price range): " + e.getMessage());
             e.printStackTrace();
             return List.of();
         }
