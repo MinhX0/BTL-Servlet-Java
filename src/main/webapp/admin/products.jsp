@@ -1,7 +1,7 @@
-        </div>
+</div>
     </div>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ include file="/WEB-INF/jsp/admin/layout/footer.jspf" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -28,10 +28,24 @@
                             <tr>
                                 <td>${p.id}</td>
                                 <td>${p.name}</td>
-                                <td><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
+                                            <span class="text-decoration-line-through text-muted"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                            <br/>
+                                            <strong><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ</strong>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
                                 <td>${p.category.name}</td>
                                 <td>
-                                    <a class="btn btn-sm btn-outline-secondary disabled" href="#" title="Sửa (sắp có)">Sửa</a>
+                                    <c:url var="editUrl" value="/admin/products/edit">
+                                        <c:param name="id" value="${p.id}"/>
+                                    </c:url>
+                                    <a class="btn btn-sm btn-outline-secondary" href="${editUrl}">Sửa</a>
                                     <a class="btn btn-sm btn-outline-danger disabled" href="#" title="Xóa (sắp có)">Xóa</a>
                                 </td>
                             </tr>
@@ -40,7 +54,9 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
 </div>
-<%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
+<%@ include file="/WEB-INF/jsp/admin/layout/footer.jspf" %>
 </body>
 </html>

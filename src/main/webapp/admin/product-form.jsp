@@ -14,7 +14,8 @@
     <h3>Thêm sản phẩm</h3>
     <div class="card mt-3">
       <div class="card-body">
-        <form method="post" action="${pageContext.request.contextPath}/admin/products/new">
+        <!-- Enable file upload -->
+        <form method="post" action="${pageContext.request.contextPath}/admin/products/new" enctype="multipart/form-data">
             <div class="mb-3">
                 <label class="form-label">Tên</label>
                 <input type="text" name="name" class="form-control" required>
@@ -24,8 +25,14 @@
                 <textarea name="description" class="form-control" rows="3"></textarea>
             </div>
             <div class="mb-3">
-                <label class="form-label">Ảnh chính (URL)</label>
-                <input type="text" name="mainImageUrl" class="form-control">
+                <label class="form-label">Ảnh sản phẩm</label>
+                <input type="file" name="mainImageFile" accept="image/*" class="form-control">
+                <div class="form-text">Chọn ảnh để tải lên. Nếu bỏ trống sẽ dùng placeholder.</div>
+            </div>
+            <!-- (Optional) allow manual URL as fallback -->
+            <div class="mb-3">
+                <label class="form-label">Hoặc URL ảnh (tuỳ chọn)</label>
+                <input type="text" name="mainImageUrl" class="form-control" placeholder="https://...">
             </div>
             <div class="mb-3">
                 <label class="form-label">Giá gốc (VND)</label>
