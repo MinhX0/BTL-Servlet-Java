@@ -1,0 +1,11 @@
+# Example local mail configuration (DO NOT COMMIT REAL SECRETS)
+# Copy this file to mail.properties.local and fill with your values.
+# Ensure mail.properties.local is ignored by git.
+# Put this in src/resources
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=youraddress@gmail.com
+MAIL_PASSWORD=your_16_char_app_password
+MAIL_FROM=youraddress@gmail.com
+MAIL_DEBUG=true
+
