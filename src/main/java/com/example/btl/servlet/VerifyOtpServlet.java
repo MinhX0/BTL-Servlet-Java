@@ -43,6 +43,18 @@ public class VerifyOtpServlet extends HttpServlet {
         String purpose = request.getParameter("purpose");
         String code = request.getParameter("code");
         if (purpose == null || purpose.isBlank()) purpose = "REGISTER";
+        if (code != null) code = code.trim();
+
+        // Server-side format validation (must be exactly 6 digits)
+        if (code == null || !code.matches("^[0-9]{6}$")) {
+            request.setAttribute("otpError", "Mã OTP phải gồm đúng 6 chữ số.");
+            try {
+                request.getRequestDispatcher("/WEB-INF/jsp/otp/verify.jsp").forward(request, response);
+            } catch (ServletException e) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+            return;
+        }
 
         boolean ok = otpService.verifyAndConsume(user, purpose, code);
         if (!ok) {
@@ -62,4 +74,3 @@ public class VerifyOtpServlet extends HttpServlet {
         response.sendRedirect(next != null ? next : (request.getContextPath() + "/index"));
     }
 }
-
