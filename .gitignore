@@ -56,3 +56,4 @@ build/
 *.backup
 
 *.md
+/src/main/resources/mail.properties.local
