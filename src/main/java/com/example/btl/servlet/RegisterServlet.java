@@ -72,8 +72,8 @@ public class RegisterServlet extends HttpServlet {
 
         // Fire OTP to email
         HttpSession session = request.getSession(true);
-        session.setAttribute("user", newUser);
-        session.setAttribute("userId", newUser.getId());
+        // Do NOT set full user object yet (avoid logged-in state)
+        session.setAttribute("pendingUserId", newUser.getId());
         String base = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
         otpService.sendOtp(newUser, "REGISTER", 10, base);
         // After verify, go to index
