@@ -2,6 +2,9 @@ package com.example.btl.servlet;
 
 import com.example.btl.model.User;
 import com.example.btl.dao.UserDAO;
+import com.example.btl.dao.OtpTokenDAO;
+import com.example.btl.service.EmailService;
+import com.example.btl.service.OtpService;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
@@ -40,44 +43,44 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Validate input
         if (username == null || username.trim().isEmpty() ||
             password == null || password.trim().isEmpty()) {
             request.setAttribute("error", "Username and password are required");
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-            return;
-        }
+            try { request.getRequestDispatcher("/login.jsp").forward(request, response);} catch (Exception e) { e.printStackTrace(); response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);} return; }
 
-        // Authenticate user
+        // Try normal authentication (only returns active users)
         User user = userDAO.authenticateUser(username, password);
-
         if (user != null) {
-            // Create session and store user
             HttpSession session = request.getSession(true);
             session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
             session.setAttribute("username", user.getUsername());
             session.setAttribute("role", user.getRole());
             session.setAttribute("name", user.getName());
-            session.setMaxInactiveInterval(30 * 60); // 30 minutes
-
-            // Navigate admin to dashboard, others to index
+            session.setMaxInactiveInterval(30 * 60);
             String redirect = user.isAdmin() ? "/admin" : "/index";
             response.sendRedirect(request.getContextPath() + redirect);
-        } else {
-            // Authentication failed
-            request.setAttribute("error", "Invalid username or password");
-            try {
-                request.getRequestDispatcher("/login.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        // If authentication failed, check if the account exists but is inactive (awaiting OTP)
+        User inactive = userDAO.findByUsernameOrEmail(username);
+        if (inactive != null && (inactive.getActive() != null && !inactive.getActive())) {
+            // Verify password manually since authenticateUser filters inactive users
+            if (com.example.btl.util.PasswordUtil.verifyPassword(password, inactive.getPassword())) {
+                // Resend OTP and redirect to verify page
+                OtpService otpService = new OtpService(new OtpTokenDAO(), new EmailService());
+                String base = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
+                otpService.sendOtp(inactive, "REGISTER", 10, base);
+                HttpSession session = request.getSession(true);
+                session.setAttribute("pendingUserId", inactive.getId());
+                session.setAttribute("otpNext:REGISTER", request.getContextPath() + "/index");
+                response.sendRedirect(request.getContextPath() + "/verify-otp?purpose=REGISTER");
+                return;
             }
         }
-    }
+
+        // Authentication failed normally
+        request.setAttribute("error", "Invalid username or password");
+        try { request.getRequestDispatcher("/login.jsp").forward(request, response);} catch (Exception e) { e.printStackTrace(); response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);} }
 }

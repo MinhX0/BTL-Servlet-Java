@@ -49,9 +49,16 @@ public class OtpService {
         return otpTokenDAO.consume(t);
     }
 
+    public OtpToken verifyAndConsumeByCode(String purpose, String code) {
+        if (code == null || code.isBlank()) return null;
+        OtpToken t = otpTokenDAO.findByCodeAndPurpose(code.trim(), purpose);
+        if (t == null) return null;
+        if (t.isConsumed() || t.isExpired()) return null;
+        return otpTokenDAO.consume(t) ? t : null;
+    }
+
     private String escape(String s) {
         if (s == null) return "";
         return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
     }
 }
-

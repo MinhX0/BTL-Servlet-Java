@@ -51,6 +51,19 @@ public class OtpTokenDAO {
         }
     }
 
+    public OtpToken findByCodeAndPurpose(String code, String purpose) {
+        try (Session s = HibernateUtil.getSession()) {
+            Query<OtpToken> q = s.createQuery(
+                    "FROM OtpToken WHERE code = :c AND purpose = :p ORDER BY id DESC",
+                    OtpToken.class
+            );
+            q.setParameter("c", code);
+            q.setParameter("p", purpose);
+            q.setMaxResults(1);
+            return q.uniqueResult();
+        }
+    }
+
     public boolean consume(OtpToken token) {
         Transaction tx = null;
         try (Session s = HibernateUtil.getSession()) {
@@ -81,4 +94,3 @@ public class OtpTokenDAO {
         }
     }
 }
-

@@ -287,4 +287,19 @@ public class UserDAO {
             return 0L;
         }
     }
+
+    /**
+     * Find user by username or email without filtering by active flag.
+     */
+    public User findByUsernameOrEmail(String identifier) {
+        try (Session session = HibernateUtil.getSession()) {
+            Query<User> q = session.createQuery("FROM User WHERE username = :id OR email = :id", User.class);
+            q.setParameter("id", identifier);
+            return q.uniqueResult();
+        } catch (HibernateException e) {
+            System.out.println("Error fetching user by identifier: " + e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
