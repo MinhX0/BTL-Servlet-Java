@@ -8,9 +8,15 @@
     <title>Chi tiết sản phẩm</title>
     <%@ include file="/WEB-INF/jsp/layout/head.jspf" %>
     <style>
-      /* Ensure top alignment between image and content */
       .product-detail .product-detail-top { align-items: flex-start !important; }
       .product-detail .product-content .title { margin-top: 0; }
+      .review-item { border-bottom: 1px solid #eee; padding: 12px 0; }
+      .review-item:last-child { border-bottom: none; }
+      .rating-stars i { color: #f8b500; }
+      .rating-stars .inactive { color: #ccc; }
+      .avg-stars i { font-size: 18px; }
+      .user-rate-stars i { cursor: pointer; font-size: 22px; transition: transform .15s; }
+      .user-rate-stars i:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -64,12 +70,45 @@
                     <div class="col-md-7">
                         <div class="product-content">
                             <div class="title"><h2>${empty product ? 'Sản phẩm' : fn:escapeXml(product.name)}</h2></div>
-                            <div class="ratting">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                            <!-- Pre-format avgRating for use in attribute (EL cannot call fmt tag as function) -->
+                            <fmt:formatNumber value="${avgRating}" maxFractionDigits="1" var="avgRatingOneDec"/>
+                            <!-- Dynamic average rating stars -->
+                            <div class="ratting avg-stars" title="Điểm trung bình: ${avgRatingOneDec} / 5">
+                                <c:set var="avg" value="${avgRating != null ? avgRating : 0}"/>
+                                <c:choose>
+                                    <c:when test="${avg >= 5}">
+                                        <c:set var="fullStars" value="5"/>
+                                        <c:set var="hasHalf" value="false"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <!-- floor using mod: base = avg - (avg mod 1) -->
+                                        <c:set var="base" value="${avg - (avg mod 1)}"/>
+                                        <!-- our rule: any decimal shows .5 (e.g., 4.1 -> 4.5, 4.9 -> 4.5) -->
+                                        <c:set var="fullStars" value="${base}"/>
+                                        <c:set var="hasHalf" value="${avg > base}"/>
+                                    </c:otherwise>
+                                </c:choose>
+
+                                <!-- render full stars -->
+                                <c:forEach begin="1" end="${fullStars}" var="i">
+                                    <i class="fa fa-star"></i>
+                                </c:forEach>
+                                <!-- render half star if any -->
+                                <c:if test="${hasHalf}">
+                                    <i class="fa fa-star-half-o"></i>
+                                </c:if>
+                                <!-- render empty stars to complete 5 -->
+                                <c:set var="empties" value="${5 - fullStars - (hasHalf ? 1 : 0)}"/>
+                                <c:forEach begin="1" end="${empties}" var="i">
+                                    <i class="fa fa-star-o"></i>
+                                </c:forEach>
+
+                                <c:if test="${reviewCount > 0}">
+                                    <span class="ms-2">(<fmt:formatNumber value="${avgRating}" maxFractionDigits="1"/> / 5 từ ${reviewCount} đánh giá)</span>
+                                </c:if>
+                                <c:if test="${reviewCount == 0}">
+                                    <span class="ms-2">Chưa có đánh giá</span>
+                                </c:if>
                             </div>
                             <div class="price">
                                 <c:choose>
@@ -188,43 +227,56 @@
                                 </ul>
                             </div>
                             <div id="reviews" class="container tab-pane fade"><br>
+                                <h4>Đánh giá khách hàng</h4>
+                                <c:choose>
+                                    <c:when test="${reviewCount > 0}">
+                                        <p><strong>${reviewCount}</strong> đánh giá - Điểm trung bình: <strong><fmt:formatNumber value="${avgRating}" maxFractionDigits="1"/> / 5</strong></p>
+                                    </c:when>
+                                    <c:otherwise><p>Chưa có đánh giá nào cho sản phẩm này.</p></c:otherwise>
+                                </c:choose>
                                 <div class="reviews-submitted">
-                                    <div class="reviewer">Khách hàng - <span><fmt:formatDate value="${nowDate}" pattern="dd/MM/yyyy"/></span></div>
-                                    <div class="ratting">
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                        <i class="fa fa-star"></i>
-                                    </div>
-                                    <p>
-                                        Chưa có đánh giá.
-                                    </p>
+                                    <c:forEach var="r" items="${reviews}">
+                                        <div class="review-item">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="reviewer"><strong>${fn:escapeXml(r.user.name)}</strong> - <span>${r.createdAtStr}</span></div>
+                                                <div class="rating-stars">
+                                                    <c:forEach begin="1" end="5" var="star">
+                                                        <i class="fa <c:out value='${star <= r.rating ? "fa-star" : "fa-star inactive"}'/>"></i>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2">${fn:escapeXml(r.content)}</div>
+                                        </div>
+                                    </c:forEach>
                                 </div>
-                                <div class="reviews-submit">
-                                    <h4>Gửi đánh giá:</h4>
-                                    <div class="ratting">
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
-                                        <i class="fa fa-star-o"></i>
+                                <c:if test="${not empty sessionScope.user}">
+                                    <div class="reviews-submit mt-4">
+                                        <h5>${userReviewRating == null ? 'Gửi đánh giá của bạn' : 'Cập nhật đánh giá của bạn'}</h5>
+                                        <form method="post" action="${pageContext.request.contextPath}/reviews" class="row g-3" id="reviewForm">
+                                            <input type="hidden" name="productId" value="${product.id}" />
+                                            <input type="hidden" name="rating" id="ratingInput" value="${userReviewRating != null ? userReviewRating : 5}" />
+                                            <div class="col-12">
+                                                <label class="form-label">Điểm:</label>
+                                                <div class="user-rate-stars" id="userRateStars">
+                                                    <c:set var="initial" value="${userReviewRating != null ? userReviewRating : 5}"/>
+                                                    <c:forEach begin="1" end="5" var="star">
+                                                        <i data-val="${star}" class="fa <c:out value='${star <= initial ? "fa-star" : "fa-star-o"}'/>"></i>
+                                                    </c:forEach>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <label for="content" class="form-label">Nội dung đánh giá</label>
+                                                <textarea name="content" id="content" rows="3" class="form-control" placeholder="Cảm nhận của bạn..." required></textarea>
+                                            </div>
+                                            <div class="col-12">
+                                                <button type="submit" class="btn btn-primary">${userReviewRating == null ? 'Gửi đánh giá' : 'Cập nhật đánh giá'}</button>
+                                            </div>
+                                        </form>
                                     </div>
-                                    <div class="row form">
-                                        <div class="col-sm-6">
-                                            <input type="text" placeholder="Tên">
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <input type="email" placeholder="Email">
-                                        </div>
-                                        <div class="col-sm-12">
-                                            <textarea placeholder="Nội dung đánh giá"></textarea>
-                                        </div>
-                                        <div class="col-sm-12">
-                                            <button>Gửi</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                </c:if>
+                                <c:if test="${empty sessionScope.user}">
+                                    <p>Vui lòng <a href="${pageContext.request.contextPath}/login">đăng nhập</a> để gửi đánh giá.</p>
+                                </c:if>
                             </div>
                         </div>
                     </div>
@@ -314,5 +366,25 @@
 <!-- Product Detail End -->
 
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
+<script>
+(function() {
+  const starsContainer = document.getElementById('userRateStars');
+  if (!starsContainer) return;
+  const hiddenInput = document.getElementById('ratingInput');
+  const setVisual = (val) => {
+    [...starsContainer.querySelectorAll('i')].forEach(i => {
+      const starVal = parseInt(i.getAttribute('data-val'));
+      if (starVal <= val) { i.classList.remove('fa-star-o'); i.classList.add('fa-star'); } else { i.classList.remove('fa-star'); i.classList.add('fa-star-o'); }
+    });
+  };
+  starsContainer.addEventListener('click', (e) => {
+    const target = e.target.closest('i');
+    if (!target) return;
+    const val = parseInt(target.getAttribute('data-val'));
+    hiddenInput.value = val;
+    setVisual(val);
+  });
+})();
+</script>
 </body>
 </html>

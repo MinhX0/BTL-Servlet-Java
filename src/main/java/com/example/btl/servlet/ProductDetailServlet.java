@@ -1,8 +1,12 @@
 package com.example.btl.servlet;
 
 import com.example.btl.dao.ProductDAO;
+import com.example.btl.dao.ReviewDAO;
 import com.example.btl.model.Product;
+import com.example.btl.model.Review;
+import com.example.btl.model.User;
 import com.example.btl.service.ProductService;
+import com.example.btl.service.ReviewService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,14 +17,17 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet(name = "ProductDetailServlet", urlPatterns = {"/product-detail"})
 public class ProductDetailServlet extends HttpServlet {
     private ProductService productService;
+    private ReviewService reviewService;
 
     @Override
     public void init() {
         this.productService = new ProductService(new ProductDAO());
+        this.reviewService = new ReviewService(new ReviewDAO());
     }
 
     @Override
@@ -51,6 +58,35 @@ public class ProductDetailServlet extends HttpServlet {
             related = related.subList(0, 8);
         }
         req.setAttribute("relatedProducts", related);
+        // Reviews data
+        try {
+            List<Review> reviews = reviewService.listRecent(product, 50);
+            req.setAttribute("reviews", reviews);
+            double avg = reviewService.averageRating(product);
+            req.setAttribute("avgRating", avg);
+            req.setAttribute("reviewCount", reviewService.totalReviews(product));
+            // Rounded (nearest) for simpler star fill decisions if needed
+            req.setAttribute("avgRatingRounded", Math.round(avg));
+            // Detect current user's review
+            HttpSession session = req.getSession(false);
+            User current = session != null ? (User) session.getAttribute("user") : null;
+            Integer userReviewRating = null;
+            if (current != null) {
+                for (Review r : reviews) {
+                    if (r.getUser().getId() == current.getId()) {
+                        userReviewRating = r.getRating();
+                        break;
+                    }
+                }
+            }
+            req.setAttribute("userReviewRating", userReviewRating);
+        } catch (Exception ignored) {
+            req.setAttribute("reviews", java.util.Collections.emptyList());
+            req.setAttribute("avgRating", 0.0);
+            req.setAttribute("avgRatingRounded", 0);
+            req.setAttribute("reviewCount", 0L);
+            req.setAttribute("userReviewRating", null);
+        }
         // For JSP date format placeholder
         req.setAttribute("nowDate", new Date());
         try {
