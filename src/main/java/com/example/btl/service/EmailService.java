@@ -4,6 +4,8 @@ import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,32 +21,77 @@ public class EmailService {
     private final boolean debug;
 
     public EmailService() {
-        this.host = System.getenv().getOrDefault("MAIL_HOST", "smtp.gmail.com");
-        this.port = Integer.parseInt(System.getenv().getOrDefault("MAIL_PORT", "587"));
-        this.username = System.getenv().getOrDefault("MAIL_USERNAME", "ShoesHuongSandals@gmail.com");
-        this.password = System.getenv().getOrDefault("MAIL_PASSWORD", "cmsr flhh aibk iogw"); // likely an App Password (should not contain spaces)
-        this.from = System.getenv().getOrDefault("MAIL_FROM", this.username);
-        this.debug = Boolean.parseBoolean(System.getenv().getOrDefault("MAIL_DEBUG", "true"));
-        if (password.contains(" ")) {
+        Properties fileProps = loadFileProps();
+        this.host = get("MAIL_HOST", fileProps, "smtp.gmail.com");
+        this.port = parseInt(get("MAIL_PORT", fileProps, "587"), 587);
+        this.username = get("MAIL_USERNAME", fileProps, "");
+        this.password = get("MAIL_PASSWORD", fileProps, "");
+        String fromCandidate = get("MAIL_FROM", fileProps, "");
+        this.from = (fromCandidate == null || fromCandidate.isBlank()) ? this.username : fromCandidate;
+        this.debug = Boolean.parseBoolean(get("MAIL_DEBUG", fileProps, "true"));
+        if (password != null && password.contains(" ")) {
             LOGGER.warning("[EmailService] MAIL_PASSWORD contains spaces. For Gmail App Passwords it should be 16 chars without spaces. Current length=" + password.length());
         }
+        if (isBlank(username) || isBlank(password)) {
+            LOGGER.warning("[EmailService] MAIL_USERNAME or MAIL_PASSWORD not set. Email sending will be disabled.");
+        }
     }
+
+    private Properties loadFileProps() {
+        Properties p = new Properties();
+        // Priority 1: explicit file path via env/system property
+        String path = or(System.getenv("MAIL_CONFIG_FILE"), System.getProperty("MAIL_CONFIG_FILE"));
+        if (!isBlank(path)) {
+            try (FileInputStream fis = new FileInputStream(path)) {
+                p.load(fis);
+                LOGGER.info("[EmailService] Loaded mail config from file: " + path);
+                return p;
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "[EmailService] Failed to load MAIL_CONFIG_FILE='" + path + "': " + e.getMessage());
+            }
+        }
+        // Priority 2: classpath local-only resource (ignored in VCS): mail.properties.local
+        try (InputStream is = EmailService.class.getClassLoader().getResourceAsStream("mail.properties.local")) {
+            if (is != null) {
+                p.load(is);
+                LOGGER.info("[EmailService] Loaded mail config from classpath: mail.properties.local");
+                return p;
+            }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "[EmailService] Failed to load classpath mail.properties.local: " + e.getMessage());
+        }
+        return p; // empty
+    }
+
+    private String get(String key, Properties fileProps, String def) {
+        String v = System.getenv(key);
+        if (!isBlank(v)) return v;
+        v = System.getProperty(key);
+        if (!isBlank(v)) return v;
+        v = fileProps.getProperty(key);
+        if (!isBlank(v)) return v;
+        return def;
+    }
+
+    private boolean isBlank(String s) { return s == null || s.trim().isEmpty(); }
+    private String or(String a, String b) { return !isBlank(a) ? a : b; }
+    private int parseInt(String s, int d) { try { return Integer.parseInt(s); } catch (Exception e) { return d; } }
 
     private Session buildSession() {
         Properties props = new Properties();
         // Core SMTP settings
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.starttls.required", "true");
+        props.put("mail.smtp.starttls.enable", String.valueOf(port != 465));
+        props.put("mail.smtp.starttls.required", String.valueOf(port != 465));
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.port", String.valueOf(port));
         // Timeouts (millis)
         props.put("mail.smtp.connectiontimeout", "10000");
         props.put("mail.smtp.timeout", "15000");
         props.put("mail.smtp.writetimeout", "15000");
-        // Trust (useful for Gmail / some hosts)
+        // Trust server
         props.put("mail.smtp.ssl.trust", host);
-        // Disable fallback
+        // SSL on 465 only
         props.put("mail.smtp.ssl.enable", String.valueOf(port == 465));
 
         Authenticator auth = new Authenticator() {
@@ -64,6 +111,10 @@ public class EmailService {
     public boolean send(String to, String subject, String html) {
         if (to == null || to.isBlank()) {
             LOGGER.warning("[EmailService] 'to' address is blank");
+            return false;
+        }
+        if (isBlank(username) || isBlank(password)) {
+            LOGGER.severe("[EmailService] Missing MAIL_USERNAME/MAIL_PASSWORD. Aborting send.");
             return false;
         }
         try {
@@ -89,7 +140,7 @@ public class EmailService {
             LOGGER.info("[EmailService] Sent email to: " + normalized + " subject='" + subject + "' length=" + (html == null ? 0 : html.length()));
             return true;
         } catch (AuthenticationFailedException ex) {
-            LOGGER.log(Level.SEVERE, "[EmailService] Authentication failed for user=" + username + ": " + ex.getMessage(), ex);
+            LOGGER.log(Level.SEVERE, "[EmailService] Authentication failed for configured user: " + ex.getMessage(), ex);
             return false;
         } catch (SendFailedException ex) {
             LOGGER.log(Level.SEVERE, "[EmailService] Send failed: invalid addresses to=" + to + " err=" + ex.getMessage(), ex);
