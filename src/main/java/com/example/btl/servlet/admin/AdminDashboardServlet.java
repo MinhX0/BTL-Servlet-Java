@@ -28,7 +28,9 @@ public class AdminDashboardServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
-        if (!user.isAdmin()) {
+
+        // Only allow Admin or Seller into admin area; others back to shop
+        if (!user.isAdmin() && !user.isSeller()) {
             response.sendRedirect(request.getContextPath() + "/index");
             return;
         }

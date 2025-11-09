@@ -42,14 +42,16 @@
                             <a href="${pageContext.request.contextPath}/admin/orders/print?id=${o.id}" class="btn btn-sm btn-outline-dark" title="In đơn hàng">
                               <i class="fa fa-print"></i> In
                             </a>
-                            <form method="post" action="${pageContext.request.contextPath}/admin/orders/action" class="d-inline">
-                                <input type="hidden" name="orderId" value="${o.id}">
-                                <button name="action" value="confirm" class="btn btn-sm btn-primary">Xác nhận</button>
-                                <button name="action" value="ship" class="btn btn-sm btn-info">Giao hàng</button>
-                                <button name="action" value="deliver" class="btn btn-sm btn-success">Đã giao</button>
-                                <button name="action" value="cancel" class="btn btn-sm btn-warning">Hủy</button>
-                                <button name="action" value="refund" class="btn btn-sm btn-secondary">Hoàn tiền</button>
-                            </form>
+                            <c:if test="${sessionScope.user != null && sessionScope.user.admin}">
+                              <form method="post" action="${pageContext.request.contextPath}/admin/orders/action" class="d-inline">
+                                  <input type="hidden" name="orderId" value="${o.id}">
+                                  <button name="action" value="confirm" class="btn btn-sm btn-primary">Xác nhận</button>
+                                  <button name="action" value="ship" class="btn btn-sm btn-info">Giao hàng</button>
+                                  <button name="action" value="deliver" class="btn btn-sm btn-success">Đã giao</button>
+                                  <button name="action" value="cancel" class="btn btn-sm btn-warning">Hủy</button>
+                                  <button name="action" value="refund" class="btn btn-sm btn-secondary">Hoàn tiền</button>
+                              </form>
+                            </c:if>
                           </div>
                       </td>
                   </tr>

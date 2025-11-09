@@ -5,10 +5,6 @@
         return;
     }
     com.example.btl.model.User user = (com.example.btl.model.User) session.getAttribute("user");
-    if (!user.isAdmin()) {
-        response.sendRedirect(request.getContextPath() + "/dashboard.jsp");
-        return;
-    }
 %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -23,8 +19,11 @@
   <div class="container-fluid">
     <div class="row g-3">
       <div class="col-12">
-        <div class="alert alert-warning">Bạn có toàn quyền quản trị hệ thống. Hãy thao tác cẩn trọng.</div>
+        <div class="alert <%= user.isAdmin()?"alert-warning":"alert-info" %>">
+          <%= user.isAdmin() ? "Bạn có toàn quyền quản trị hệ thống. Hãy thao tác cẩn trọng." : "Bạn đang ở chế độ SELLER: chỉ có thể xem đơn hàng và hỗ trợ chat." %>
+        </div>
       </div>
+      <% if (user.isAdmin()) { %>
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
@@ -41,6 +40,7 @@
           </div>
         </div>
       </div>
+      <% } %>
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
@@ -49,6 +49,7 @@
           </div>
         </div>
       </div>
+      <% if (user.isAdmin()) { %>
       <div class="col-md-3">
         <div class="card text-center">
           <div class="card-body">
@@ -57,9 +58,11 @@
           </div>
         </div>
       </div>
+      <% } %>
     </div>
 
     <div class="row g-3 mt-1">
+      <% if (user.isAdmin()) { %>
       <div class="col-lg-6">
         <div class="card">
           <div class="card-header">Quản lý nội dung</div>
@@ -79,24 +82,28 @@
           </div>
         </div>
       </div>
+      <% } else { %>
+      <div class="col-lg-6">
+        <div class="card">
+          <div class="card-header">Tác vụ cho Seller</div>
+          <div class="card-body d-grid gap-2">
+            <a class="btn btn-outline-primary" href="${pageContext.request.contextPath}/admin/orders">Xem đơn hàng</a>
+            <a class="btn btn-outline-primary" href="${pageContext.request.contextPath}/admin/support-chat">Hỗ trợ Chat</a>
+          </div>
+        </div>
+      </div>
+      <% } %>
     </div>
   </div>
 </div>
 <%@ include file="/WEB-INF/jsp/admin/layout/footer.jspf" %>
 <script>
-  // Format revenue nicely if available
   (function(){
     const el = document.querySelector('.kpi-revenue');
     if(!el) return;
     const val = el.getAttribute('data-val');
-    try {
-      const num = Number(val);
-      if (!isNaN(num)) {
-        el.textContent = new Intl.NumberFormat('vi-VN').format(num) + ' đ';
-      } else {
-        el.textContent = val;
-      }
-    } catch(e){ el.textContent = val; }
+    try { const num = Number(val); if (!isNaN(num)) { el.textContent = new Intl.NumberFormat('vi-VN').format(num) + ' đ'; } else { el.textContent = val; } }
+    catch(e){ el.textContent = val; }
   })();
 </script>
 </body>

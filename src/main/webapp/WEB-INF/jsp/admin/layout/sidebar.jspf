@@ -1,4 +1,4 @@
-    <%-- Admin sidebar --%>
+<%-- Admin sidebar --%>
         <%@ taglib prefix="c" uri="jakarta.tags.core" %>
         <aside class="admin-sidebar">
         <div class="list-group list-group-flush">
@@ -6,6 +6,7 @@
         href="${pageContext.request.contextPath}/admin/dashboard">
         <i class="fas fa-gauge me-2"></i> Bảng điều khiển
         </a>
+        <c:if test="${sessionScope.user != null && sessionScope.user.admin}">
         <a class="list-group-item list-group-item-action bg-transparent text-white"
         href="${pageContext.request.contextPath}/admin/users">
         <i class="fas fa-users me-2"></i> Người dùng
@@ -18,16 +19,26 @@
         href="${pageContext.request.contextPath}/admin/products">
         <i class="fas fa-box-open me-2"></i> Sản phẩm
         </a>
+        </c:if>
         <a class="list-group-item list-group-item-action bg-transparent text-white"
         href="${pageContext.request.contextPath}/admin/orders">
         <i class="fas fa-clipboard-list me-2"></i> Đơn hàng
         </a>
+        <c:if test="${sessionScope.user != null && sessionScope.user.admin}">
         <a class="list-group-item list-group-item-action bg-transparent text-white"
         href="${pageContext.request.contextPath}/admin/reports">
         <i class="fas fa-chart-line me-2"></i> Báo cáo
         </a>
-        <a class="list-group-item list-group-item-action bg-transparent text-white disabled" href="#" title="Sắp có">
+        <a class="list-group-item list-group-item-action bg-transparent text-white disabled"
+        href="#" title="Sắp có">
         <i class="fas fa-gear me-2"></i> Cài đặt
         </a>
+        </c:if>
+        <c:if test="${sessionScope.user != null && (sessionScope.user.seller || sessionScope.user.admin)}">
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/support-chat">
+        <i class="fas fa-comments me-2"></i> Hỗ trợ Chat
+        </a>
+        </c:if>
         </div>
         </aside>

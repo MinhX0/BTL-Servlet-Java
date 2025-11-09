@@ -30,7 +30,8 @@ public class AdminOrderPrintServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User user = session != null ? (User) session.getAttribute("user") : null;
         if (user == null) { response.sendRedirect(request.getContextPath() + "/login"); return; }
-        if (!user.isAdmin()) { response.sendRedirect(request.getContextPath() + "/index"); return; }
+        // Allow both Admin and Seller to print
+        if (!user.isAdmin() && !user.isSeller()) { response.sendRedirect(request.getContextPath() + "/index"); return; }
 
         String id = request.getParameter("id");
         int orderId;
@@ -49,4 +50,3 @@ public class AdminOrderPrintServlet extends HttpServlet {
         }
     }
 }
-

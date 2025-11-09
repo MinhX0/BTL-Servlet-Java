@@ -24,7 +24,10 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             User u = (User) session.getAttribute("user");
-            String redirect = (u != null && u.isAdmin()) ? "/admin" : "/index";
+            String redirect;
+            if (u.isAdmin()) redirect = "/admin"; // admin root (dashboard area)
+            else if (u.isSeller()) redirect = "/admin"; // changed: send seller to dashboard
+            else redirect = "/index";
             response.sendRedirect(request.getContextPath() + redirect);
             return;
         }
@@ -58,7 +61,10 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("role", user.getRole());
             session.setAttribute("name", user.getName());
             session.setMaxInactiveInterval(30 * 60);
-            String redirect = user.isAdmin() ? "/admin" : "/index";
+            String redirect;
+            if (user.isAdmin()) redirect = "/admin";
+            else if (user.isSeller()) redirect = "/admin/dashboard.jsp"; // changed seller redirect
+            else redirect = "/index";
             response.sendRedirect(request.getContextPath() + redirect);
             return;
         }

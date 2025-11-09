@@ -25,7 +25,7 @@ public class AdminOrderListServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         User user = session != null ? (User) session.getAttribute("user") : null;
         if (user == null) { response.sendRedirect(request.getContextPath() + "/login"); return; }
-        if (!user.isAdmin()) { response.sendRedirect(request.getContextPath() + "/index"); return; }
+        if (!(user.isAdmin() || user.isSeller())) { response.sendRedirect(request.getContextPath() + "/index"); return; }
 
         List<Order> orders = orderDAO.listAll();
         request.setAttribute("orders", orders);
@@ -36,4 +36,3 @@ public class AdminOrderListServlet extends HttpServlet {
         }
     }
 }
-
