@@ -31,7 +31,7 @@ public class ProductListServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         User user = session != null ? (User) session.getAttribute("user") : null;
-        if (user != null && user.isAdmin()) {
+        if (user != null && (user.isAdmin() || user.isSeller())) { // include seller
             response.sendRedirect(request.getContextPath() + "/admin");
             return;
         }

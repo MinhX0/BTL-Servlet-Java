@@ -32,6 +32,12 @@ public class ProductDetailServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        HttpSession session = req.getSession(false);
+        User currentUser = session != null ? (User) session.getAttribute("user") : null;
+        if (currentUser != null && (currentUser.isAdmin() || currentUser.isSeller())) {
+            resp.sendRedirect(req.getContextPath() + "/admin");
+            return;
+        }
         String idParam = req.getParameter("id");
         int id;
         try {
@@ -68,8 +74,8 @@ public class ProductDetailServlet extends HttpServlet {
             // Rounded (nearest) for simpler star fill decisions if needed
             req.setAttribute("avgRatingRounded", Math.round(avg));
             // Detect current user's review
-            HttpSession session = req.getSession(false);
-            User current = session != null ? (User) session.getAttribute("user") : null;
+            HttpSession httpSession = req.getSession(false);
+            User current = httpSession != null ? (User) httpSession.getAttribute("user") : null;
             Integer userReviewRating = null;
             if (current != null) {
                 for (Review r : reviews) {

@@ -27,7 +27,7 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
         User user = session != null ? (User) session.getAttribute("user") : null;
-        if (user != null && user.isAdmin()) {
+        if (user != null && (user.isAdmin() || user.isSeller())) { // include seller
             response.sendRedirect(request.getContextPath() + "/admin");
             return;
         }
@@ -49,7 +49,7 @@ public class CartServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         Integer userId = session != null ? (Integer) session.getAttribute("userId") : null;
         User user = session != null ? (User) session.getAttribute("user") : null;
-        if (user != null && user.isAdmin()) {
+        if (user != null && (user.isAdmin() || user.isSeller())) { // include seller
             response.sendRedirect(request.getContextPath() + "/admin");
             return;
         }
