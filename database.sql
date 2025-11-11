@@ -43,9 +43,10 @@ CREATE TABLE Products
     main_image_url VARCHAR(255)   NULL,
     base_price     DECIMAL(10, 2) NOT NULL,
     sale_price     DECIMAL(10, 2) NULL,
-    date_added     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    date_added     DATETIME                DEFAULT CURRENT_TIMESTAMP,
     category_id    INT            NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES Categories (category_id)
+    FOREIGN KEY (category_id) REFERENCES Categories (category_id),
+    is_active      TINYINT        NOT NULL DEFAULT 1
 );
 
 -- ----------------------------
@@ -55,9 +56,9 @@ CREATE TABLE Carts
 (
     cart_item_id INT AUTO_INCREMENT PRIMARY KEY,
     -- FK now references the 'id' column in the Users table
-    user_id      INT NOT NULL,
-    product_id   INT NOT NULL,
-    quantity     INT NOT NULL CHECK (quantity > 0),
+    user_id      INT         NOT NULL,
+    product_id   INT         NOT NULL,
+    quantity     INT         NOT NULL CHECK (quantity > 0),
     size         VARCHAR(10) NULL,
     date_added   DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users (id),
