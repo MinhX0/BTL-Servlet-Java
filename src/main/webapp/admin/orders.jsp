@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/ui" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -35,7 +36,9 @@
                       <td>${o.id}</td>
                       <td>${o.user.username}</td>
                       <td>${o.orderDate}</td>
-                      <td>${o.totalAmount}</td>
+                      <td>
+                        <fmt:formatNumber value="${o.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
+                      </td>
                       <td><ui:orderStatusText value="${o.status}" /></td>
                       <td>
                           <div class="btn-group" role="group">

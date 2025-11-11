@@ -31,12 +31,12 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                            <span class="text-decoration-line-through text-muted"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                            <span class="text-decoration-line-through text-muted"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                             <br/>
-                                            <strong><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ</strong>
+                                            <strong><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</strong>
                                         </c:when>
                                         <c:otherwise>
-                                            <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ
+                                            <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
