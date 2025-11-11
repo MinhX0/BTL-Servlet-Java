@@ -57,7 +57,7 @@
                                 <div class="col-md-6">
                                     <h6>Tổng quan</h6>
                                     <p class="mb-1"><strong>Tổng tiền:</strong>
-                                        <fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true"/> đ
+                                        <fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
                                     </p>
                                     <p class="mb-1"><strong>Số lượng sản phẩm:</strong>
                                         <c:out value="${fn:length(items)}"/>
@@ -90,9 +90,9 @@
                                                 <a href="${detailUrl}">${it.product.name}</a>
                                             </td>
                                             <td>${empty it.itemSize ? '-' : it.itemSize}</td>
-                                            <td><fmt:formatNumber value="${it.priceAtPurchase}" type="number" groupingUsed="true"/> đ</td>
+                                            <td><fmt:formatNumber value="${it.priceAtPurchase}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</td>
                                             <td>${it.quantity}</td>
-                                            <td><fmt:formatNumber value="${it.priceAtPurchase * it.quantity}" type="number" groupingUsed="true"/> đ</td>
+                                            <td><fmt:formatNumber value="${it.priceAtPurchase * it.quantity}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</td>
                                         </tr>
                                     </c:forEach>
                                 </c:when>

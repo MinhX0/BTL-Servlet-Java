@@ -114,14 +114,14 @@
                                 <c:choose>
                                     <c:when test="${not empty product && not empty product.basePrice && not empty product.salePrice && product.salePrice > 0 && product.basePrice > product.salePrice}">
                                         <span class="price-old">
-                                            <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ
+                                            <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
                                         </span>
                                         <span class="price-new">
-                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true"/> đ
+                                            <fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
                                         </span>
                                     </c:when>
                                     <c:when test="${not empty product && not empty product.basePrice}">
-                                        <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                        <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                     </c:when>
                                     <c:otherwise>—</c:otherwise>
                                 </c:choose>
@@ -213,12 +213,12 @@
                                         <c:choose>
                                             <c:when test="${not empty product && not empty product.basePrice && not empty product.salePrice && product.salePrice > 0 && product.basePrice > product.salePrice}">
                                                 <span class="price-old">
-                                                    <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ
+                                                    <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
                                                 </span>
-                                                <span class="price-new"><fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                <span class="price-new"><fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                             </c:when>
                                             <c:when test="${not empty product && not empty product.basePrice}">
-                                                <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                             </c:when>
                                             <c:otherwise>-</c:otherwise>
                                         </c:choose>
@@ -337,10 +337,10 @@
                                         <div class="price">
                                             <c:choose>
                                                 <c:when test="${not empty rp.salePrice && not empty rp.basePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
-                                                    <span class="price-new"><fmt:formatNumber value="${rp.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                    <span class="price-new"><fmt:formatNumber value="${rp.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="price-new"><fmt:formatNumber value="${rp.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                    <span class="price-new"><fmt:formatNumber value="${rp.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                                 </c:otherwise>
                                             </c:choose>
                                         </div>

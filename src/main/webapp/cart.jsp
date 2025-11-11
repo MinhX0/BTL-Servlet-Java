@@ -79,11 +79,11 @@
                                         <td>
                                             <c:choose>
                                                 <c:when test="${ci.product.salePrice != null && ci.product.salePrice > 0}">
-                                                    <div class="price-old"><fmt:formatNumber value="${ci.product.basePrice}" type="number" groupingUsed="true"/> đ</div>
-                                                    <div class="price-new"><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true"/> đ</div>
+                                                    <div class="price-old"><fmt:formatNumber value="${ci.product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</div>
+                                                    <div class="price-new"><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</div>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <div><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true"/> đ</div>
+                                                    <div><fmt:formatNumber value="${unitPrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</div>
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
@@ -99,7 +99,7 @@
                                                 </div>
                                             </form>
                                         </td>
-                                        <td><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true"/> đ</td>
+                                        <td><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</td>
                                         <td>
                                             <form method="post" action="${pageContext.request.contextPath}/cart" onsubmit="return confirm('Xóa sản phẩm này?');">
                                                 <input type="hidden" name="action" value="remove"/>
@@ -132,9 +132,9 @@
                     <div class="cart-summary">
                         <div class="cart-content">
                             <h3>Tóm tắt giỏ hàng</h3>
-                            <p>Tạm tính<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true"/> đ</span></p>
+                            <p>Tạm tính<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span></p>
                             <p>Phí vận chuyển<span>0đ</span></p>
-                            <h4>Tổng cộng<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true"/> đ</span></h4>
+                            <h4>Tổng cộng<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span></h4>
                         </div>
                         <div class="cart-btn">
                             <form method="post" action="${pageContext.request.contextPath}/cart" class="d-inline">

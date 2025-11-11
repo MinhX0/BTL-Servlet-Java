@@ -185,11 +185,11 @@
                                             <div class="price">
                                                 <c:choose>
                                                     <c:when test="${not empty p.salePrice && not empty p.basePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                                        <span class="price-old"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
-                                                        <span class="price-new"><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                        <span class="price-old"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
+                                                        <span class="price-new"><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span class="price-new"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                        <span class="price-new"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </div>

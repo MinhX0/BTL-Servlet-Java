@@ -72,9 +72,9 @@
           <td>${s.index + 1}</td>
           <td>${it.product.name}</td>
           <td>${empty it.itemSize ? '-' : it.itemSize}</td>
-          <td class="text-end"><fmt:formatNumber value="${unit}" type="number" groupingUsed="true"/> đ</td>
+          <td class="text-end"><fmt:formatNumber value="${unit}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</td>
           <td class="text-end">${it.quantity}</td>
-          <td class="text-end"><fmt:formatNumber value="${line}" type="number" groupingUsed="true"/> đ</td>
+          <td class="text-end"><fmt:formatNumber value="${line}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</td>
         </tr>
         <c:set var="sum" value="${sum + line}"/>
       </c:forEach>
@@ -82,7 +82,7 @@
       <tfoot>
       <tr>
         <th colspan="5" class="text-end">Tổng cộng</th>
-        <th class="text-end"><fmt:formatNumber value="${sum}" type="number" groupingUsed="true"/> đ</th>
+        <th class="text-end"><fmt:formatNumber value="${sum}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</th>
       </tr>
       </tfoot>
     </table>
@@ -95,4 +95,3 @@
 </div>
 </body>
 </html>
-

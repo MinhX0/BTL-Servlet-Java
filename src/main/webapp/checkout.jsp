@@ -85,12 +85,12 @@
                             <c:set var="lineTotal" value="${ci.product.basePrice * ci.quantity}"/>
                             <p>
                                 ${ci.product.name} x ${ci.quantity}
-                                <span><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true"/> đ</span>
+                                <span><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                             </p>
                         </c:forEach>
-                        <p class="sub-total">Tạm tính<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true"/> đ</span></p>
+                        <p class="sub-total">Tạm tính<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span></p>
                         <p class="ship-cost">Phí vận chuyển<span>0đ</span></p>
-                        <h4>Tổng cộng<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true"/> đ</span></h4>
+                        <h4>Tổng cộng<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span></h4>
                     </div>
                 </div>
             </div>

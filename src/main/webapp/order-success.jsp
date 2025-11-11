@@ -16,7 +16,7 @@
             <div class="alert alert-success">
                 <h4 class="alert-heading">Cảm ơn! Đơn hàng của bạn đã được đặt thành công.</h4>
                 <p>Mã đơn hàng: <strong>#${orderId}</strong></p>
-                <p>Tổng tiền: <strong><fmt:formatNumber value="${totalAmount}" type="number" groupingUsed="true"/> đ</strong></p>
+                <p>Tổng tiền: <strong><fmt:formatNumber value="${totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</strong></p>
                 <p>Ngày: <strong>${orderDate}</strong></p>
                 <c:if test="${not empty address}">
                     <p>Địa chỉ giao hàng: <strong>${address}</strong></p>
