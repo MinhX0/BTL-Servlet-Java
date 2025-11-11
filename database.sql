@@ -95,3 +95,45 @@ CREATE TABLE Order_Items
     FOREIGN KEY (order_id) REFERENCES Orders (order_id),
     FOREIGN KEY (product_id) REFERENCES Products (product_id)
 );
+
+-- =============================
+-- Soft Delete Cascade & Guards
+-- Remove cart items when a product is soft-deleted (is_active set to 0)
+-- Block adding/updating cart items that reference inactive products
+-- =============================
+DELIMITER $$
+
+DROP TRIGGER IF EXISTS trg_products_soft_delete_carts_cleanup $$
+CREATE TRIGGER trg_products_soft_delete_carts_cleanup
+AFTER UPDATE ON Products
+FOR EACH ROW
+BEGIN
+  IF NEW.is_active = 0 AND OLD.is_active <> 0 THEN
+    DELETE FROM Carts WHERE product_id = NEW.product_id;
+  END IF;
+END $$
+
+DROP TRIGGER IF EXISTS trg_carts_block_inactive_insert $$
+CREATE TRIGGER trg_carts_block_inactive_insert
+BEFORE INSERT ON Carts
+FOR EACH ROW
+BEGIN
+  IF EXISTS (SELECT 1 FROM Products p WHERE p.product_id = NEW.product_id AND p.is_active = 0) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot add inactive product to cart';
+  END IF;
+END $$
+
+DROP TRIGGER IF EXISTS trg_carts_block_inactive_update $$
+CREATE TRIGGER trg_carts_block_inactive_update
+BEFORE UPDATE ON Carts
+FOR EACH ROW
+BEGIN
+  IF NEW.product_id <> OLD.product_id AND EXISTS (SELECT 1 FROM Products p WHERE p.product_id = NEW.product_id AND p.is_active = 0) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Cannot reference inactive product in cart';
+  END IF;
+END $$
+
+DELIMITER ;
+-- =============================
+-- End soft delete cascade triggers
+-- =============================

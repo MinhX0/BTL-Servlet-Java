@@ -11,6 +11,7 @@ public class ProductService {
     public ProductService(ProductDAO productDAO) { this.productDAO = productDAO; }
 
     public Product get(int id) { return productDAO.getById(id); }
+    public Product getIncludingInactive(int id) { return productDAO.getByIdIncludingInactive(id); }
     public List<Product> listAll() { return productDAO.listAll(); }
     public List<Product> listByCategory(int categoryId) { return productDAO.listByCategory(categoryId); }
 

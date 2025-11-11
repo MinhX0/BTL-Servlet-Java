@@ -46,12 +46,13 @@ public class ProductDetailServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/products");
             return;
         }
-        Product product = productService.get(id);
+        Product product = productService.getIncludingInactive(id);
         if (product == null) {
             resp.sendRedirect(req.getContextPath() + "/products");
             return;
         }
         req.setAttribute("product", product);
+        req.setAttribute("productInactive", !product.isActive());
         // Simple related products: same category, exclude self, limit 8
         List<Product> related;
         try {
