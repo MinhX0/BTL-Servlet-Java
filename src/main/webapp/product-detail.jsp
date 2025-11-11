@@ -218,20 +218,6 @@
                                 <h4>Thông số</h4>
                                 <ul>
                                     <li>Tên: ${empty product ? '-' : fn:escapeXml(product.name)}</li>
-                                    <li>Giá:
-                                        <c:choose>
-                                            <c:when test="${not empty product && not empty product.basePrice && not empty product.salePrice && product.salePrice > 0 && product.basePrice > product.salePrice}">
-                                                <span class="price-old">
-                                                    <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
-                                                </span>
-                                                <span class="price-new"><fmt:formatNumber value="${product.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
-                                            </c:when>
-                                            <c:when test="${not empty product && not empty product.basePrice}">
-                                                <span class="price-new"><fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
-                                            </c:when>
-                                            <c:otherwise>-</c:otherwise>
-                                        </c:choose>
-                                    </li>
                                     <c:if test="${not empty product && not empty product.category && not empty product.category.name}"><li>Danh mục: ${fn:escapeXml(product.category.name)}</li></c:if>
                                 </ul>
                             </div>
