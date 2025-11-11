@@ -20,6 +20,12 @@
         </div>
         <div class="card">
             <div class="card-body">
+                <c:if test="${param.deleted == '1'}">
+                  <div class="alert alert-success">Đã xóa (ẩn) sản phẩm.</div>
+                </c:if>
+                <c:if test="${param.deleted == '0'}">
+                  <div class="alert alert-danger">Không thể xóa sản phẩm.</div>
+                </c:if>
                 <div class="table-responsive">
                     <table class="table table-striped table-hover align-middle">
                         <thead><tr><th>ID</th><th>Tên</th><th>Giá</th><th>Danh mục</th><th>Thao tác</th></tr></thead>
@@ -31,12 +37,12 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                            <span class="text-decoration-line-through text-muted"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                            <span class="text-decoration-line-through text-muted"><fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
                                             <br/>
-                                            <strong><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true"/> đ</strong>
+                                            <strong><fmt:formatNumber value="${p.salePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</strong>
                                         </c:when>
                                         <c:otherwise>
-                                            <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true"/> đ
+                                            <fmt:formatNumber value="${p.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
@@ -46,7 +52,10 @@
                                         <c:param name="id" value="${p.id}"/>
                                     </c:url>
                                     <a class="btn btn-sm btn-outline-secondary" href="${editUrl}">Sửa</a>
-                                    <a class="btn btn-sm btn-outline-danger disabled" href="#" title="Xóa (sắp có)">Xóa</a>
+                                    <form method="post" action="${pageContext.request.contextPath}/admin/products/delete" class="d-inline" onsubmit="return confirm('Ẩn (xóa mềm) sản phẩm này?');">
+                                      <input type="hidden" name="id" value="${p.id}" />
+                                      <button type="submit" class="btn btn-sm btn-outline-danger">Xóa</button>
+                                    </form>
                                 </td>
                             </tr>
                         </c:forEach>

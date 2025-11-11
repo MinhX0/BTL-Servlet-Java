@@ -137,46 +137,55 @@
                                 </p>
                             </div>
 
-                            <form class="quantity" method="post" action="${pageContext.request.contextPath}/add-to-cart">
-                                <input type="hidden" name="productId" value="${product.id}" />
-                                <!-- Size selector (above quantity) -->
-                                <div class="mb-3">
-                                    <label class="d-block font-weight-bold mb-2">Kích cỡ</label>
-                                    <div class="btn-group btn-group-toggle flex-wrap" data-toggle="buttons">
-                                        <label class="btn btn-outline-secondary m-1">
-                                            <input type="radio" name="size" value="39" autocomplete="off"> 39
-                                        </label>
-                                        <label class="btn btn-outline-secondary m-1 ">
-                                            <input type="radio" name="size" value="39" autocomplete="off"> 40
-                                        </label>
-                                        <label class="btn btn-outline-secondary m-1">
-                                            <input type="radio" name="size" value="41" autocomplete="off"> 41
-                                        </label>
-                                        <label class="btn btn-outline-secondary m-1">
-                                            <input type="radio" name="size" value="42" autocomplete="off"> 42
-                                        </label>
-                                        <label class="btn btn-outline-secondary m-1">
-                                            <input type="radio" name="size" value="43" autocomplete="off"> 43
-                                        </label>
-                                        <label class="btn btn-outline-secondary m-1">
-                                            <input type="radio" name="size" value="44" autocomplete="off"> 44
-                                        </label>
-                                        <label class="btn btn-outline-secondary m-1">
-                                            <input type="radio" name="size" value="45" autocomplete="off"> 45
-                                        </label>
+                            <c:choose>
+                              <c:when test="${productInactive}">
+                                <div class="alert alert-warning mt-3">
+                                  Sản phẩm này hiện không còn khả dụng để mua (đã ngừng bán).
+                                </div>
+                              </c:when>
+                              <c:otherwise>
+                                <form class="quantity" method="post" action="${pageContext.request.contextPath}/add-to-cart">
+                                    <input type="hidden" name="productId" value="${product.id}" />
+                                    <!-- Size selector (above quantity) -->
+                                    <div class="mb-3">
+                                        <label class="d-block font-weight-bold mb-2">Kích cỡ</label>
+                                        <div class="btn-group btn-group-toggle flex-wrap" data-toggle="buttons">
+                                            <label class="btn btn-outline-secondary m-1">
+                                                <input type="radio" name="size" value="39" autocomplete="off"> 39
+                                            </label>
+                                            <label class="btn btn-outline-secondary m-1 ">
+                                                <input type="radio" name="size" value="39" autocomplete="off"> 40
+                                            </label>
+                                            <label class="btn btn-outline-secondary m-1">
+                                                <input type="radio" name="size" value="41" autocomplete="off"> 41
+                                            </label>
+                                            <label class="btn btn-outline-secondary m-1">
+                                                <input type="radio" name="size" value="42" autocomplete="off"> 42
+                                            </label>
+                                            <label class="btn btn-outline-secondary m-1">
+                                                <input type="radio" name="size" value="43" autocomplete="off"> 43
+                                            </label>
+                                            <label class="btn btn-outline-secondary m-1">
+                                                <input type="radio" name="size" value="44" autocomplete="off"> 44
+                                            </label>
+                                            <label class="btn btn-outline-secondary m-1">
+                                                <input type="radio" name="size" value="45" autocomplete="off"> 45
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <h4>Số lượng:</h4>
-                                <div class="qty">
-                                    <button type="button" class="btn-minus"><i class="fa fa-minus"></i></button>
-                                    <input name="quantity" type="text" value="1">
-                                    <button type="button" class="btn-plus"><i class="fa fa-plus"></i></button>
-                                </div>
-                                <div class="action">
-                                    <button type="submit" class="btn btn-primary" aria-label="Thêm vào giỏ"><i class="fa fa-cart-plus"></i></button>
-                                </div>
-                            </form>
+                                    <h4>Số lượng:</h4>
+                                    <div class="qty">
+                                        <button type="button" class="btn-minus"><i class="fa fa-minus"></i></button>
+                                        <input name="quantity" type="text" value="1">
+                                        <button type="button" class="btn-plus"><i class="fa fa-plus"></i></button>
+                                    </div>
+                                    <div class="action">
+                                        <button type="submit" class="btn btn-primary" aria-label="Thêm vào giỏ"><i class="fa fa-cart-plus"></i></button>
+                                    </div>
+                                </form>
+                              </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </div>
@@ -294,59 +303,61 @@
                 <div class="row align-items-center product-slider product-slider-3">
                     <c:if test="${not empty relatedProducts}">
                         <c:forEach var="rp" items="${relatedProducts}">
-                            <div class="col-lg-3">
-                                <div class="product-item">
-                                    <div class="product-image">
-                                        <c:url var="rpDetail" value="/product-detail">
-                                            <c:param name="id" value="${rp.id}"/>
-                                        </c:url>
-                                        <c:choose>
-                                            <c:when test="${empty rp.mainImageUrl}">
-                                                <c:set var="rpImg" value="/product-image"/>
-                                            </c:when>
-                                            <c:when test="${fn:startsWith(rp.mainImageUrl,'http://') || fn:startsWith(rp.mainImageUrl,'https://')}">
-                                                <c:set var="rpImg" value="${rp.mainImageUrl}"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:url var="rpImg" value="/product-image">
-                                                    <c:param name="file" value="${fn:startsWith(rp.mainImageUrl,'/') ? fn:substringAfter(rp.mainImageUrl,'/') : rp.mainImageUrl}"/>
-                                                </c:url>
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <c:if test="${not empty rp.salePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
-                                            <c:set var="discountPercent" value="${(100 - (rp.salePrice * 100 / rp.basePrice))}"/>
-                                            <span class="discount-badge">-${discountPercent}%</span>
-                                        </c:if>
-                                        <img src="${rpImg}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
-                                        <div class="product-action">
-                                            <c:url var="addRp" value="/add-to-cart">
-                                                <c:param name="productId" value="${rp.id}"/>
+                            <c:if test="${rp.active}">
+                                <div class="col-lg-3">
+                                    <div class="product-item">
+                                        <div class="product-image">
+                                            <c:url var="rpDetail" value="/product-detail">
+                                                <c:param name="id" value="${rp.id}"/>
                                             </c:url>
-                                            <a href="${addRp}"><i class="fa fa-cart-plus"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="product-content">
-                                        <div class="title"><a href="${rpDetail}">${rp.name}</a></div>
-                                        <div class="ratting">
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                            <i class="fa fa-star"></i>
-                                        </div>
-                                        <div class="price">
                                             <c:choose>
-                                                <c:when test="${not empty rp.salePrice && not empty rp.basePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
-                                                    <span class="price-new"><fmt:formatNumber value="${rp.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                <c:when test="${empty rp.mainImageUrl}">
+                                                    <c:set var="rpImg" value="/product-image"/>
+                                                </c:when>
+                                                <c:when test="${fn:startsWith(rp.mainImageUrl,'http://') || fn:startsWith(rp.mainImageUrl,'https://')}">
+                                                    <c:set var="rpImg" value="${rp.mainImageUrl}"/>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <span class="price-new"><fmt:formatNumber value="${rp.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                    <c:url var="rpImg" value="/product-image">
+                                                        <c:param name="file" value="${fn:startsWith(rp.mainImageUrl,'/') ? fn:substringAfter(rp.mainImageUrl,'/') : rp.mainImageUrl}"/>
+                                                    </c:url>
                                                 </c:otherwise>
                                             </c:choose>
+                                            <c:if test="${not empty rp.salePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
+                                                <c:set var="discountPercent" value="${(100 - (rp.salePrice * 100 / rp.basePrice))}"/>
+                                                <span class="discount-badge">-${discountPercent}%</span>
+                                            </c:if>
+                                            <img src="${rpImg}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
+                                            <div class="product-action">
+                                                <c:url var="addRp" value="/add-to-cart">
+                                                    <c:param name="productId" value="${rp.id}"/>
+                                                </c:url>
+                                                <a href="${addRp}"><i class="fa fa-cart-plus"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="product-content">
+                                            <div class="title"><a href="${rpDetail}">${rp.name}</a></div>
+                                            <div class="ratting">
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                                <i class="fa fa-star"></i>
+                                            </div>
+                                            <div class="price">
+                                                <c:choose>
+                                                    <c:when test="${not empty rp.salePrice && not empty rp.basePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
+                                                        <span class="price-new"><fmt:formatNumber value="${rp.salePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="price-new"><fmt:formatNumber value="${rp.basePrice}" type="number" groupingUsed="true"/> đ</span>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </c:if>
                         </c:forEach>
                     </c:if>
                 </div>

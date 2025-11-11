@@ -35,6 +35,9 @@ public class Product {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean active = true;
+
     public Product() { }
 
     // getters and setters
@@ -55,6 +58,8 @@ public class Product {
     public void setDateAdded(LocalDateTime dateAdded) { this.dateAdded = dateAdded; }
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
     // Alias for JSP usage: imgsrc -> maps to mainImageUrl
     @Transient

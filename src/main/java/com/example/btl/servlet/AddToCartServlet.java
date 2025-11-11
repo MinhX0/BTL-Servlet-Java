@@ -86,7 +86,8 @@ public class AddToCartServlet extends HttpServlet {
             return;
         }
 
-        Product product = productDAO.getById(productId);
+        // Fetch including inactive so we can return a meaningful message
+        Product product = productDAO.getByIdIncludingInactive(productId);
         if (product == null) {
             if (isAjax(request)) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -95,6 +96,18 @@ public class AddToCartServlet extends HttpServlet {
                 return;
             }
             response.sendRedirect(request.getContextPath() + "/index");
+            return;
+        }
+        if (!product.isActive()) {
+            if (isAjax(request)) {
+                response.setStatus(409); // Conflict: unavailable
+                response.setContentType("application/json");
+                response.getWriter().write("{\"ok\":false,\"message\":\"Sản phẩm đã ngừng bán\"}");
+                return;
+            }
+            // Redirect back to product detail with a hint param
+            String url = request.getContextPath() + "/product-detail?id=" + product.getId() + "&unavailable=1";
+            response.sendRedirect(url);
             return;
         }
 
