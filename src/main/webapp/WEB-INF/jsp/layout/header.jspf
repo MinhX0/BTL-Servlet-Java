@@ -83,7 +83,7 @@
               <c:when test="${not empty sessionScope.user}">
                 <a href="#" class="nav-link dropdown-toggle py-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                   <i class="bi bi-person"></i>
-                  <span class="d-none d-sm-inline">${fn:escapeXml(sessionScope.user.displayName != null ? sessionScope.user.displayName : sessionScope.user.username)}</span>
+                  <span class="d-none d-sm-inline">${fn:escapeXml(sessionScope.user.name != null ? sessionScope.user.name : sessionScope.user.username)}</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
                   <c:choose>
@@ -104,13 +104,11 @@
                 </div>
               </c:when>
               <c:otherwise>
-                <a href="#" class="nav-link dropdown-toggle py-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TÀI KHOẢN</a>
-                <div class="dropdown-menu dropdown-menu-right">
-                  <c:url var="loginUrl" value="/login.jsp#login"/>
-                  <c:url var="registerUrl" value="/login.jsp#register"/>
-                  <a href="${loginUrl}" class="dropdown-item">Đăng nhập</a>
-                  <a href="${registerUrl}" class="dropdown-item">Đăng ký</a>
-                </div>
+                <!-- Guest: single icon linking to unified login/register page -->
+                <c:url var="loginUnifiedUrl" value="/login.jsp"/>
+                <a href="${loginUnifiedUrl}" class="nav-link py-0" aria-label="Đăng nhập / Đăng ký">
+                  <i class="bi bi-person" style="font-size:18px;"></i>
+                </a>
               </c:otherwise>
             </c:choose>
           </div>
