@@ -1,168 +1,203 @@
-<%-- Common top header and nav bar, using template assets prefix --%>
+<%-- Updated header with centered logo, left search, right account/cart --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
-<script>
-    window.appContextPath = '${pageContext.request.contextPath}';
-</script>
-<!-- Top Header Start -->
-<div class="top-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-3">
-                <div class="logo">
-                    <c:choose>
-                        <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
-                            <c:url var="homeUrl" value="/admin"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:url var="homeUrl" value="/index"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <a href="${homeUrl}">
-                        <c:url var="logoUrl" value="/assets/img/logo.png"/>
-                        <img src="${logoUrl}" alt="Logo">
-                    </a>
-                </div>
+<script>window.appContextPath='${pageContext.request.contextPath}';</script>
+
+<header>
+  <div class="container-fluid px-4">
+    <!-- Top row: centered bigger logo only -->
+    <div class="d-flex align-items-center justify-content-center">
+      <div class="text-center py-1">
+        <c:choose>
+          <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
+            <c:url var="homeUrl" value="/admin"/>
+          </c:when>
+          <c:otherwise>
+            <c:url var="homeUrl" value="/index"/>
+          </c:otherwise>
+        </c:choose>
+        <c:url var="logoUrl" value="/assets/img/logo.png"/>
+        <a href="${homeUrl}" class="d-inline-block">
+          <img src="${logoUrl}" alt="Logo" style="height:64px;object-fit:contain;"/>
+        </a>
+      </div>
+    </div>
+
+    <!-- Nav row: search | nav text | account/cart all on the same line -->
+    <div class="mt-2">
+      <div class="d-flex align-items-center justify-content-between nav-row">
+        <!-- Left: search (shop side only) -->
+        <div class="nav-left d-flex align-items-center">
+          <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
+            <div class="search-wrapper d-flex align-items-center">
+              <button type="button" class="search-toggle btn-ico" aria-label="Mở tìm kiếm" aria-expanded="false">
+                <i class="bi bi-search" style="font-size:18px;"></i>
+              </button>
+              <div class="search-box" aria-hidden="true">
+                <c:url var="searchAction" value="/products"/>
+                <form method="get" action="${searchAction}" class="m-0">
+                  <c:if test="${not empty param.categoryId}">
+                    <input type="hidden" name="categoryId" value="${param.categoryId}"/>
+                  </c:if>
+                  <label for="globalSearch" class="sr-only">Tìm kiếm sản phẩm</label>
+                  <input id="globalSearch" name="q" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm" aria-label="Tìm kiếm sản phẩm" value="${fn:escapeXml(param.q)}">
+                </form>
+              </div>
             </div>
-            <div class="col-md-6">
-                <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
-                    <div class="search position-relative">
-                        <c:url var="searchAction" value="/products"/>
-                        <form method="get" action="${searchAction}" class="m-0">
-                            <c:if test="${not empty param.categoryId}">
-                                <input type="hidden" name="categoryId" value="${param.categoryId}"/>
-                            </c:if>
-                            <label for="globalSearch" class="sr-only">Tìm kiếm sản phẩm</label>
-                            <input id="globalSearch" name="q" type="text" placeholder="Tìm kiếm sản phẩm" aria-label="Tìm kiếm sản phẩm" value="${fn:escapeXml(param.q)}">
-                            <button type="submit" aria-label="Tìm kiếm"><i class="fa fa-search"></i></button>
-                        </form>
-                    </div>
-                </c:if>
-            </div>
-            <div class="col-md-3">
-                <div class="user d-flex align-items-center justify-content-end gap-2">
-                    <div class="dropdown">
-                        <c:choose>
-                            <c:when test="${not empty sessionScope.user}">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <i class="fa fa-user"></i>
-                                    <span>${fn:escapeXml(sessionScope.name != null ? sessionScope.name : sessionScope.username)}</span>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <c:choose>
-                                        <c:when test="${sessionScope.user.admin}">
-                                            <c:url var="adminUrl" value="/admin"/>
-                                            <a href="${adminUrl}" class="dropdown-item">Bảng điều khiển</a>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:url var="accountUrl" value="/account"/>
-                                            <a href="${accountUrl}" class="dropdown-item">Tài khoản của tôi</a>
-                                            <c:url var="ordersUrl" value="/orders"/>
-                                            <a href="${ordersUrl}" class="dropdown-item">Đơn hàng của tôi</a>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <div class="dropdown-divider"></div>
-                                    <c:url var="logoutUrl" value="/logout"/>
-                                    <a href="${logoutUrl}" class="dropdown-item">Đăng xuất</a>
-                                </div>
-                            </c:when>
-                            <c:otherwise>
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tài khoản</a>
-                                <div class="dropdown-menu">
-                                    <c:url var="loginUrl" value="/login.jsp#login"/>
-                                    <c:url var="registerUrl" value="/login.jsp#register"/>
-                                    <a href="${loginUrl}" class="dropdown-item">Đăng nhập</a>
-                                    <a href="${registerUrl}" class="dropdown-item">Đăng ký</a>
-                                </div>
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                    <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
-                        <div class="cart">
-                            <c:url var="cartUrl" value="/cart"/>
-                            <a href="${cartUrl}" aria-label="Xem giỏ hàng"><i class="fa fa-cart-plus"></i></a>
-                            <span>(${empty requestScope.cartCount ? 0 : requestScope.cartCount})</span>
-                        </div>
-                    </c:if>
-                </div>
-            </div>
+          </c:if>
         </div>
-    </div>
-</div>
-<!-- Top Header End -->
 
-<!-- Header Start -->
-<div class="header">
-    <div class="container">
-        <nav class="navbar navbar-expand-md bg-dark navbar-dark">
-            <a href="#" class="navbar-brand">MENU</a>
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                <div class="navbar-nav m-auto">
-                    <c:choose>
-                        <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
-                            <c:url var="adminUrl2" value="/admin"/>
-                            <a href="${adminUrl2}" class="nav-item nav-link">Bảng điều khiển</a>
-                            <c:url var="adminOrdersUrl" value="/admin/orders"/>
-                            <a href="${adminOrdersUrl}" class="nav-item nav-link">Đơn hàng</a>
-                            <c:url var="adminProductsUrl" value="/admin/products"/>
-                            <a href="${adminProductsUrl}" class="nav-item nav-link">Sản phẩm</a>
-                            <c:url var="adminCategoriesUrl" value="/admin/categories"/>
-                            <a href="${adminCategoriesUrl}" class="nav-item nav-link">Danh mục</a>
-                        </c:when>
-                        <c:otherwise>
-                            <a href="${homeUrl}" class="nav-item nav-link ${fn:endsWith(pageContext.request.requestURI, '/index.jsp') || fn:endsWith(pageContext.request.requestURI, '/index') ? 'active' : ''}">Trang chủ</a>
-                            <c:url var="productsUrl" value="/products"/>
-                            <a href="${productsUrl}" class="nav-item nav-link">Sản phẩm</a>
-                            <c:url var="contactUrl" value="/contact.jsp"/>
-                            <a href="${contactUrl}" class="nav-item nav-link">Liên hệ</a>
-                            <%-- New quick anchors to sections on index page --%>
-                            <c:url var="indexOnSaleUrl" value="/index#on-sale"/>
-                            <c:url var="indexNewComerUrl" value="/index#new-comer"/>
-                            <a href="${indexOnSaleUrl}" class="nav-item nav-link js-index-anchor" data-target="#on-sale">Đang giảm giá</a>
-                            <a href="${indexNewComerUrl}" class="nav-item nav-link js-index-anchor" data-target="#new-comer">Hàng mới về</a>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-            </div>
+        <!-- Center: nav text -->
+        <nav class="nav-center d-flex align-items-center justify-content-center">
+          <ul class="navbar-nav flex-row mb-0">
+            <li class="nav-item">
+              <a href="${homeUrl}" class="nav-link ${fn:endsWith(pageContext.request.requestURI,'/index') || fn:endsWith(pageContext.request.requestURI,'/index.jsp') ? 'active' : ''}">TRANG CHỦ</a>
+            </li>
+            <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
+              <c:url var="productsUrl" value="/products"/>
+              <li class="nav-item"><a href="${productsUrl}" class="nav-link">SẢN PHẨM</a></li>
+            </c:if>
+            <c:url var="contactUrl" value="/contact.jsp"/>
+            <li class="nav-item"><a href="${contactUrl}" class="nav-link">LIÊN HỆ</a></li>
+            <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
+              <c:url var="indexOnSaleUrl" value="/index#on-sale"/>
+              <c:url var="indexNewComerUrl" value="/index#new-comer"/>
+              <li class="nav-item"><a href="${indexOnSaleUrl}" class="nav-link js-index-anchor" data-target="#on-sale">Đang giảm giá</a></li>
+              <li class="nav-item"><a href="${indexNewComerUrl}" class="nav-link js-index-anchor" data-target="#new-comer">Hàng mới về</a></li>
+            </c:if>
+            <c:if test="${not empty sessionScope.user && sessionScope.user.admin}">
+              <c:url var="adminOrdersUrl" value="/admin/orders"/>
+              <c:url var="adminProductsUrl" value="/admin/products"/>
+              <c:url var="adminCategoriesUrl" value="/admin/categories"/>
+              <li class="nav-item"><a href="${adminOrdersUrl}" class="nav-link">ĐƠN HÀNG</a></li>
+              <li class="nav-item"><a href="${adminProductsUrl}" class="nav-link">SẢN PHẨM</a></li>
+              <li class="nav-item"><a href="${adminCategoriesUrl}" class="nav-link">DANH MỤC</a></li>
+            </c:if>
+          </ul>
         </nav>
+
+        <!-- Right: account/cart -->
+        <div class="nav-right d-flex align-items-center" style="gap:10px;">
+          <div class="dropdown">
+            <c:choose>
+              <c:when test="${not empty sessionScope.user}">
+                <a href="#" class="nav-link dropdown-toggle py-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                  <i class="bi bi-person"></i>
+                  <span class="d-none d-sm-inline">${fn:escapeXml(sessionScope.user.displayName != null ? sessionScope.user.displayName : sessionScope.user.username)}</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <c:choose>
+                    <c:when test="${sessionScope.user.admin}">
+                      <c:url var="adminUrl" value="/admin"/>
+                      <a href="${adminUrl}" class="dropdown-item">Bảng điều khiển</a>
+                    </c:when>
+                    <c:otherwise>
+                      <c:url var="accountUrl" value="/account"/>
+                      <a href="${accountUrl}" class="dropdown-item">Tài khoản của tôi</a>
+                      <c:url var="ordersUrl" value="/orders"/>
+                      <a href="${ordersUrl}" class="dropdown-item">Đơn hàng của tôi</a>
+                    </c:otherwise>
+                  </c:choose>
+                  <div class="dropdown-divider"></div>
+                  <c:url var="logoutUrl" value="/logout"/>
+                  <a href="${logoutUrl}" class="dropdown-item">Đăng xuất</a>
+                </div>
+              </c:when>
+              <c:otherwise>
+                <a href="#" class="nav-link dropdown-toggle py-0" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TÀI KHOẢN</a>
+                <div class="dropdown-menu dropdown-menu-right">
+                  <c:url var="loginUrl" value="/login.jsp#login"/>
+                  <c:url var="registerUrl" value="/login.jsp#register"/>
+                  <a href="${loginUrl}" class="dropdown-item">Đăng nhập</a>
+                  <a href="${registerUrl}" class="dropdown-item">Đăng ký</a>
+                </div>
+              </c:otherwise>
+            </c:choose>
+          </div>
+          <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
+            <div class="cart ms-2 position-relative">
+              <c:url var="cartUrl" value="/cart"/>
+              <a href="${cartUrl}" aria-label="Xem giỏ hàng" class="position-relative">
+                <i class="bi bi-bag" style="font-size:18px;"></i>
+                <span class="position-absolute translate-middle badge rounded-pill bg-danger cart-badge">${empty requestScope.cartCount ? 0 : requestScope.cartCount}</span>
+              </a>
+            </div>
+          </c:if>
+        </div>
+      </div>
     </div>
-</div>
-<!-- Header End -->
+  </div>
+</header>
 
 <script>
 (function(){
-  // Smooth scroll only when already on index page
   function smoothScrollTo(selector){
-    var el = document.querySelector(selector);
-    if(!el) return;
-    var y = el.getBoundingClientRect().top + window.pageYOffset - 70; // header offset
-    window.scrollTo({top: y, behavior: 'smooth'});
-  }
-  function onNavClick(e){
-    var targetSel = this.getAttribute('data-target');
-    if(!targetSel) return;
-    // Determine if we are already on index page
-    var onIndex = document.body && document.body.classList.contains('home-index');
-    if(onIndex){
-      e.preventDefault();
-      smoothScrollTo(targetSel);
-    } // else default navigation to /index#...
-  }
-  document.addEventListener('DOMContentLoaded', function(){
-    document.querySelectorAll('.js-index-anchor').forEach(function(a){
-      a.addEventListener('click', onNavClick);
+    var el=document.querySelector(selector);if(!el)return;var y=el.getBoundingClientRect().top+window.pageYOffset-70;window.scrollTo({top:y,behavior:'smooth'});}
+  function onNavClick(e){var targetSel=this.getAttribute('data-target');if(!targetSel)return;var onIndex=document.body&&document.body.classList.contains('home-index');if(onIndex){e.preventDefault();smoothScrollTo(targetSel);} }
+
+  function bindSearchToggle(){
+    document.querySelectorAll('.search-toggle').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        var wrap = btn.closest('.search-wrapper');
+        if(!wrap) return;
+        var open = wrap.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var box = wrap.querySelector('.search-box');
+        if(box){ box.setAttribute('aria-hidden', open ? 'false' : 'true'); }
+        var input = wrap.querySelector('#globalSearch');
+        if(open && input){ setTimeout(function(){ input.focus(); }, 120); }
+      });
     });
-    // If landed on index with a hash, adjust scroll smoothly after load
-    var onIndex = document.body && document.body.classList.contains('home-index');
-    if(onIndex && window.location.hash){
-      var sel = window.location.hash;
-      // slight delay to ensure layout ready
-      setTimeout(function(){ smoothScrollTo(sel); }, 100);
-    }
+    // click outside to close
+    document.addEventListener('click', function(e){
+      document.querySelectorAll('.search-wrapper.open').forEach(function(wrap){
+        if(!wrap.contains(e.target)){
+          wrap.classList.remove('open');
+          var btn = wrap.querySelector('.search-toggle'); if(btn){ btn.setAttribute('aria-expanded','false'); }
+          var box = wrap.querySelector('.search-box'); if(box){ box.setAttribute('aria-hidden','true'); }
+        }
+      });
+    });
+    // ESC to close
+    document.addEventListener('keydown', function(e){
+      if(e.key === 'Escape'){
+        document.querySelectorAll('.search-wrapper.open').forEach(function(wrap){
+          wrap.classList.remove('open');
+          var btn = wrap.querySelector('.search-toggle'); if(btn){ btn.setAttribute('aria-expanded','false'); }
+          var box = wrap.querySelector('.search-box'); if(box){ box.setAttribute('aria-hidden','true'); }
+        });
+      }
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('.js-index-anchor').forEach(function(a){a.addEventListener('click',onNavClick);});
+    if(document.body&&document.body.classList.contains('home-index')&&window.location.hash){setTimeout(function(){smoothScrollTo(window.location.hash);},100);}
+    bindSearchToggle();
   });
 })();
 </script>
+
+<style>
+/* Smaller text and spacing adjustments */
+header {background-color:#fff;border-bottom:1px solid #eee;padding:10px 0;position:sticky;top:0;z-index:1000;}
+.nav-link {color:#000 !important;font-weight:500;margin:0 10px;transition:color .3s;font-size:.95rem;}
+.nav-link:hover,.nav-link.active {color:#ff3b6a !important;}
+.header-icons i {font-size:18px;cursor:pointer;transition:color .3s;}
+.header-icons i:hover {color:#ff3b6a;}
+.dropdown-menu {min-width:180px;}
+.search-wrapper { height:36px; }
+.search-wrapper .search-box { width:0; opacity:0; margin-left:8px; overflow:hidden; transition: width .25s ease, opacity .2s ease; }
+.search-wrapper.open .search-box { width:300px; opacity:1; }
+.search-wrapper .search-box input { width:100%; height:36px; font-size:14px; padding:4px 10px; margin:0; }
+.btn-ico { background: transparent; border: 0; padding: 0; color: inherit; display:inline-flex; align-items:center; justify-content:center; height:36px; width:36px; border-radius:18px; }
+.btn-ico:hover { background: transparent; color:#ff3b6a; }
+.btn-ico:focus { outline: none; box-shadow: none; }
+
+/* Layout alignment */
+.nav-row { display:flex; gap:10px; align-items:center; justify-content:flex-start; }
+.nav-left, .nav-right { flex: 0 0 auto; }
+.nav-right { margin-left: auto; }
+/* ...existing code... */
+</style>
