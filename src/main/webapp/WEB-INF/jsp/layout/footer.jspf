@@ -13,7 +13,7 @@
                             <div class="student-avatar mr-3" aria-hidden="true">TM</div>
                             <div>
                                 <div class="student-name">Trần Tuấn Minh</div>
-                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> --/--/2004</small>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> 09/11/2004</small>
                             </div>
                         </li>
                         <li class="list-group-item d-flex align-items-center">
@@ -27,7 +27,7 @@
                             <div class="student-avatar mr-3" aria-hidden="true">AT</div>
                             <div>
                                 <div class="student-name">Lường Anh Tiến</div>
-                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> --/--/2004</small>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> 08/12/2004 </small>
                             </div>
                         </li>
                         <li class="list-group-item d-flex align-items-center">
