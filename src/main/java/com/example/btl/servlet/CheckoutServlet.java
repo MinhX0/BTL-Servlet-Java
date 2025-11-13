@@ -4,6 +4,7 @@ import com.example.btl.dao.CartItemDAO;
 import com.example.btl.model.CartItem;
 import com.example.btl.model.Order;
 import com.example.btl.model.User;
+import com.example.btl.model.Product;
 import com.example.btl.service.CheckoutService;
 import com.example.btl.servlet.payment.vnpay.Config;
 import jakarta.servlet.annotation.WebServlet;
@@ -13,15 +14,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import static java.lang.System.out;
 
 @WebServlet(name = "CheckoutServlet", urlPatterns = {"/checkout"})
 public class CheckoutServlet extends HttpServlet {
@@ -50,8 +48,11 @@ public class CheckoutServlet extends HttpServlet {
         List<CartItem> items = cartItemDAO.listByUserDetailed(userId);
         long subTotalVnd = 0L;
         for (CartItem ci : items) {
-            long price = ci.getProduct().getBasePrice();
-            subTotalVnd += price * (long) ci.getQuantity();
+            Product p = ci.getProduct();
+            long unit = (p.getSalePrice() != null && p.getSalePrice() > 0 && p.getBasePrice() > p.getSalePrice())
+                    ? p.getSalePrice()
+                    : p.getBasePrice();
+            subTotalVnd += unit * (long) ci.getQuantity();
         }
         request.setAttribute("cartItems", items);
         request.setAttribute("subTotal", subTotalVnd);
@@ -116,7 +117,7 @@ public class CheckoutServlet extends HttpServlet {
         }
     }
 
-    private String buildVnPayRedirectUrl(HttpServletRequest request, Order order) throws UnsupportedEncodingException {
+    private String buildVnPayRedirectUrl(HttpServletRequest request, Order order) {
         // Compute amount in minor units (x100)
         BigDecimal total = order.getTotalAmount() != null ? order.getTotalAmount() : BigDecimal.ZERO;
         long amountMinor = total.multiply(BigDecimal.valueOf(100)).setScale(0, RoundingMode.HALF_UP).longValue();

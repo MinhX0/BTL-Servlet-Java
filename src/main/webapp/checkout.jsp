@@ -82,10 +82,21 @@
                     <div class="checkout-content">
                         <h3>Sản phẩm</h3>
                         <c:forEach var="ci" items="${cartItems}">
-                            <c:set var="lineTotal" value="${ci.product.basePrice * ci.quantity}"/>
+                            <c:set var="unitPrice" value="${not empty ci.product.salePrice && ci.product.salePrice > 0 && ci.product.basePrice > ci.product.salePrice ? ci.product.salePrice : ci.product.basePrice}"/>
+                            <c:set var="lineTotal" value="${unitPrice * ci.quantity}"/>
                             <p>
                                 ${ci.product.name} x ${ci.quantity}
-                                <span><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
+                                <span>
+                                  <c:choose>
+                                    <c:when test="${not empty ci.product.salePrice && ci.product.salePrice > 0 && ci.product.basePrice > ci.product.salePrice}">
+                                      <span class="price-old"><fmt:formatNumber value="${ci.product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
+                                      <span class="price-new"><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                      <fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ
+                                    </c:otherwise>
+                                  </c:choose>
+                                </span>
                             </p>
                         </c:forEach>
                         <p class="sub-total">Tạm tính<span><fmt:formatNumber value="${subTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0"/> đ</span></p>
