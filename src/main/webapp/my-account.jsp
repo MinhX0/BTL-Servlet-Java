@@ -107,18 +107,18 @@
                             <div class="alert alert-danger" role="alert"><c:out value="${requestScope.passwordError}"/></div>
                         </c:if>
                         <c:url var="passwordAction" value="/account/password"/>
-                        <form method="post" action="${passwordAction}">
+                        <form method="post" action="${passwordAction}" id="changePasswordForm">
                             <div class="form-group">
                                 <label for="currentPassword">Mật khẩu hiện tại</label>
                                 <input type="password" id="currentPassword" name="currentPassword" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="newPassword">Mật khẩu mới</label>
-                                <input type="password" id="newPassword" name="newPassword" class="form-control" minlength="8" required>
+                                <input type="password" id="newPassword" name="newPassword" class="form-control" minlength="7" required>
                             </div>
                             <div class="form-group">
                                 <label for="confirmPassword">Xác nhận mật khẩu mới</label>
-                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" minlength="8" required>
+                                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" minlength="7" required>
                             </div>
                             <button type="submit" class="btn">Đổi mật khẩu</button>
                         </form>
@@ -130,5 +130,31 @@
 </div>
 
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
+<script>
+  (function(){
+    function setupChangePasswordValidation(){
+      var form = document.getElementById('changePasswordForm');
+      if(!form) return;
+      var np = document.getElementById('newPassword');
+      var cp = document.getElementById('confirmPassword');
+      function validate(){
+        if(np && np.value && np.value.length < 7){
+          np.setCustomValidity('Mật khẩu tối thiểu 7 ký tự.');
+        } else {
+          np.setCustomValidity('');
+        }
+        if(cp && cp.value && np && np.value !== cp.value){
+          cp.setCustomValidity('Mật khẩu xác nhận không khớp.');
+        } else {
+          cp.setCustomValidity('');
+        }
+      }
+      np && np.addEventListener('input', validate);
+      cp && cp.addEventListener('input', validate);
+      form.addEventListener('submit', function(e){ validate(); if(!form.checkValidity()){ e.preventDefault(); e.stopPropagation(); }});
+    }
+    document.addEventListener('DOMContentLoaded', setupChangePasswordValidation);
+  })();
+</script>
 </body>
 </html>
