@@ -46,7 +46,7 @@ CREATE TABLE Products
     date_added     DATETIME                DEFAULT CURRENT_TIMESTAMP,
     category_id    INT            NOT NULL,
     is_active      TINYINT(1)        NOT NULL DEFAULT 1,
-    stock          INT               NOT NULL DEFAULT 0,
+    stock          INT               NOT NULL DEFAULT 100,
     FOREIGN KEY (category_id) REFERENCES Categories (category_id)
 );
 
