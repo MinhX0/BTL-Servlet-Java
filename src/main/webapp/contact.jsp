@@ -45,6 +45,7 @@
             <div class="chat-header">Chat hỗ trợ</div>
             <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input">
+                <label for="chatText" class="sr-only">Tin nhắn</label>
                 <input id="chatText" class="form-control" type="text" placeholder="Nhập tin nhắn..." />
                 <button id="chatSend" class="btn btn-primary">Gửi</button>
             </div>
@@ -61,9 +62,11 @@
   let lastTs = 0;
   function escapeHtml(str){return str.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
   function addMsg(cls, html){const d=document.createElement('div');d.className='msg '+cls;const b=document.createElement('div');b.className='bubble';b.innerHTML=html;d.appendChild(b);$msgs.appendChild(d);$msgs.scrollTop=999999;}
-  function poll(){fetch(ctx+"/chat/poll?after="+lastTs).then(r=>r.json()).then(data=>{(data.messages||[]).forEach(m=>{lastTs=Math.max(lastTs,m.ts);const mine=!m.fromSeller;const who=m.fromSeller?('Hỗ trợ<span class=\"seller-tag\">SELLER</span>'):escapeHtml(m.from);addMsg(mine?'me':'other', '<strong>'+who+':</strong> '+escapeHtml(m.content));}); setTimeout(poll,1200);}).catch(()=>setTimeout(poll,3000));}
+  // Initial system greet
+  addMsg('system','<em>Bạn đã kết nối tới kênh hỗ trợ. Vui lòng chờ nhân viên phản hồi...</em>');
+  function poll(){fetch(ctx+"/chat/poll?after="+lastTs,{cache:'no-store'}).then(r=>{if(!r.ok) throw new Error('poll '+r.status); return r.json();}).then(data=>{(data.messages||[]).forEach(m=>{lastTs=Math.max(lastTs,m.ts);const mine=!m.fromSeller;const who=m.fromSeller?('Hỗ trợ<span class=\"seller-tag\">SELLER</span>'):escapeHtml(m.from);addMsg(mine?'me':'other', '<strong>'+who+':</strong> '+escapeHtml(m.content));}); setTimeout(poll,1200);}).catch(()=>setTimeout(poll,3000));}
   poll();
-  $send.onclick=function(){const t=($text.value||'').trim(); if(!t) return; const body=new URLSearchParams(); body.append('content', t); fetch(ctx+'/chat/send',{method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:body.toString()}).then(r=>{if(r.ok){$text.value='';}}); };
+  $send.onclick=function(){const t=($text.value||'').trim(); if(!t) return; const body=new URLSearchParams(); body.append('content', t); fetch(ctx+'/chat/send',{method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:body.toString()}).then(r=>{if(r.ok){$text.value='';} else { addMsg('system','<em>Gửi thất bại. Vui lòng thử lại.</em>'); }}).catch(()=>addMsg('system','<em>Mất kết nối, đang thử lại...</em>'))};
   $text.addEventListener('keydown',e=>{if(e.key==='Enter'){ $send.click(); }});
 })();
 </script>
