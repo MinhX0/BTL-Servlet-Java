@@ -125,21 +125,24 @@
             }
         }
 
-        // Quantity controls
+        // Quantity controls (respect min/max, default min=1)
         $('.qty button').on('click', function () {
             var $button = $(this);
-            var oldValue = $button.parent().find('input').val();
-            var newVal;
+            var $input = $button.parent().find('input');
+            var min = parseInt($input.attr('min'), 10);
+            var max = parseInt($input.attr('max'), 10);
+            if (isNaN(min)) min = 1;
+            var oldValue = parseFloat($input.val());
+            if (isNaN(oldValue)) oldValue = min;
+            var newVal = oldValue;
             if ($button.hasClass('btn-plus')) {
-                newVal = parseFloat(oldValue) + 1;
+                newVal = oldValue + 1;
+                if (!isNaN(max)) newVal = Math.min(newVal, max);
             } else {
-                if (oldValue > 0) {
-                    newVal = parseFloat(oldValue) - 1;
-                } else {
-                    newVal = 0;
-                }
+                newVal = oldValue - 1;
+                newVal = Math.max(newVal, min);
             }
-            $button.parent().find('input').val(newVal);
+            $input.val(newVal);
         });
 
         // Shipping address show hide

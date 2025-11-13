@@ -92,9 +92,9 @@
                                                 <input type="hidden" name="action" value="update"/>
                                                 <input type="hidden" name="cartItemId" value="${ci.id}"/>
                                                 <div class="qty">
-                                                    <button type="button" class="btn-minus" onclick="var i=this.parentNode.querySelector('input[name=qty]'); if(i.value>1){i.value--}"><i class="fa fa-minus"></i></button>
-                                                    <input type="text" name="qty" value="${ci.quantity}">
-                                                    <button type="button" class="btn-plus" onclick="var i=this.parentNode.querySelector('input[name=qty]'); i.value++"><i class="fa fa-plus"></i></button>
+                                                    <button type="button" class="btn-minus"><i class="fa fa-minus"></i></button>
+                                                    <input type="text" name="qty" value="${ci.quantity}" min="1">
+                                                    <button type="button" class="btn-plus"><i class="fa fa-plus"></i></button>
                                                     <button type="submit" class="btn btn-sm btn-secondary ml-2">Cập nhật</button>
                                                 </div>
                                             </form>
@@ -123,12 +123,6 @@
         <c:if test="${not empty cartItems}">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="coupon">
-                        <input type="text" placeholder="Mã giảm giá" disabled>
-                        <button disabled>Áp dụng</button>
-                    </div>
-                </div>
-                <div class="col-md-6">
                     <div class="cart-summary">
                         <div class="cart-content">
                             <h3>Tóm tắt giỏ hàng</h3>
@@ -142,7 +136,7 @@
                                 <button class="btn btn-secondary" name="action" value="clear">Xóa giỏ</button>
                             </form>
                             <c:url var="checkoutUrl" value="/checkout"/>
-                            <a class="btn btn-primary" href="${checkoutUrl}">Thanh toán</a>
+                            <a class="btn btn-secondary" href="${checkoutUrl}">Thanh toán</a>
                         </div>
                     </div>
                 </div>

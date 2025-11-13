@@ -111,7 +111,6 @@
               <c:url var="cartUrl" value="/cart"/>
               <a href="${cartUrl}" aria-label="Xem giỏ hàng" class="position-relative">
                 <i class="bi bi-bag" style="font-size:18px;"></i>
-                <span class="position-absolute translate-middle badge rounded-pill bg-danger cart-badge">${empty requestScope.cartCount ? 0 : requestScope.cartCount}</span>
               </a>
             </div>
           </c:if>
