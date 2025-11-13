@@ -1,13 +1,39 @@
 <%-- Common footer and scripts --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!-- Footer Start -->
-<div class="footer">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-3 col-md-6">
+<div class="footer footer-light">
+    <div class="container">
+        <div class="row py-5 footer-top">
+            <!-- Left group: Brand/About + Quick Links -->
+            <div class="col-lg-7 col-md-7 mb-4">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h3 class="footer-brand mb-3 d-flex align-items-center">
+                            <c:url var="footerLogo" value="/assets/img/logo.png"/>
+                            <img src="${footerLogo}" alt="Logo" style="height:42px;object-fit:contain;display:inline-block;margin-right:12px;"/>
+                            Shoes Hướng
+                        </h3>
+                        <p class="mb-3">Chuyên bán giày dép nữ cao cấp</p>
+                        <ul class="list-unstyled small mb-0">
+                            <li><i class="fa fa-map-marker-alt mr-2"></i> Hà Nội, Việt Nam</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h5 class="footer-title">Liên kết nhanh</h5>
+                        <ul class="list-unstyled footer-links">
+                            <li><a href="<c:url value='/'/>">Trang chủ</a></li>
+                            <li><a href="<c:url value='/products'/>">Sản phẩm</a></li>
+                            <li><a href="<c:url value='/contact.jsp'/>">Liên hệ</a></li>
+                            <li><a href="<c:url value='/orders'/>">Đơn hàng</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rightmost: Student info -->
+            <div class="col-lg-5 col-md-5 mb-4 ml-auto">
                 <div class="footer-widget">
-                    <h3 class="title">Thông tin sinh viên</h3>
-                    <!-- Improved student list -->
+                    <h5 class="footer-title">Nhóm thực hiện</h5>
                     <ul class="list-group student-list">
                         <li class="list-group-item d-flex align-items-center">
                             <div class="student-avatar mr-3" aria-hidden="true">TM</div>
@@ -34,27 +60,24 @@
                             <div class="student-avatar mr-3" aria-hidden="true">HT</div>
                             <div>
                                 <div class="student-name">Hoàng Văn Tuyên</div>
-                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> --/--/2004</small>
+                                <small class="text-muted"><i class="fa fa-birthday-cake"></i> 24/05/2004</small>
                             </div>
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
-
-        <!-- Close container-fluid and footer only -->
     </div>
 </div>
 <!-- Footer End -->
 
 <!-- Footer Bottom Start -->
-<div class="footer-bottom">
+<div class="footer-bottom footer-light-bottom py-3">
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 copyright">
-                <p>Bản quyền &copy; Anh em cay khe Corporation. Đã đăng ký bản quyền</p>
+        <div class="row align-items-center">
+            <div class="col-md-6 copyright mb-2 mb-md-0">
+                <p class="mb-0">Bản quyền &copy; Anh em cay khe Corporation. Đã đăng ký bản quyền</p>
             </div>
-
         </div>
     </div>
 </div>
@@ -63,23 +86,26 @@
 <!-- Back to Top -->
 <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
 
-<!-- Tiny scoped styles for student list -->
+<!-- Styles scoped to footer -->
 <style>
-/* Make list items opaque and readable on dark footer */
-.footer .student-list .list-group-item {
-  background: #2d2f36; /* solid dark */
-  border-color: #3a3d44;
-  color: #e9ecef;
-  padding: 0.6rem 0.75rem;
-}
-.footer .student-list .student-avatar {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: #343a40; color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-weight: 600; letter-spacing: 0.5px;
-}
-.footer .student-list .student-name { font-weight: 600; color: #ffffff; }
-.footer .student-list small.text-muted { color: #cfd3da !important; }
+/* Light theme for footer */
+.footer.footer-light { background:#f7f9fc; color:#2c2f36; }
+.footer-light a { color:#495057; }
+.footer-light a:hover { color:#212529; text-decoration:none; }
+.footer .footer-brand { font-weight:700; letter-spacing:.2px; color:#23262d; }
+.footer .footer-title { font-weight:700; font-size:1.05rem; margin-bottom:1rem; color:#23262d; }
+.footer .footer-links li { margin-bottom:.5rem; }
+.footer-bottom.footer-light-bottom { background:#eef2f7; color:#2c2f36; border-top:1px solid #e3e7ee; }
+
+/* Student list on light background */
+.footer .student-list .list-group-item { background:#ffffff; border-color:#e9ecef; color:#343a40; padding:0.6rem 0.75rem; }
+.footer .student-list .student-avatar { width:36px; height:36px; border-radius:50%; background:#e9ecef; color:#2c2f36; display:inline-flex; align-items:center; justify-content:center; font-weight:600; letter-spacing:0.5px; }
+.footer .student-list .student-name { font-weight:600; color:#23262d; }
+.footer .student-list small.text-muted { color:#6c757d !important; }
+
+/* Optional social buttons for light theme if used */
+.footer .btn-social { width:34px; height:34px; border-radius:50%; background:#eef2f7; color:#2c2f36; display:inline-flex; align-items:center; justify-content:center; }
+.footer .btn-social:hover { background:#e1e7f0; }
 </style>
 
 <!-- JavaScript Libraries -->
@@ -93,5 +119,3 @@
 <!-- Template Javascript -->
 <c:url var="mainJsUrl" value="/assets/js/main.js"/>
 <script src="${mainJsUrl}"></script>
-
-

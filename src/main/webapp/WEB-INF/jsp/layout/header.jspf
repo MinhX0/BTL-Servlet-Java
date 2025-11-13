@@ -1,33 +1,28 @@
-<%-- Updated header with centered logo, left search, right account/cart --%>
+<%-- Updated header with left-aligned logo on same line as nav/search/account/cart --%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <script>window.appContextPath='${pageContext.request.contextPath}';</script>
 
+<c:choose>
+  <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
+    <c:url var="homeUrl" value="/admin"/>
+  </c:when>
+  <c:otherwise>
+    <c:url var="homeUrl" value="/index"/>
+  </c:otherwise>
+</c:choose>
+<c:url var="logoUrl" value="/assets/img/logo.png"/>
+
 <header>
   <div class="container-fluid px-4">
-    <!-- Top row: centered bigger logo only -->
-    <div class="d-flex align-items-center justify-content-center">
-      <div class="text-center py-1">
-        <c:choose>
-          <c:when test="${not empty sessionScope.user && sessionScope.user.admin}">
-            <c:url var="homeUrl" value="/admin"/>
-          </c:when>
-          <c:otherwise>
-            <c:url var="homeUrl" value="/index"/>
-          </c:otherwise>
-        </c:choose>
-        <c:url var="logoUrl" value="/assets/img/logo.png"/>
-        <a href="${homeUrl}" class="d-inline-block">
-          <img src="${logoUrl}" alt="Logo" style="height:64px;object-fit:contain;"/>
-        </a>
-      </div>
-    </div>
-
-    <!-- Nav row: search | nav text | account/cart all on the same line -->
-    <div class="mt-2">
+    <!-- Single row: logo (left) | nav + anchors (center) | account/cart (right) with optional search next to logo -->
+    <div class="mt-0">
       <div class="d-flex align-items-center justify-content-between nav-row">
-        <!-- Left: search (shop side only) -->
-        <div class="nav-left d-flex align-items-center">
+        <!-- Left: logo then search (shop side only) -->
+        <div class="nav-left d-flex align-items-center" style="gap:12px;">
+          <a href="${homeUrl}" class="d-inline-flex align-items-center brand-logo" aria-label="Trang chủ">
+            <img src="${logoUrl}" alt="Logo" style="height:48px;object-fit:contain;display:block;"/>
+          </a>
           <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
             <div class="search-wrapper d-flex align-items-center">
               <button type="button" class="search-toggle btn-ico" aria-label="Mở tìm kiếm" aria-expanded="false">
@@ -62,8 +57,8 @@
             <c:if test="${empty sessionScope.user || !sessionScope.user.admin}">
               <c:url var="indexOnSaleUrl" value="/index#on-sale"/>
               <c:url var="indexNewComerUrl" value="/index#new-comer"/>
-              <li class="nav-item"><a href="${indexOnSaleUrl}" class="nav-link js-index-anchor" data-target="#on-sale">Đang giảm giá</a></li>
-              <li class="nav-item"><a href="${indexNewComerUrl}" class="nav-link js-index-anchor" data-target="#new-comer">Hàng mới về</a></li>
+              <li class="nav-item"><a href="${indexOnSaleUrl}" class="nav-link js-index-anchor" data-target="#on-sale">ĐANG GIẢM GIÁ</a></li>
+              <li class="nav-item"><a href="${indexNewComerUrl}" class="nav-link js-index-anchor" data-target="#new-comer">HÀNG MỚI VỀ</a></li>
             </c:if>
             <c:if test="${not empty sessionScope.user && sessionScope.user.admin}">
               <c:url var="adminOrdersUrl" value="/admin/orders"/>
@@ -104,7 +99,6 @@
                 </div>
               </c:when>
               <c:otherwise>
-                <!-- Guest: single icon linking to unified login/register page -->
                 <c:url var="loginUnifiedUrl" value="/login.jsp"/>
                 <a href="${loginUnifiedUrl}" class="nav-link py-0" aria-label="Đăng nhập / Đăng ký">
                   <i class="bi bi-person" style="font-size:18px;"></i>
