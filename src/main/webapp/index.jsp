@@ -112,8 +112,10 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             <c:if test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                                <c:set var="discountPercent" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
-                                                <span class="discount-badge">-${discountPercent}%</span>
+                                                <c:set var="discountPercentRaw" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
+                                                <fmt:formatNumber value="${discountPercentRaw}" maxFractionDigits="0" var="discountPercentInt"/>
+                                                <c:set var="discountPercentFinal" value="${discountPercentInt < 1 ? 1 : discountPercentInt}"/>
+                                                <span class="discount-badge">-${discountPercentFinal}%</span>
                                             </c:if>
                                             <a href="${detailUrl}" aria-label="Xem chi tiết ${fn:escapeXml(p.name)}">
                                                 <img src="${resolvedImg}" alt="${fn:escapeXml(p.name)}" class="lazy-img" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">
@@ -192,8 +194,10 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             <c:if test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                                <c:set var="discountPercent" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
-                                                <span class="discount-badge">-${discountPercent}%</span>
+                                                <c:set var="discountPercentRaw" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
+                                                <fmt:formatNumber value="${discountPercentRaw}" maxFractionDigits="0" var="discountPercentInt"/>
+                                                <c:set var="discountPercentFinal" value="${discountPercentInt < 1 ? 1 : discountPercentInt}"/>
+                                                <span class="discount-badge">-${discountPercentFinal}%</span>
                                             </c:if>
                                             <a href="${detailUrl}">
                                                 <img src="${resolvedImg}" alt="${fn:escapeXml(p.name)}" onerror="this.onerror=null;this.src='${placeholderUrl2}?v=${v}'">

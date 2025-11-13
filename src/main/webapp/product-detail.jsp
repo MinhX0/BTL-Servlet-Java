@@ -17,6 +17,20 @@
       .avg-stars i { font-size: 18px; }
       .user-rate-stars i { cursor: pointer; font-size: 22px; transition: transform .15s; }
       .user-rate-stars i:hover { transform: scale(1.2); }
+      /* Added styling to fix product-detail-bottom visual regression after header change */
+      .product-detail-bottom { margin-top:40px; }
+      /* Updated nav styling to match header color scheme */
+      .product-detail-bottom .nav-pills { background:transparent; border:none; display:flex; justify-content:center; gap:4px; }
+      .product-detail-bottom .nav-pills .nav-link { background:transparent !important; border-radius:0; color:#000; font-weight:500; padding:12px 24px; position:relative; transition:color .2s; }
+      .product-detail-bottom .nav-pills .nav-link:hover { color:#ff3b6a; }
+      .product-detail-bottom .nav-pills .nav-link.active { color:#ff3b6a; background:transparent; }
+      .product-detail-bottom .nav-pills .nav-link.active:after,
+      .product-detail-bottom .nav-pills .nav-link:hover:after { display:none; }
+      .product-detail-bottom .tab-content { background:#ffffff; border:1px solid #e1e5ea; border-top:none; padding:28px 26px; box-shadow:0 4px 10px -4px rgba(0,0,0,0.06); }
+      .product-detail-bottom h4 { font-weight:600; font-size:1.1rem; margin-bottom:1rem; }
+      .product-detail-bottom ul { padding-left:18px; }
+      .price-old { text-decoration:line-through; color:#888; margin-right:8px; display:inline-block; }
+      .price-new { color:#ff3b6a; font-weight:600; display:inline-block; }
     </style>
 </head>
 <body>
@@ -310,8 +324,9 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             <c:if test="${not empty rp.salePrice && rp.salePrice > 0 && rp.basePrice > rp.salePrice}">
-                                                <c:set var="discountPercent" value="${(100 - (rp.salePrice * 100 / rp.basePrice))}"/>
-                                                <span class="discount-badge">-${discountPercent}%</span>
+                                                <c:set var="discountPercentRaw" value="${(100 - (rp.salePrice * 100 / rp.basePrice))}"/>
+                                                <fmt:formatNumber value="${discountPercentRaw}" maxFractionDigits="0" var="discountPercentInt"/>
+                                                <span class="discount-badge">-${discountPercentInt}%</span>
                                             </c:if>
                                             <img src="${rpImg}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
                                             <div class="product-action">

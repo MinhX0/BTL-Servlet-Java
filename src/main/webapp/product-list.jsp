@@ -168,8 +168,10 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             <c:if test="${not empty p.salePrice && p.salePrice > 0 && p.basePrice > p.salePrice}">
-                                                <c:set var="discountPercent" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
-                                                <span class="discount-badge">-${discountPercent}%</span>
+                                                <c:set var="discountPercentRaw" value="${(100 - (p.salePrice * 100 / p.basePrice))}"/>
+                                                <fmt:formatNumber value="${discountPercentRaw}" maxFractionDigits="0" var="discountPercentInt"/>
+                                                <c:set var="discountPercentFinal" value="${discountPercentInt < 1 ? 1 : discountPercentInt}"/>
+                                                <span class="discount-badge">-${discountPercentFinal}%</span>
                                             </c:if>
                                             <c:url var="placeholderUrl" value="/assets/img/placeholder.jpg"/>
                                             <a href="${detailUrl}"><img src="${resolvedImg}" alt="${fn:escapeXml(p.name)}" loading="lazy" onerror="this.onerror=null;this.src='${placeholderUrl}'"></a>
