@@ -110,6 +110,16 @@ public class AddToCartServlet extends HttpServlet {
             response.sendRedirect(url);
             return;
         }
+        if (product.getStock() <= 0) {
+            if (isAjax(request)) {
+                response.setStatus(409);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"ok\":false,\"message\":\"Sản phẩm tạm hết hàng\"}");
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/product-detail?id=" + product.getId() + "&outOfStock=1");
+            return;
+        }
 
         HttpSession session = request.getSession(false);
         User user = session != null ? (User) session.getAttribute("user") : null;
@@ -142,8 +152,22 @@ public class AddToCartServlet extends HttpServlet {
 
         int qty = parseQuantity(request);
 
-        // Check existing cart item for this user & product & size
+        // Clamp qty to available stock minus existing qty in cart
         CartItem existing = cartItemDAO.findByUserProductSize(user.getId(), productId, size);
+        int already = existing != null ? existing.getQuantity() : 0;
+        int available = Math.max(0, product.getStock() - already);
+        if (available <= 0) {
+            if (isAjax(request)) {
+                response.setStatus(409);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"ok\":false,\"message\":\"Số lượng vượt quá tồn kho\"}");
+                return;
+            }
+            response.sendRedirect(request.getContextPath() + "/cart?error=outofstock");
+            return;
+        }
+        if (qty > available) qty = available;
+
         if (existing != null) {
             existing.setQuantity(existing.getQuantity() + qty);
             cartItemDAO.update(existing);

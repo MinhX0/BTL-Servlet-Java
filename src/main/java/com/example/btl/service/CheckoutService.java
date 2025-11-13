@@ -23,10 +23,18 @@ public class CheckoutService {
             session = HibernateUtil.getSession();
             tx = session.beginTransaction();
 
+            // Validate stock before creating order
+            for (CartItem ci : items) {
+                Product p = session.get(Product.class, ci.getProduct().getId());
+                if (p == null || !p.isActive() || p.getStock() < ci.getQuantity()) {
+                    throw new IllegalStateException("Insufficient stock for product id=" + (p!=null?p.getId():-1));
+                }
+            }
+
             // Compute total in VND (long) using effective price per item
             long totalVnd = 0L;
             for (CartItem ci : items) {
-                Product p = ci.getProduct();
+                Product p = session.get(Product.class, ci.getProduct().getId());
                 long unit = (p.getSalePrice() != null && p.getSalePrice() > 0) ? p.getSalePrice() : p.getBasePrice();
                 totalVnd += unit * (long) ci.getQuantity();
             }
@@ -43,11 +51,19 @@ public class CheckoutService {
             }
             session.persist(order);
 
-            // Create order items (rehydrate product in this session and use its effective price now)
+            // Create order items and deduct stock atomically
             for (CartItem ci : items) {
+                Product product = session.get(Product.class, ci.getProduct().getId());
+                // deduct stock
+                int newStock = product.getStock() - ci.getQuantity();
+                if (newStock < 0) {
+                    throw new IllegalStateException("Stock underflow for product id=" + product.getId());
+                }
+                product.setStock(newStock);
+                session.merge(product);
+
                 OrderItem oi = new OrderItem();
                 oi.setOrder(order);
-                Product product = session.get(Product.class, ci.getProduct().getId());
                 oi.setProduct(product);
                 oi.setQuantity(ci.getQuantity());
                 long unit = (product.getSalePrice() != null && product.getSalePrice() > 0) ? product.getSalePrice() : product.getBasePrice();

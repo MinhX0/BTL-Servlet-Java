@@ -34,13 +34,19 @@
                 <label class="form-label">Hoặc URL ảnh (tuỳ chọn)</label>
                 <input type="text" name="mainImageUrl" class="form-control" placeholder="https://...">
             </div>
-            <div class="mb-3">
-                <label class="form-label">Giá gốc (VND)</label>
-                <input type="number" step="1" min="0" name="basePrice" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Giá giảm (VND) - tuỳ chọn</label>
-                <input type="number" step="1" min="0" name="salePrice" class="form-control" placeholder="Để trống nếu không giảm giá">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Giá gốc (VND)</label>
+                    <input type="number" step="1" min="0" name="basePrice" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Giá giảm (VND) - tuỳ chọn</label>
+                    <input type="number" step="1" min="0" name="salePrice" class="form-control" placeholder="Để trống nếu không giảm giá">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Tồn kho</label>
+                    <input type="number" step="1" min="0" name="stock" class="form-control" value="0" required>
+                </div>
             </div>
             <div class="mb-3">
                 <label class="form-label">Danh mục</label>

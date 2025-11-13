@@ -38,6 +38,10 @@ public class Product {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    // New: inventory stock (total units available across sizes)
+    @Column(name = "stock", nullable = false)
+    private int stock = 0;
+
     public Product() { }
 
     // getters and setters
@@ -61,6 +65,9 @@ public class Product {
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
 
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = Math.max(0, stock); }
+
     // Alias for JSP usage: imgsrc -> maps to mainImageUrl
     @Transient
     public String getImgsrc() { return mainImageUrl; }
@@ -69,4 +76,7 @@ public class Product {
     // Effective price for UI/logic
     @Transient
     public long getEffectivePrice() { return (salePrice != null && salePrice > 0) ? salePrice : basePrice; }
+
+    @Transient
+    public boolean isInStock() { return active && stock > 0; }
 }

@@ -45,8 +45,9 @@ CREATE TABLE Products
     sale_price     DECIMAL(10, 2) NULL,
     date_added     DATETIME                DEFAULT CURRENT_TIMESTAMP,
     category_id    INT            NOT NULL,
-    FOREIGN KEY (category_id) REFERENCES Categories (category_id),
-    is_active      TINYINT(1)        NOT NULL DEFAULT 1
+    is_active      TINYINT(1)        NOT NULL DEFAULT 1,
+    stock          INT               NOT NULL DEFAULT 0,
+    FOREIGN KEY (category_id) REFERENCES Categories (category_id)
 );
 
 -- ----------------------------

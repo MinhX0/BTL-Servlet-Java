@@ -77,6 +77,7 @@ public class AdminProductCreateServlet extends HttpServlet {
         String basePriceStr = request.getParameter("basePrice");
         String salePriceStr = request.getParameter("salePrice");
         String categoryIdStr = request.getParameter("categoryId");
+        String stockStr = request.getParameter("stock");
 
         Part imagePart = null;
         try { imagePart = request.getPart("mainImageFile"); } catch (ServletException ignored) {}
@@ -88,6 +89,10 @@ public class AdminProductCreateServlet extends HttpServlet {
                 try { long sp = Long.parseLong(salePriceStr.trim()); if (sp > 0) salePrice = sp; } catch (NumberFormatException ignored) {}
             }
             int categoryId = Integer.parseInt(categoryIdStr);
+            int stock = 0;
+            if (stockStr != null && !stockStr.isBlank()) {
+                try { stock = Math.max(0, Integer.parseInt(stockStr.trim())); } catch (NumberFormatException ignored) {}
+            }
             Category category = categoryDAO.getById(categoryId);
 
             Product p = new Product();
@@ -97,6 +102,7 @@ public class AdminProductCreateServlet extends HttpServlet {
             if (salePrice != null) p.setSalePrice(salePrice);
             p.setCategory(category);
             p.setDateAdded(LocalDateTime.now());
+            p.setStock(stock);
 
             // Decide image source: uploaded file first, otherwise manual URL.
             String storedFileName = null;

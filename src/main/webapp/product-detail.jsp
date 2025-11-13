@@ -84,6 +84,12 @@
                     <div class="col-md-7">
                         <div class="product-content">
                             <div class="title"><h2>${empty product ? 'Sản phẩm' : fn:escapeXml(product.name)}</h2></div>
+                            <!-- Stock info -->
+                            <c:if test="${not empty product}">
+                                <p class="text-${product.stock > 0 ? 'success' : 'danger'}">
+                                    ${product.stock > 0 ? ('Còn hàng: ' += product.stock) : 'Hết hàng'}
+                                </p>
+                            </c:if>
                             <!-- Pre-format avgRating for use in attribute (EL cannot call fmt tag as function) -->
                             <fmt:formatNumber value="${avgRating}" maxFractionDigits="1" var="avgRatingOneDec"/>
                             <!-- Dynamic average rating stars -->
@@ -152,9 +158,9 @@
                             </div>
 
                             <c:choose>
-                              <c:when test="${productInactive}">
+                              <c:when test="${productInactive || product.stock <= 0}">
                                 <div class="alert alert-warning mt-3">
-                                  Sản phẩm này hiện không còn khả dụng để mua (đã ngừng bán).
+                                  Sản phẩm này hiện không còn khả dụng để mua.
                                 </div>
                               </c:when>
                               <c:otherwise>
@@ -233,6 +239,7 @@
                                 <ul>
                                     <li>Tên: ${empty product ? '-' : fn:escapeXml(product.name)}</li>
                                     <c:if test="${not empty product && not empty product.category && not empty product.category.name}"><li>Danh mục: ${fn:escapeXml(product.category.name)}</li></c:if>
+                                    <li>Tồn kho: ${product.stock}</li>
                                 </ul>
                             </div>
                             <div id="reviews" class="container tab-pane fade"><br>
@@ -330,10 +337,12 @@
                                             </c:if>
                                             <img src="${rpImg}" alt="${fn:escapeXml(rp.name)}" onerror="this.onerror=null;this.src='${phUrl}?v=${v}'">
                                             <div class="product-action">
-                                                <c:url var="addRp" value="/add-to-cart">
-                                                    <c:param name="productId" value="${rp.id}"/>
-                                                </c:url>
-                                                <a href="${addRp}"><i class="fa fa-cart-plus"></i></a>
+                                                <c:if test="${rp.stock > 0}">
+                                                    <c:url var="addRp" value="/add-to-cart">
+                                                        <c:param name="productId" value="${rp.id}"/>
+                                                    </c:url>
+                                                    <a href="${addRp}"><i class="fa fa-cart-plus"></i></a>
+                                                </c:if>
                                             </div>
                                         </div>
                                         <div class="product-content">

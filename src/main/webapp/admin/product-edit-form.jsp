@@ -59,21 +59,27 @@
                 <input type="text" name="mainImageUrl" class="form-control" placeholder="https://...">
                 <div class="form-text">Nếu tải lên & URL cùng có, ưu tiên ảnh tải lên.</div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Giá gốc (VND)</label>
-                <input type="number" step="1" min="0" name="basePrice" class="form-control" value="${product.basePrice}" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Giá giảm (VND) - tuỳ chọn</label>
-                <input type="number" step="1" min="0" name="salePrice" class="form-control" value="${product.salePrice}" placeholder="Để trống nếu không giảm giá">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Danh mục</label>
-                <select name="categoryId" class="form-select" required>
-                    <c:forEach var="c" items="${categories}">
-                        <option value="${c.id}" <c:if test='${c.id == product.category.id}'>selected</c:if>>${c.name}</option>
-                    </c:forEach>
-                </select>
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Giá gốc (VND)</label>
+                    <input type="number" step="1" min="0" name="basePrice" class="form-control" value="${product.basePrice}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Giá giảm (VND) - tuỳ chọn</label>
+                    <input type="number" step="1" min="0" name="salePrice" class="form-control" value="${product.salePrice}" placeholder="Để trống nếu không giảm giá">
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Tồn kho</label>
+                    <input type="number" step="1" min="0" name="stock" class="form-control" value="${product.stock}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Danh mục</label>
+                    <select name="categoryId" class="form-select" required>
+                        <c:forEach var="c" items="${categories}">
+                            <option value="${c.id}" <c:if test='${c.id == product.category.id}'>selected</c:if>>${c.name}</option>
+                        </c:forEach>
+                    </select>
+                </div>
             </div>
             <button type="submit" class="btn btn-success">Cập nhật</button>
             <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-secondary">Hủy</a>

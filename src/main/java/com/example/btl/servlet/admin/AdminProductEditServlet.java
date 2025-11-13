@@ -82,6 +82,7 @@ public class AdminProductEditServlet extends HttpServlet {
         String basePriceStr = req.getParameter("basePrice");
         String salePriceStr = req.getParameter("salePrice");
         String categoryIdStr = req.getParameter("categoryId");
+        String stockStr = req.getParameter("stock");
         Part imagePart = null;
         try { imagePart = req.getPart("mainImageFile"); } catch (ServletException ignored) {}
 
@@ -101,6 +102,9 @@ public class AdminProductEditServlet extends HttpServlet {
             int categoryId = Integer.parseInt(categoryIdStr);
             Category c = categoryDAO.getById(categoryId);
             p.setCategory(c);
+            if (stockStr != null && !stockStr.isBlank()) {
+                try { p.setStock(Math.max(0, Integer.parseInt(stockStr.trim()))); } catch (NumberFormatException ignored) {}
+            }
             // Image handling: optional new upload overwrites filename.
             if (imagePart != null && imagePart.getSize() > 0) {
                 String submitted = imagePart.getSubmittedFileName();
