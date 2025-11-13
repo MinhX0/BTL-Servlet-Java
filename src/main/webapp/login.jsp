@@ -99,11 +99,11 @@
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label>Mật khẩu</label>
-                                <input class="form-control" type="password" name="password" placeholder="Mật khẩu" required>
+                                <input class="form-control" type="password" name="password" id="regPassword" placeholder="Mật khẩu" minlength="7" required>
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label>Xác nhận mật khẩu</label>
-                                <input class="form-control" type="password" name="confirm-password" placeholder="Xác nhận mật khẩu" required>
+                                <input class="form-control" type="password" name="confirm-password" id="regConfirmPassword" placeholder="Xác nhận mật khẩu" minlength="7" required>
                             </div>
                             <div class="col-md-6 mt-3">
                                 <label>Số điện thoại (Không bắt buộc)</label>
@@ -126,5 +126,25 @@
 <!-- Login End -->
 
 <%@ include file="/WEB-INF/jsp/layout/footer.jspf" %>
+<script>
+  (function(){
+    function setupRegisterValidation(){
+      var pwd = document.getElementById('regPassword');
+      var cpw = document.getElementById('regConfirmPassword');
+      if(!pwd || !cpw) return;
+      function validate(){
+        // minlength handled by HTML, here ensure identical
+        if(cpw.value && pwd.value !== cpw.value){
+          cpw.setCustomValidity('Mật khẩu xác nhận không khớp.');
+        } else {
+          cpw.setCustomValidity('');
+        }
+      }
+      pwd.addEventListener('input', validate);
+      cpw.addEventListener('input', validate);
+    }
+    document.addEventListener('DOMContentLoaded', setupRegisterValidation);
+  })();
+</script>
 </body>
 </html>
