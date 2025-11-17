@@ -13,6 +13,7 @@
         .checkout-summary .checkout-content h3 {margin:15px 0 10px;}
         .checkout-summary .price-old {text-decoration:line-through;color:#999;font-size:12px;margin-right:4px;}
         .checkout-summary .checkout-content .empty-cart {text-align:center;color:#777;font-style:italic;margin:10px 0;}
+        .badge-selected {background:#007bff;color:#fff;border-radius:4px;padding:2px 6px;font-size:12px;}
     </style>
 </head>
 <body>
@@ -25,6 +26,12 @@
         <div class="row">
             <div class="col-md-7">
                 <form method="post" action="${pageContext.request.contextPath}/checkout">
+                    <c:if test="${not empty selectedIds}">
+                        <div class="mb-2"><span class="badge-selected">Thanh toán ${fn:length(selectedIds)} mục đã chọn</span></div>
+                        <c:forEach var="sid" items="${selectedIds}">
+                            <input type="hidden" name="selectedItem" value="${sid}" />
+                        </c:forEach>
+                    </c:if>
                     <div class="billing-address">
                         <h2>Thông tin thanh toán</h2>
                         <div class="row">

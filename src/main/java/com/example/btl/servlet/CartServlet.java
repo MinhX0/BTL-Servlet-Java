@@ -58,6 +58,26 @@ public class CartServlet extends HttpServlet {
             return;
         }
         String action = request.getParameter("action");
+
+        // Handle AJAX update
+        if ("updateAjax".equalsIgnoreCase(action)) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            try {
+                int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
+                int qty = parseIntOr(request.getParameter("qty"), 1);
+                boolean ok = cartService.updateQuantity(cartItemId, qty);
+                if (ok) {
+                    response.getWriter().write("{\"success\":true}");
+                } else {
+                    response.getWriter().write("{\"success\":false,\"message\":\"Không thể cập nhật số lượng\"}");
+                }
+            } catch (Exception e) {
+                response.getWriter().write("{\"success\":false,\"message\":\"" + e.getMessage() + "\"}");
+            }
+            return;
+        }
+
         boolean ok = false;
         try {
             if ("add".equalsIgnoreCase(action)) {
@@ -69,8 +89,20 @@ public class CartServlet extends HttpServlet {
                 int qty = parseIntOr(request.getParameter("qty"), 1);
                 ok = cartService.updateQuantity(cartItemId, qty);
             } else if ("remove".equalsIgnoreCase(action)) {
-                int cartItemId = Integer.parseInt(request.getParameter("cartItemId"));
-                ok = cartService.updateQuantity(cartItemId, 0); // delete
+                String cartItemIdStr = request.getParameter("cartItemId");
+                if (cartItemIdStr != null && !cartItemIdStr.isEmpty()) {
+                    int cartItemId = Integer.parseInt(cartItemIdStr);
+                    ok = cartService.updateQuantity(cartItemId, 0); // delete
+                } else {
+                    // Multiple items
+                    String[] ids = request.getParameterValues("cartItemId");
+                    if (ids != null) {
+                        for (String id : ids) {
+                            cartService.updateQuantity(Integer.parseInt(id), 0);
+                        }
+                        ok = true;
+                    }
+                }
             } else if ("clear".equalsIgnoreCase(action)) {
                 ok = cartService.clearCart(userId);
             } else if ("changeSize".equalsIgnoreCase(action)) {

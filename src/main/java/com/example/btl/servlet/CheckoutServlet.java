@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "CheckoutServlet", urlPatterns = {"/checkout"})
 public class CheckoutServlet extends HttpServlet {
@@ -45,7 +46,21 @@ public class CheckoutServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
-        List<CartItem> items = cartItemDAO.listByUserDetailed(userId);
+
+        // If specific selected ids come from cart via query string, show only those in summary; else show all
+        String[] selectedParam = request.getParameterValues("item");
+        List<CartItem> items;
+        if (selectedParam != null && selectedParam.length > 0) {
+            List<Integer> ids = Arrays.stream(selectedParam)
+                    .map(s -> { try { return Integer.parseInt(s); } catch (Exception e) { return null; } })
+                    .filter(Objects::nonNull)
+                    .toList();
+            items = cartItemDAO.listByUserSelectedDetailed(userId, ids);
+            request.setAttribute("selectedIds", ids); // keep for the form hidden inputs
+        } else {
+            items = cartItemDAO.listByUserDetailed(userId);
+        }
+
         long subTotalVnd = 0L;
         for (CartItem ci : items) {
             Product p = ci.getProduct();
@@ -77,18 +92,30 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
         String payment = Optional.ofNullable(request.getParameter("payment")).orElse("COD");
-        String fullName = request.getParameter("fullName");
-        String phone = request.getParameter("phone");
-        String email = request.getParameter("email");
         String address = request.getParameter("address");
 
-        List<CartItem> items = cartItemDAO.listByUserDetailed(userId);
+        // Collect selected cart item ids from hidden inputs named selectedItem
+        String[] selectedIdsRaw = request.getParameterValues("selectedItem");
+        List<Integer> selectedIds = selectedIdsRaw == null ? List.of() : Arrays.stream(selectedIdsRaw)
+                .map(s -> { try { return Integer.parseInt(s); } catch (Exception e) { return null; } })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        List<CartItem> items;
+        boolean partialCheckout = false;
+        if (!selectedIds.isEmpty()) {
+            items = cartItemDAO.listByUserSelectedDetailed(userId, selectedIds);
+            partialCheckout = true;
+        } else {
+            // fallback: all items
+            items = cartItemDAO.listByUserDetailed(userId);
+        }
         if (items.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/cart");
             return;
         }
-        // Always create the order and clear the cart per requirement
-        Order order = checkoutService.placeOrder(userId, items, address);
+
+        Order order = checkoutService.placeOrderSelected(userId, items, address, partialCheckout);
         if (order == null) {
             response.sendRedirect(request.getContextPath() + "/checkout?error=1");
             return;

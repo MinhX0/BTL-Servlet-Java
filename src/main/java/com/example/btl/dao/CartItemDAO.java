@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CartItemDAO {
@@ -144,6 +145,43 @@ public class CartItemDAO {
             System.out.println("Error deleting cart items for user: " + e.getMessage());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    // NEW: fetch selected cart items with join fetch product
+    public List<CartItem> listByUserSelectedDetailed(int userId, List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return List.of();
+        try (Session session = HibernateUtil.getSession()) {
+            Query<CartItem> q = session.createQuery(
+                    "select ci from CartItem ci join fetch ci.product p where ci.user.id = :uid and ci.id in (:ids) order by ci.dateAdded desc",
+                    CartItem.class
+            );
+            q.setParameter("uid", userId);
+            q.setParameterList("ids", ids);
+            return q.getResultList();
+        } catch (HibernateException e) {
+            System.out.println("Error listing selected detailed cart items: " + e.getMessage());
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
+
+    // NEW: delete only given ids (after partial checkout)
+    public int deleteIds(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return 0;
+        Transaction tx = null;
+        try (Session session = HibernateUtil.getSession()) {
+            tx = session.beginTransaction();
+            Query<?> q = session.createQuery("delete from CartItem where id in (:ids)");
+            q.setParameterList("ids", ids);
+            int affected = q.executeUpdate();
+            tx.commit();
+            return affected;
+        } catch (HibernateException e) {
+            if (tx != null) tx.rollback();
+            System.out.println("Error deleting selected cart item ids: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
         }
     }
 }
