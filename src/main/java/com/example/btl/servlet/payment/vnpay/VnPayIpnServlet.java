@@ -63,7 +63,6 @@ public class VnPayIpnServlet extends HttpServlet {
 
             // Extract VNPay fields
             String vnp_TxnRef = request.getParameter("vnp_TxnRef"); // we use internal order_id here
-            String vnp_TransactionStatus = request.getParameter("vnp_TransactionStatus");
             String vnp_ResponseCode = request.getParameter("vnp_ResponseCode");
 
             int orderId;
@@ -74,8 +73,14 @@ public class VnPayIpnServlet extends HttpServlet {
                 return;
             }
 
-            boolean success = "00".equals(vnp_TransactionStatus) || "00".equals(vnp_ResponseCode);
-            OrderStatus newStatus = success ? OrderStatus.Processing : OrderStatus.Cancelled;
+            // vnp_ResponseCode: 00 = success, 24 = user cancelled, others = failed/cancelled
+            OrderStatus newStatus;
+            if ("00".equals(vnp_ResponseCode)) {
+                newStatus = OrderStatus.Processing;
+            } else {
+                // Any non-success code (24 = user cancelled, 07 = suspicious transaction, etc.)
+                newStatus = OrderStatus.Cancelled;
+            }
 
             boolean updated = orderDAO.updateStatus(orderId, newStatus);
             if (updated) {
