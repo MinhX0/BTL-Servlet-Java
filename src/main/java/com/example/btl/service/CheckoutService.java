@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class CheckoutService {
+    private final PromotionService promotionService = new PromotionService();
+
     public Order placeOrder(int userId, List<CartItem> items) {
         // Delegate to the overload without address
         return placeOrder(userId, items, null);
@@ -114,18 +116,33 @@ public class CheckoutService {
                 }
             }
 
-            long totalVnd = 0L;
+            long subtotalVnd = 0L;
             for (CartItem ci : selectedItems) {
                 Product p = session.get(Product.class, ci.getProduct().getId());
                 long unit = (p.getSalePrice() != null && p.getSalePrice() > 0) ? p.getSalePrice() : p.getBasePrice();
-                totalVnd += unit * (long) ci.getQuantity();
+                subtotalVnd += unit * (long) ci.getQuantity();
+            }
+
+            BigDecimal subtotal = BigDecimal.valueOf(subtotalVnd);
+
+            // Find and apply best promotion
+            Promotion bestPromotion = promotionService.getBestApplicablePromotion(subtotal);
+            BigDecimal discountAmount = BigDecimal.ZERO;
+            BigDecimal totalAmount = subtotal;
+
+            if (bestPromotion != null) {
+                discountAmount = bestPromotion.calculateDiscount(subtotal);
+                totalAmount = subtotal.subtract(discountAmount);
             }
 
             Order order = new Order();
             User userRef = session.get(User.class, userId);
             order.setUser(userRef);
             order.setOrderDate(LocalDateTime.now());
-            order.setTotalAmount(BigDecimal.valueOf(totalVnd));
+            order.setSubtotalAmount(subtotal);
+            order.setDiscountAmount(discountAmount);
+            order.setTotalAmount(totalAmount);
+            order.setPromotion(bestPromotion);
             order.setStatus(OrderStatus.Pending);
             if (address != null && !address.isBlank()) {
                 order.setAddress(address);

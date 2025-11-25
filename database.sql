@@ -67,20 +67,43 @@ CREATE TABLE Carts
     FOREIGN KEY (product_id) REFERENCES Products (product_id),
     UNIQUE KEY idx_user_product_size (user_id, product_id, size)
 );
-
+-- ----------------------------
+-- 9. Promotions Table (Date-based discount system)
+-- ----------------------------
+CREATE TABLE Promotions
+(
+    promotion_id   INT AUTO_INCREMENT PRIMARY KEY,
+    name           VARCHAR(255)   NOT NULL,
+    description    TEXT,
+    discount_type  ENUM ('PERCENTAGE', 'FIXED_AMOUNT') NOT NULL DEFAULT 'PERCENTAGE',
+    discount_value DECIMAL(10, 2) NOT NULL,
+    min_order_amount DECIMAL(10, 2) DEFAULT 0,
+    start_date     DATETIME       NOT NULL,
+    end_date       DATETIME       NOT NULL,
+    is_active      TINYINT(1)     NOT NULL DEFAULT 1,
+    created_at     DATETIME       DEFAULT CURRENT_TIMESTAMP,
+    updated_at     DATETIME       DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT chk_discount_value CHECK (discount_value >= 0),
+    CONSTRAINT chk_percentage CHECK (discount_type != 'PERCENTAGE' OR discount_value <= 100),
+    CONSTRAINT chk_dates CHECK (end_date > start_date)
+);
 -- ----------------------------
 -- 7. Orders Table (Header for a finalized transaction)
 -- ----------------------------
 CREATE TABLE Orders
 (
-    order_id     INT AUTO_INCREMENT PRIMARY KEY,
+    order_id         INT AUTO_INCREMENT PRIMARY KEY,
     -- FK now references the 'id' column in the Users table
-    user_id      INT                                                                             NOT NULL,
-    order_date   DATETIME                                                                                 DEFAULT CURRENT_TIMESTAMP,
-    total_amount DECIMAL(10, 2)                                                                  NOT NULL,
-    status       ENUM ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded') NOT NULL DEFAULT 'Pending',
-    address      VARCHAR(500),
-    FOREIGN KEY (user_id) REFERENCES Users (id)
+    user_id          INT                                                                             NOT NULL,
+    order_date       DATETIME                                                                                 DEFAULT CURRENT_TIMESTAMP,
+    subtotal_amount  DECIMAL(10, 2),
+    discount_amount  DECIMAL(10, 2)                                                                           DEFAULT 0,
+    total_amount     DECIMAL(10, 2)                                                                  NOT NULL,
+    promotion_id     INT                                                                             NULL,
+    status           ENUM ('Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Refunded') NOT NULL DEFAULT 'Pending',
+    address          VARCHAR(500),
+    FOREIGN KEY (user_id) REFERENCES Users (id),
+    FOREIGN KEY (promotion_id) REFERENCES Promotions (promotion_id)
 );
 
 -- ----------------------------
@@ -97,6 +120,8 @@ CREATE TABLE Order_Items
     FOREIGN KEY (order_id) REFERENCES Orders (order_id),
     FOREIGN KEY (product_id) REFERENCES Products (product_id)
 );
+
+
 
 -- =============================
 -- Soft Delete Cascade & Guards

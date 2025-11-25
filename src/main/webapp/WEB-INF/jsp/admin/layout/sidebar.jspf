@@ -19,6 +19,10 @@
         href="${pageContext.request.contextPath}/admin/products">
         <i class="fas fa-box-open me-2"></i> Sản phẩm
         </a>
+        <a class="list-group-item list-group-item-action bg-transparent text-white"
+        href="${pageContext.request.contextPath}/admin/promotions">
+        <i class="fas fa-percent me-2"></i> Khuyến mãi
+        </a>
         </c:if>
         <a class="list-group-item list-group-item-action bg-transparent text-white"
         href="${pageContext.request.contextPath}/admin/orders">

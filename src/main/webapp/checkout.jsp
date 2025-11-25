@@ -111,8 +111,14 @@
                         </c:choose>
                         <c:set var="finalTotal" value="${empty subTotal ? computedTotal : subTotal}" />
                         <p class="sub-total">Tạm tính<span><fmt:formatNumber value="${finalTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0" /> đ</span></p>
+                        <c:if test="${not empty promotion}">
+                            <p class="discount" style="color: #28a745;">
+                                Khuyến mãi: ${promotion.name}
+                                <span>-<fmt:formatNumber value="${discountAmount}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0" /> đ</span>
+                            </p>
+                        </c:if>
                         <p class="ship-cost">Phí vận chuyển<span>0đ</span></p>
-                        <h4>Tổng cộng<span><fmt:formatNumber value="${finalTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0" /> đ</span></h4>
+                        <h4>Tổng cộng<span><fmt:formatNumber value="${not empty totalAmount ? totalAmount : finalTotal}" type="number" groupingUsed="true" maxFractionDigits="0" minFractionDigits="0" /> đ</span></h4>
                     </div>
                 </div>
             </div>

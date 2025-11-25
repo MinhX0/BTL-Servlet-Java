@@ -37,7 +37,8 @@ public class HibernateUtil {
                     .addAnnotatedClass(Order.class)
                     .addAnnotatedClass(OrderItem.class)
                     .addAnnotatedClass(OtpToken.class)
-                    .addAnnotatedClass(Review.class);
+                    .addAnnotatedClass(Review.class)
+                    .addAnnotatedClass(Promotion.class);
 
 
             Metadata metadata = sources.buildMetadata();
