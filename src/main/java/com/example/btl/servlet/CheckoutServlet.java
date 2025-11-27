@@ -5,7 +5,9 @@ import com.example.btl.model.CartItem;
 import com.example.btl.model.Order;
 import com.example.btl.model.User;
 import com.example.btl.model.Product;
+import com.example.btl.model.Promotion;
 import com.example.btl.service.CheckoutService;
+import com.example.btl.service.PromotionService;
 import com.example.btl.servlet.payment.vnpay.Config;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,11 +28,13 @@ import java.util.stream.Collectors;
 public class CheckoutServlet extends HttpServlet {
     private CartItemDAO cartItemDAO;
     private CheckoutService checkoutService;
+    private PromotionService promotionService;
 
     @Override
     public void init() {
         this.cartItemDAO = new CartItemDAO();
         this.checkoutService = new CheckoutService();
+        this.promotionService = new PromotionService();
     }
 
     @Override
@@ -69,8 +73,24 @@ public class CheckoutServlet extends HttpServlet {
                     : p.getBasePrice();
             subTotalVnd += unit * (long) ci.getQuantity();
         }
+
+        // Find best applicable promotion
+        BigDecimal subtotal = BigDecimal.valueOf(subTotalVnd);
+        Promotion bestPromotion = promotionService.getBestApplicablePromotion(subtotal);
+        BigDecimal discountAmount = BigDecimal.ZERO;
+        BigDecimal totalAmount = subtotal;
+
+        if (bestPromotion != null) {
+            discountAmount = bestPromotion.calculateDiscount(subtotal);
+            totalAmount = subtotal.subtract(discountAmount);
+        }
+
         request.setAttribute("cartItems", items);
         request.setAttribute("subTotal", subTotalVnd);
+        request.setAttribute("promotion", bestPromotion);
+        request.setAttribute("discountAmount", discountAmount.longValue());
+        request.setAttribute("totalAmount", totalAmount.longValue());
+
         try {
             request.getRequestDispatcher("/checkout.jsp").forward(request, response);
         } catch (Exception e) {
