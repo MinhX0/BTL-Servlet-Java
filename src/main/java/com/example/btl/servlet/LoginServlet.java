@@ -2,9 +2,6 @@ package com.example.btl.servlet;
 
 import com.example.btl.model.User;
 import com.example.btl.dao.UserDAO;
-import com.example.btl.dao.OtpTokenDAO;
-import com.example.btl.service.EmailService;
-import com.example.btl.service.OtpService;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.*;
 import java.io.IOException;
@@ -69,21 +66,18 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // If authentication failed, check if the account exists but is inactive (awaiting OTP)
+        // If authentication failed, check if the account exists but is inactive (disabled)
         User inactive = userDAO.findByUsernameOrEmail(username);
         if (inactive != null && (inactive.getActive() != null && !inactive.getActive())) {
-            // Verify password manually since authenticateUser filters inactive users
-            if (com.example.btl.util.PasswordUtil.verifyPassword(password, inactive.getPassword())) {
-                // Resend OTP and redirect to verify page
-                OtpService otpService = new OtpService(new OtpTokenDAO(), new EmailService());
-                String base = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath());
-                otpService.sendOtp(inactive, "REGISTER", 10, base);
-                HttpSession session = request.getSession(true);
-                session.setAttribute("pendingUserId", inactive.getId());
-                session.setAttribute("otpNext:REGISTER", request.getContextPath() + "/index");
-                response.sendRedirect(request.getContextPath() + "/verify-otp?purpose=REGISTER");
-                return;
+            // Do NOT attempt OTP resend for disabled accounts. Inform the user instead.
+            request.setAttribute("error", "Your account has been disabled. Please contact the administrator or support.");
+            try {
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
+            return;
         }
 
         // Authentication failed normally
