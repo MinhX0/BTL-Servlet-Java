@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users
     created_at   TIMESTAMP                                     DEFAULT CURRENT_TIMESTAMP,
     updated_at   TIMESTAMP                                     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+INSERT INTO `users` (`id`, `username`, `password`, `name`, `email`, `phone_number`, `address`, `role`, `is_active`, `created_at`, `updated_at`) VALUES (1, 'admin', '$2a$12$t4381/QnG4g46Wn981TG8.nJlXFyjcc.Y4m0PwLVtUnzOFAdZtcyq', 'Admin', 'admin@admin.com', NULL, NULL, 'ADMIN', 1, '2025-11-25 08:57:41', '2025-11-25 08:57:41');
 
 -- ----------------------------
 -- 3. Categories Table (Product classification and hierarchy)
@@ -142,7 +143,12 @@ DELIMITER ;
 -- =============================
 -- End soft delete cascade triggers
 -- =============================
-
+INSERT INTO Categories (category_id, name, slug, parent_id, is_active) VALUES
+                                                                           (1, 'Dép quai ngang nữ', 'womens-slide-sandals', NULL, TRUE),
+                                                                           (2, 'Dép xỏ ngón nữ', 'womens-flip-flops', NULL, TRUE),
+                                                                           (3, 'Dép đi trong nhà nữ', 'womens-house-slippers', NULL, TRUE),
+                                                                           (4, 'Dép sandal nữ', 'womens-sandals', NULL, TRUE),
+                                                                           (5, 'Dép cao gót nữ', 'womens-high-heels', NULL, TRUE);
 INSERT INTO `products` (`main_image_url`, `name`, `base_price`, `sale_price`, `description`, `category_id`) VALUES ('caogoi_muinhonden.jpeg', 'Giày Cao Gót Cao Gót Mũi Nhọn', '499000', NULL, 'Thiết kế mũi nhọn thanh lịch tôn lên vẻ sang trọng cho phái đẹp. Phù hợp để đi làm, dự tiệc hay dạo phố, giúp đôi chân trông thon gọn và quyến rũ hơn.', '2');
 INSERT INTO `products` (`main_image_url`, `name`, `base_price`, `sale_price`, `description`, `category_id`) VALUES ('caogot_bitmui.jpeg', 'Giày Cao Gót Cao Gót Bít Mũi Phối Cap', '549000', '466650', 'Thiết kế bít mũi phối cap tinh tế, tôn lên vẻ sang trọng và chuyên nghiệp. Phù hợp cho môi trường công sở hoặc các dịp trang trọng.', '3');
 INSERT INTO `products` (`main_image_url`, `name`, `base_price`, `sale_price`, `description`, `category_id`) VALUES ('caogot_dapcheo.jpeg', 'Giày Cao Gót Đắp Chéo', '549000', '466650', 'Phần quai đắp chéo mềm mại ôm chân, tạo cảm giác thoải mái và chắc chắn. Phong cách hiện đại giúp bạn dễ dàng kết hợp với nhiều outfit.', '4');
